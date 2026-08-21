@@ -1,0 +1,69 @@
+---
+description: After every build/test, run post-build cleanup to free RAM/disk (both VPS projects). Also keep ram-guard for low-RAM auto-cleanup.
+alwaysApply: true
+---
+
+# Post-build memory cleanup
+
+On this shared ~8GB VPS (NewsCrawler + BreachSentinel), **always** reclaim caches after builds — do not wait for the user to remind you.
+
+## Required after ANY of these
+
+- `docker compose build` / `up --build` / image rebuild
+- frontend `npm run build` / `npm test` / Vite builds — **always** cleanup both repos after
+- large pytest runs
+- recreating heavy services that may leave BuildKit layers or stopped one-shots
+
+**alwaysApply:** this rule is mandatory on every agent turn that rebuilds frontend or images. Do not leave Vite caches, BuildKit layers, or exited test containers.
+
+Run **both** projects when either one built (shared Docker + host caches):
+
+```bash
+sh /root/NewsCrawler/scripts/post-build-cleanup.sh
+sh /root/BreachSentinel/scripts/post-build-cleanup.sh
+```
+
+From inside a project repo, `sh scripts/post-build-cleanup.sh` is enough for that tree; still run the sibling script when Docker images were built.
+
+## Automatic low-RAM cleanup (ram-guard)
+
+Agents must ensure the shared RAM guard exists and is scheduled:
+
+- Script: `/root/NewsCrawler/scripts/ram-guard.sh` (BreachSentinel wrapper: `scripts/ram-guard.sh`)
+- Threshold: `RAM_GUARD_MIN_AVAILABLE_MB=2048` (2 GiB MemAvailable; configurable)
+- Cron: `*/2 * * * * /root/NewsCrawler/scripts/ram-guard.sh`
+- When available RAM **< 2 GiB** anytime, the guard runs safe cleanup for **both** projects (cooldown ~15 min unless critically low / `FORCE_RAM_CLEANUP=1`)
+- Log: `/var/log/ram-guard.log` (or `~/ram-guard.log`)
+
+After builds, still run the post-build cleanup scripts above — do not rely only on the timer.
+
+## What the script reclaims
+
+- `frontend` Vite/Vitest/TS buildinfo caches and local `dist`
+- `__pycache__`, `.pytest_cache`, `.mypy_cache`, `.ruff_cache`
+- npm/pip/apt host caches
+- stopped containers + unused networks (`docker container/network prune`)
+- Docker BuildKit cache (`docker builder prune -af`) + dangling images
+- (NewsCrawler) unloads idle Ollama models from RAM (keeps model files)
+- drops Linux page cache when running as root
+
+## Do not leave behind
+
+- Host `frontend/node_modules/.vite` / `*.tsbuildinfo` after Docker frontend builds
+- Unused BuildKit layers (hundreds of MB–GB)
+- Exited one-shot containers (e.g. `nc-notebook-bootstrap` — profile `bootstrap` only)
+- Test-only compose profiles left running after a build
+
+## Never wipe
+
+- Named app data volumes (Postgres, SurrealDB/Notebook data, Ollama model store, Redis persistence)
+- `.env` secrets / API keys
+- Source code / running compose images still in use
+- Production services permanently stopped
+
+## Runtime RAM discipline (already in compose)
+
+- Prefer `mem_limit` on Wigolo / Ollama / Celery / Notebook
+- Keep Celery/Gunicorn concurrency at 1 on this host unless upgrading RAM
+- Keep `WIGOLO_EAGER_WARMUP=0` and `DOCUMENT_SCAN_ENABLED=false` unless explicitly raising limits
+- After unloading Ollama, models reload on demand (~2GB spike for `qwen2.5:3b`)

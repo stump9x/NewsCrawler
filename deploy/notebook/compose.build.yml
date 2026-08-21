@@ -1,0 +1,13 @@
+# Optional override: build Notebook AI from vendored + speech-disabled source.
+# Usage (from repo root):
+#   docker compose -f docker-compose.yml -f deploy/notebook/compose.build.yml build notebook-ai
+#   docker compose -f docker-compose.yml -f deploy/notebook/compose.build.yml up -d notebook-ai notebook-gateway
+# Context path is relative to the *first* compose file (repo root).
+services:
+  notebook-ai:
+    image: newscrawler-notebook:local
+    build:
+      context: ./vendor/open-notebook
+      dockerfile: Dockerfile
+      target: runtime
+    pull_policy: never

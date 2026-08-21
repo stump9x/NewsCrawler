@@ -1,0 +1,29 @@
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+
+# Dependencies and build outputs
+frontend/node_modules/
+frontend/dist/
+backend/.venv/
+backend/venv/
+__pycache__/
+*.py[cod]
+
+# Runtime data, logs and local databases
+*.log
+*.db
+*.sqlite3
+backend/celerybeat-schedule
+backend/core.*
+data/
+surrealdb/
+
+# Local/editor artifacts
+.DS_Store
+.vscode/
+.idea/
+*.tmp
+*.bak
+*.bak-*

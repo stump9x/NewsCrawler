@@ -1,0 +1,4 @@
+Vendored from https://github.com/mvanhorn/last30days-skill (MIT)
+Version: 3.18.0
+Upstream path: skills/last30days/
+Integrated into NewsCrawler as apps.integrations.last30days

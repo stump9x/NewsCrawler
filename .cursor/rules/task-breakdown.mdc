@@ -1,0 +1,39 @@
+---
+description: Break an approved TDD into a small actionable checklist in docs/tasks/. Use after technical design is ready or when user asks to break down tasks.
+alwaysApply: false
+---
+
+# Task breakdown rule
+
+Input: approved Markdown TDD in `docs/designs/`.  
+Output: `docs/tasks/<same-slug>.md` checklist.
+
+## Guidelines
+
+1. Tasks completable in hours (not days); verbs: Create / Implement / Add / Update / Test / Document.
+2. Order by dependency (migrations → models/API → workers → UI → tests).
+3. Cover: schema, API, UI, Celery/ingest if any, unit + relevant integration tests, docs, open questions.
+4. Format:
+
+```markdown
+# Tasks: [Feature]
+
+Source TDD: docs/designs/<slug>.md
+
+## Database
+- [ ] Task 1: …
+
+## API / workers
+- [ ] Task 2: … (depends on Task 1)
+
+## UI
+- [ ] Task 3: …
+
+## Testing
+- [ ] Task 4: …
+
+## Docs / ops
+- [ ] Task 5: …
+```
+
+5. Optional: `(High Priority)` markers. No code yet — wait for implementation rule + user go-ahead.

@@ -1,0 +1,15 @@
+---
+description: Token-efficient workflow — read overview; for non-trivial features Design→Breakdown→Implement one task at a time.
+alwaysApply: true
+---
+
+# Workflow gate
+
+1. **Orient:** For non-trivial work, read `.cursor/docs/overview.md` before wide exploration.
+2. **Non-trivial features** (new API/UI/model/ingest path, multi-file):  
+   Design (`docs/designs/`) → Breakdown (`docs/tasks/`) → Implement **one** unchecked task → mark `- [x]` → ask before next / commit.  
+   Confirm with the user before coding if no approved TDD exists.
+3. **Trivial:** typos, single-file fixes, ops deletes, “implement directly” → skip TDD.
+4. **Token:** Prefer targeted search + small file reads; cite paths; no whole-repo dumps.
+5. **Ops:** After builds/tests → post-build cleanup rule. Never commit unless asked.
+6. Details: `.cursor/docs/WORKFLOW.md` and rules `technical-design`, `task-breakdown`, `implementation`.

@@ -1,0 +1,49 @@
+---
+description: Write a Technical Design Document before coding non-trivial features. Use when user asks for design, TDD, architecture plan, or a new multi-file feature.
+alwaysApply: false
+---
+
+# Technical Design rule (NewsCrawler)
+
+You are the architect for **NewsCrawler**. Do **not** write production code until the TDD is accepted (unless user says implement directly).
+
+## Process
+
+1. Clarify purpose, scope, NFRs, dependencies; reuse existing Wire/RSS/Notebook paths when possible.
+2. Read `.cursor/docs/overview.md`; inspect only relevant files (`apps/intel`, `apps/workers/feeds`, `frontend/src/pages`, integrations).
+3. Write `docs/designs/<feature-slug>.md` using the template below.
+4. Stop for review. Next step = task-breakdown rule.
+
+## Template
+
+```markdown
+# TDD: [Feature Name]
+
+## 1. Overview
+Purpose + scope (in / out).
+
+## 2. Requirements
+### 2.1 Functional
+### 2.2 Non-functional (RAM, latency, auth)
+
+## 3. Technical Design
+### 3.1 Data model (Threat / FeedSource / … + migrations)
+### 3.2 API (`/api/v1/…` request/response examples)
+### 3.3 UI (routes/components under frontend/src)
+### 3.4 Logic flow (Mermaid sequence if useful)
+### 3.5 Dependencies (Celery, Ollama, SearX, Surreal, …)
+### 3.6 Security
+### 3.7 Performance (VPS mem_limit, concurrency=1)
+
+## 4. Testing Plan
+## 5. Open Questions
+## 6. Alternatives Considered
+```
+
+## Project anchors
+
+- Models: `backend/apps/intel/models.py`
+- RSS catalog: `backend/apps/workers/feeds/rss_sources.json`
+- Ingest: `backend/apps/workers/feeds/clients.py`, `services.py`
+- API: `backend/apps/intel/urls.py`
+- After image/frontend builds: post-build cleanup

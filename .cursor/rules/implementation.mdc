@@ -1,0 +1,36 @@
+---
+description: Implement one checklist task at a time from docs/tasks/ against the TDD. Use when user asks to implement, code a task, or continue the checklist.
+alwaysApply: false
+---
+
+# Implementation rule (NewsCrawler)
+
+## Input
+
+```
+Implementation:
+Task document: docs/tasks/<slug>.md
+Technical Design Document: docs/designs/<slug>.md
+```
+
+## Workflow
+
+1. Find first unchecked `- [ ]` (or the task the user named). Confirm with user before coding if unclear.
+2. Re-read only the TDD sections for that task + touched files.
+3. Implement to match TDD and existing Django/DRF + React patterns. Prefer reuse over new abstractions. Add/adjust tests for new logic.
+4. If TDD is wrong/incomplete → **stop**, propose TDD update; do not freestyle.
+5. Mark done immediately:
+
+```markdown
+- [x] Task N: … (Completed)
+```
+
+6. Say: `Task N complete. Checklist updated. Ready for commit?` — **do not commit** unless asked. Conventional message suggestion: `feat|fix|docs|refactor|test|chore: …`
+7. One task per turn unless user says continue.
+
+## Local standards
+
+- Python: match `apps/intel`, `apps/workers`, `apps/integrations` style; type hints where neighbors use them.
+- React: functional components; follow existing `frontend/src` patterns (no new UI kit).
+- RSS source changes: update `rss_sources.json` **and** DB, or seed will resurrect rows.
+- After Docker/npm builds: post-build cleanup (both VPS projects when images built).

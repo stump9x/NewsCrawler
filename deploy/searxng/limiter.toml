@@ -1,0 +1,6 @@
+# Current SearxNG enables bot detection through server.limiter in settings.yml.
+# Keep only supported limiter policy keys here.
+
+[botdetection.ip_limit]
+# Rate-limit abusive clients when limiter is on
+link_token = false

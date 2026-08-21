@@ -1,0 +1,1 @@
+"""SearxNG integration package."""

@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+
+project_root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+export XDG_CONFIG_HOME="$project_root/.tools/xdg/config"
+export XDG_DATA_HOME="$project_root/.tools/xdg/data"
+export XDG_CACHE_HOME="$project_root/.tools/xdg/cache"
+
+exec "$project_root/.tools/bin/rtk" "$@"

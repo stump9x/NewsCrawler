@@ -1,0 +1,23 @@
+---
+description: Notebook chat/briefing UX — render markdown bold; suppress empty-fetch pipeline warnings in UI.
+globs: frontend/src/pages/NotebookAIPage.jsx,frontend/src/pages/BriefingsPage.jsx,frontend/src/api/notebook.js,frontend/src/utils/inlineMarkdown.js,frontend/src/utils/pipelineWarnings.js,backend/apps/integrations/ai/briefings.py,backend/apps/integrations/serializers.py
+alwaysApply: false
+---
+
+# Notebook AI / briefing display UX
+
+## Bold / emphasis
+
+- Never leave literal `**...**` as visible garbage in chat or briefing UI.
+- Prefer **render** inline markdown (`**bold**`, `*italic*`) via `InlineMarkdown` / `splitInlineMarkdown` — do not strip paired markers into broken plain text.
+- Briefing `normalize_briefing_prose` may keep paired `**...**` for the SPA to render; only strip **unpaired** leftovers and Wire metadata noise.
+
+## Pipeline warnings
+
+- Do **not** show user-facing alerts like `Cảnh báo pipeline … Không đọc được … (empty response)`.
+- Filter empty-fetch / unreadable-URL warnings in API `warnings` + SPA (`filterUserFacingPipelineWarnings`). Still log server-side; answer from readable sources only.
+
+## Simple chat fast path
+
+- Short / single-source / keyword-like questions → one healthy cloud model, insights-tight context, skip race + Groq polish. Keep deep multi-source analysis on the full path.
+- Social/chitchat (xin chào, cảm ơn, bạn là ai, ok/test, …) → Groq `llama-3.1-8b-instant` only via `/ai/notebook-chat/chitchat/` — no crawl, no digest, no “Đang suy nghĩ…”.

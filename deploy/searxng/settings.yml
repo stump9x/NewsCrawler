@@ -1,0 +1,54 @@
+# SearxNG — JSON API for NewsCrawler open-web leak hunting.
+# GitHub is intentionally disabled (dedicated GitHub Scanner module).
+
+use_default_settings: true
+
+general:
+  instance_name: "NewsCrawler SearxNG"
+  enable_metrics: false
+
+search:
+  safe_search: 0
+  autocomplete: ""
+  default_lang: "en"
+  formats:
+    - html
+    - json
+
+server:
+  secret_key: "replace-via-SEARXNG_SECRET-env"
+  limiter: false
+  image_proxy: false
+  method: "GET"
+
+# Enable extra engines useful for leak hunting (clearnet + onion index).
+# Ahmia indexes .onion sites; primary search hits ahmia.fi (clearnet).
+# Full onion fetch still needs Tor elsewhere (Wire .onion feeds).
+engines:
+  - name: bing
+    disabled: false
+  - name: brave
+    disabled: false
+  - name: duckduckgo
+    disabled: false
+  - name: gitlab
+    disabled: false
+  - name: bitbucket
+    disabled: false
+  - name: npm
+    disabled: false
+  - name: stackoverflow
+    disabled: false
+  - name: qwant
+    disabled: false
+  - name: ahmia
+    disabled: false
+    timeout: 25.0
+  - name: google
+    disabled: false
+  - name: yandex
+    disabled: false
+  - name: semantic scholar
+    disabled: false
+  - name: github
+    disabled: true

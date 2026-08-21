@@ -1,0 +1,1372 @@
+[
+  {
+    "name": "twz",
+    "url": "https://www.twz.com/feed",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | Indo-Pacific military-defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "defense-news",
+    "url": "https://www.defensenews.com/arc/outboundfeeds/rss/?outputType=xml",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | Indo-Pacific military-defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "breaking-defense",
+    "url": "https://breakingdefense.com/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | Indo-Pacific military-defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "defense-one",
+    "url": "https://www.defenseone.com/rss/all/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | Indo-Pacific military-defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "naval-news",
+    "url": "https://www.navalnews.com/feed/",
+    "country": "France",
+    "country_code": "FR",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | naval and maritime defense | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "war-on-the-rocks",
+    "url": "https://warontherocks.com/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | defense analysis | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "air-and-space-forces",
+    "url": "https://www.airandspaceforces.com/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | air and space defense | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "19fortyfive",
+    "url": "https://www.19fortyfive.com/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | defense analysis | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "rand-commentary",
+    "url": "https://www.rand.org/blog.xml",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | policy research | redirects to current RAND commentary feed | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "csis",
+    "url": "https://www.csis.org/rss.xml",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | security policy research | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "atlantic-council",
+    "url": "https://www.atlanticcouncil.org/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | security policy research | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "c4ads",
+    "url": "https://c4ads.org/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | security analysis | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "aspi-strategist",
+    "url": "https://www.aspistrategist.org.au/feed/",
+    "country": "Australia",
+    "country_code": "AU",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | Indo-Pacific security analysis | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "defense-gov",
+    "url": "https://www.defense.gov/DesktopModules/ArticleCS/RSS.ashx?ContentType=1&Site=945&max=100",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | official US defense releases | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "gao-reports",
+    "url": "https://www.gao.gov/rss/reports.xml",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | official US government reports | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "global-taiwan-institute",
+    "url": "https://globaltaiwan.org/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | Taiwan security analysis | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "jamestown-foundation",
+    "url": "https://jamestown.org/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | strategic security analysis | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "missile-threat-csis",
+    "url": "https://missilethreat.csis.org/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | missile and strategic forces | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "defense-scoop",
+    "url": "https://defensescoop.com/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | defense technology | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "federal-news-network",
+    "url": "https://federalnewsnetwork.com/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | US government and defense | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "defence-security-asia",
+    "url": "https://defencesecurityasia.com/feed/",
+    "country": "Malaysia",
+    "country_code": "MY",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | Southeast Asia defense | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "eurasian-times",
+    "url": "https://www.eurasiantimes.com/feed/",
+    "country": "India",
+    "country_code": "IN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | Asia defense news | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "bangkok-post",
+    "url": "https://www.bangkokpost.com/rss/data/topstories.xml",
+    "country": "Thailand",
+    "country_code": "TH",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | Thailand regional news; military filter applied | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "khmer-times",
+    "url": "https://www.khmertimeskh.com/feed/",
+    "country": "Cambodia",
+    "country_code": "KH",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | Cambodia regional news; military filter applied | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "laotian-times",
+    "url": "https://laotiantimes.com/feed/",
+    "country": "Laos",
+    "country_code": "LA",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | Laos regional news; military filter applied | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "malay-mail-malaysia",
+    "url": "https://www.malaymail.com/feed/rss/malaysia",
+    "country": "Malaysia",
+    "country_code": "MY",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | Malaysia regional news; military filter applied | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "japan-mod",
+    "url": "https://www.mod.go.jp/j/rss/news.xml",
+    "country": "Japan",
+    "country_code": "JP",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | official Japan Ministry of Defense releases | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "japan-mod-updates",
+    "url": "https://www.mod.go.jp/j/rss/update.xml",
+    "country": "Japan",
+    "country_code": "JP",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | official Japan Ministry of Defense update feed; strategic filter applied | validated=2026-08-05",
+    "requires_tor": false
+  },
+  {
+    "name": "philippine-defense-resource",
+    "url": "http://www.phdefresource.com/feeds/posts/default?alt=rss",
+    "country": "Philippines",
+    "country_code": "PH",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | Philippines defense and modernization | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "defence-blog-indonesia",
+    "url": "https://defence-blog.com/topics/indonesia/feed/",
+    "country": "Global",
+    "country_code": "ZZ",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | Indonesia defense topic feed | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "indonesian-strategic-institute",
+    "url": "https://www.isi-indonesia.com/blog-feed.xml",
+    "country": "Indonesia",
+    "country_code": "ID",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | Indonesia defense policy analysis | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "china-daily-world",
+    "url": "https://www.chinadaily.com.cn/rss/world_rss.xml",
+    "country": "China",
+    "country_code": "CN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | China international desk; military filter applied | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "china-daily-china",
+    "url": "https://www.chinadaily.com.cn/rss/china_rss.xml",
+    "country": "China",
+    "country_code": "CN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | China domestic desk; military filter applied | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "scmp-china",
+    "url": "https://www.scmp.com/rss/4/feed",
+    "country": "China",
+    "country_code": "CN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | China regional coverage; military filter applied | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "taipei-times",
+    "url": "https://www.taipeitimes.com/xml/index.rss",
+    "country": "Taiwan",
+    "country_code": "TW",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | Taiwan news; military filter applied | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "nhk-world",
+    "url": "https://www3.nhk.or.jp/rss/news/cat0.xml",
+    "country": "Japan",
+    "country_code": "JP",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | Japan public broadcaster; military filter applied | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "antara-english",
+    "url": "https://en.antaranews.com/rss/news.xml",
+    "country": "Indonesia",
+    "country_code": "ID",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | Indonesia English news; military filter applied | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "pitz-defense-analysis",
+    "url": "https://www.pitzdefanalysis.net/feeds/posts/default?alt=rss",
+    "country": "Philippines",
+    "country_code": "PH",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | Philippines defense analysis | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "rappler-philippines",
+    "url": "https://www.rappler.com/philippines/feed/",
+    "country": "Philippines",
+    "country_code": "PH",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | PH national news; WPS/defense/cyber via military filter | validated=2026-07-23",
+    "requires_tor": false
+  },
+  {
+    "name": "rappler-nation",
+    "url": "https://www.rappler.com/nation/feed/",
+    "country": "Philippines",
+    "country_code": "PH",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | PH nation desk; AFP/PCG/cybersecurity coverage | validated=2026-07-23",
+    "requires_tor": false
+  },
+  {
+    "name": "philstar-nation",
+    "url": "https://www.philstar.com/rss/nation",
+    "country": "Philippines",
+    "country_code": "PH",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | Philippine Star nation; West Philippine Sea / AFP | validated=2026-07-23",
+    "requires_tor": false
+  },
+  {
+    "name": "philstar-headlines",
+    "url": "https://www.philstar.com/rss/headlines",
+    "country": "Philippines",
+    "country_code": "PH",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | Philippine Star headlines; PH security flash traffic | validated=2026-07-23",
+    "requires_tor": false
+  },
+  {
+    "name": "maxdefense-philippines",
+    "url": "https://maxdefense.blogspot.com/feeds/posts/default?alt=rss",
+    "country": "Philippines",
+    "country_code": "PH",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | AFP modernization / PCG / PH naval procurement | validated=2026-07-23",
+    "requires_tor": false
+  },
+  {
+    "name": "cybersecurity-ph",
+    "url": "https://www.cybersecurity.ph/feed/",
+    "country": "Philippines",
+    "country_code": "PH",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | Philippines cybersecurity situation reporting | validated=2026-07-23",
+    "requires_tor": false
+  },
+  {
+    "name": "us-embassy-philippines",
+    "url": "https://ph.usembassy.gov/feed/",
+    "country": "Philippines",
+    "country_code": "PH",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | US Embassy Manila; Balikatan / EDCA / SCS statements | validated=2026-07-23",
+    "requires_tor": false
+  },
+  {
+    "name": "amti-csis",
+    "url": "https://amti.csis.org/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | CSIS Asia Maritime Transparency Initiative; South China Sea / WPS | validated=2026-07-23",
+    "requires_tor": false
+  },
+  {
+    "name": "seas-research-scs",
+    "url": "https://seasresearch.wordpress.com/feed/",
+    "country": "Global",
+    "country_code": "ZZ",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | South China Sea research / legal-maritime analysis | validated=2026-07-23",
+    "requires_tor": false
+  },
+  {
+    "name": "the-diplomat-philippines",
+    "url": "https://thediplomat.com/tag/philippines/feed/",
+    "country": "Philippines",
+    "country_code": "PH",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | The Diplomat Philippines tag; WPS and PH defense | validated=2026-07-23",
+    "requires_tor": false
+  },
+  {
+    "name": "defenseph",
+    "url": "https://defenseph.net/feed/",
+    "country": "Philippines",
+    "country_code": "PH",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | Philippines defense modernization / DND-AFP coverage | validated=2026-07-23",
+    "requires_tor": false
+  },
+  {
+    "name": "asian-military-review",
+    "url": "https://www.asianmilitaryreview.com/feed/",
+    "country": "Global",
+    "country_code": "ZZ",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | Asia-Pacific military capabilities and procurement | validated=2026-07-23",
+    "requires_tor": false
+  },
+  {
+    "name": "rusi-whats-new",
+    "url": "https://www.rusi.org/rss/whats-new.xml",
+    "country": "United Kingdom",
+    "country_code": "GB",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | defense and security research | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "white-house-briefings",
+    "url": "https://www.whitehouse.gov/briefings-statements/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | official US policy statements; defense filter applied | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "us-army-news",
+    "url": "https://www.army.mil/rss/static/1.xml",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | official US Army news | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "us-air-force-news",
+    "url": "https://www.af.mil/DesktopModules/ArticleCS/RSS.ashx?ContentType=1&Site=1&isdashboardselected=0&max=20",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | official US Air Force news | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "us-navy-fleet-forces",
+    "url": "https://www.usff.navy.mil/DesktopModules/ArticleCS/RSS.ashx?ContentType=2&Site=1148&isdashboardselected=0&max=50",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | official US Navy Fleet Forces releases | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "sipri",
+    "url": "https://www.sipri.org/rss/combined.xml",
+    "country": "Sweden",
+    "country_code": "SE",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | think-tank/specialist defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "eu-iss",
+    "url": "https://www.iss.europa.eu/euiss-rss-view.xml",
+    "country": "European Union",
+    "country_code": "EU",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | think-tank/specialist defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "swp-berlin",
+    "url": "https://www.swp-berlin.org/rss.xml",
+    "country": "Germany",
+    "country_code": "DE",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | think-tank/specialist defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "ifri",
+    "url": "https://www.ifri.org/en/rss.xml",
+    "country": "France",
+    "country_code": "FR",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | think-tank/specialist defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "fpri",
+    "url": "https://www.fpri.org/news/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | think-tank/specialist defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "just-security",
+    "url": "https://www.justsecurity.org/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | think-tank/specialist defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "cipher-brief",
+    "url": "https://www.thecipherbrief.com/feeds/feed.rss",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | think-tank/specialist defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "long-war-journal",
+    "url": "https://www.longwarjournal.org/feed",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | think-tank/specialist defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "usni-news",
+    "url": "https://news.usni.org/feed",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | naval and defense news | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "realclear-defense",
+    "url": "https://www.realcleardefense.com/index.xml",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | defense news and analysis | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "shephard-media",
+    "url": "https://www.shephardmedia.com/news/feed/",
+    "country": "United Kingdom",
+    "country_code": "GB",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | defense industry news | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "defense-aerospace",
+    "url": "https://www.defense-aerospace.com/feed/atom/",
+    "country": "France",
+    "country_code": "FR",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | official Atom feed; primary RSS is Cloudflare-protected | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "military-times",
+    "url": "https://www.militarytimes.com/arc/outboundfeeds/rss/?outputType=xml",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | US military news | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "air-force-times",
+    "url": "https://www.airforcetimes.com/arc/outboundfeeds/rss/?outputType=xml",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | US Air Force news | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "army-times",
+    "url": "https://www.armytimes.com/arc/outboundfeeds/rss/?outputType=xml",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | US Army news | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "navy-times",
+    "url": "https://www.navytimes.com/arc/outboundfeeds/rss/?outputType=xml",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | US Navy news | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "c4isrnet",
+    "url": "https://www.c4isrnet.com/arc/outboundfeeds/rss/?outputType=xml",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | defense technology and C4ISR | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "space-news",
+    "url": "https://spacenews.com/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | space industry and defense | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "flight-global",
+    "url": "https://www.flightglobal.com/feed/",
+    "country": "United Kingdom",
+    "country_code": "GB",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | global aviation news | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "aviation-week",
+    "url": "https://aviationweek.com/awn/rss-feed-by-content-source",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | aerospace and defense news | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "navy-lookout",
+    "url": "https://www.navylookout.com/feed/",
+    "country": "United Kingdom",
+    "country_code": "GB",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | Royal Navy news and analysis | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "covert-shores",
+    "url": "https://www.hisutton.com/feed.xml",
+    "country": "United Kingdom",
+    "country_code": "GB",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | naval technology and submarine analysis | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "national-defense-magazine",
+    "url": "https://nationaldefense.libsyn.com/rss",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | official National Defense Magazine podcast feed | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "afcea-signal",
+    "url": "https://www.afcea.org/signal-articles-feed.xml",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | defense communications and technology | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "ausa-headline-news",
+    "url": "https://www.ausa.org/taxonomy/term/14/feed",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | Association of the United States Army news | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "ndia-events",
+    "url": "https://www.ndia.org/events/feeds",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | National Defense Industrial Association events | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "edr-magazine",
+    "url": "https://www.edrmagazine.eu/feed",
+    "country": "Italy",
+    "country_code": "IT",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | European defense industry news | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "european-security-defence",
+    "url": "https://euro-sd.com/feed/",
+    "country": "Germany",
+    "country_code": "DE",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | European security and defense news | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "defence24",
+    "url": "https://defence24.com/_rss",
+    "country": "Poland",
+    "country_code": "PL",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | Polish and European defense news | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "monch",
+    "url": "https://monch.com/feed/",
+    "country": "Germany",
+    "country_code": "DE",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | international defense industry news | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "defence-connect",
+    "url": "https://www.defenceconnect.com.au/news?format=feed&type=rss",
+    "country": "Australia",
+    "country_code": "AU",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | Australian defense industry news | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "world-nuclear-news",
+    "url": "https://www.world-nuclear-news.org/rss",
+    "country": "United Kingdom",
+    "country_code": "GB",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | nuclear industry news | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "interesting-engineering",
+    "url": "https://interestingengineering.com/feed",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | engineering and defense technology | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "nucnet",
+    "url": "https://www.nucnet.org/feed",
+    "country": "Belgium",
+    "country_code": "BE",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | global nuclear news | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "offshore-wind",
+    "url": "https://www.offshorewind.biz/feed/",
+    "country": "Netherlands",
+    "country_code": "NL",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | offshore wind industry; security filter applied | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "windpower-monthly",
+    "url": "https://www.windpowermonthly.com/rss/news",
+    "country": "United Kingdom",
+    "country_code": "GB",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | wind power news; security filter applied | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "select-committee-ccp",
+    "url": "https://chinaselectcommittee.house.gov/rss.xml",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | official Select Committee on the CCP releases | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "state-department-press-releases",
+    "url": "https://www.state.gov/rss-feed/press-releases/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | official US State Department press releases | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "congress-most-viewed-bills",
+    "url": "https://www.congress.gov/rss/most-viewed-bills.xml",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | weekly Congress.gov most-viewed bills | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "us-space-force",
+    "url": "https://www.spaceforce.mil/DesktopModules/ArticleCS/RSS.ashx?ContentType=1&max=20",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | official US Space Force news | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "mi5-threat-level",
+    "url": "https://www.mi5.gov.uk/UKThreatLevel/UKThreatLevel.xml",
+    "country": "United Kingdom",
+    "country_code": "GB",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | official UK terrorism threat-level alerts | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "jimin-daily-news",
+    "url": "http://rss.jimin.jp/f1887/index.rdf",
+    "country": "Japan",
+    "country_code": "JP",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | Liberal Democratic Party daily news; HTTP-only official endpoint | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "air-times-news-network",
+    "url": "https://www.airtimes.my/feed/",
+    "country": "Malaysia",
+    "country_code": "MY",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | Malaysian defense and security news | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "asian-defence-journal",
+    "url": "https://adj.com.my/feed/",
+    "country": "Malaysia",
+    "country_code": "MY",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | Asian defense industry news | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "dset-taiwan",
+    "url": "https://dset.tw/feed/",
+    "country": "Taiwan",
+    "country_code": "TW",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | technology democracy and security research | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "ronins-grips",
+    "url": "https://blog.roninsgrips.com/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | military and geopolitical analysis | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "npc-observer",
+    "url": "https://npcobserver.com/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | Chinese legislative and political analysis | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "newscop-australia",
+    "url": "https://newscop.com.au/feed/",
+    "country": "Australia",
+    "country_code": "AU",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | Australian security and public-sector news | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "fdd-analysis",
+    "url": "https://www.fdd.org/analysis/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | national security analysis | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "bloomberg-politics",
+    "url": "https://feeds.bloomberg.com/politics/news.rss",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | politics and policy news; military filter applied | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "heritage",
+    "url": "https://www.heritage.org/rss",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | policy research and commentary | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "lansing-institute",
+    "url": "https://lansinginstitute.org/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | security and geopolitical analysis | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "atlas-institute",
+    "url": "https://atlasinstitute.org/feed/",
+    "country": "United Kingdom",
+    "country_code": "GB",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | international affairs analysis | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "asia-times",
+    "url": "https://asiatimes.com/feed/",
+    "country": "Hong Kong",
+    "country_code": "HK",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | Asia geopolitics and security | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "iseas",
+    "url": "https://www.iseas.edu.sg/category/articles-commentaries/feed/",
+    "country": "Singapore",
+    "country_code": "SG",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | Southeast Asia research commentary | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "the-aviationist",
+    "url": "https://theaviationist.com/feed/",
+    "country": "Italy",
+    "country_code": "IT",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | military aviation and aerospace | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "itif",
+    "url": "https://itif.org/feed/rss.xml",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | technology and innovation policy; feed also includes events | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "secrss",
+    "url": "https://www.secrss.com/api/articles?tag=%E5%86%9B%E9%98%9F%E5%86%9B%E5%B7%A5",
+    "country": "China",
+    "country_code": "CN",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-json | SecRSS 安全内参 tag=军队军工 | homepage=https://www.secrss.com/ | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "secrss-cyberwar",
+    "url": "https://www.secrss.com/api/articles?tag=%E7%BD%91%E7%BB%9C%E6%88%98",
+    "country": "China",
+    "country_code": "CN",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-json | SecRSS 安全内参 tag=网络战 (cyber warfare) | homepage=https://www.secrss.com/ | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "secrss-intel",
+    "url": "https://www.secrss.com/api/articles?tag=%E6%83%85%E6%8A%A5",
+    "country": "China",
+    "country_code": "CN",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-json | SecRSS 安全内参 tag=情报 | homepage=https://www.secrss.com/ | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "secrss-apt",
+    "url": "https://www.secrss.com/api/articles?tag=APT",
+    "country": "China",
+    "country_code": "CN",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-json | SecRSS 安全内参 tag=APT | homepage=https://www.secrss.com/ | validated=2026-07-22",
+    "requires_tor": false
+  },
+  {
+    "name": "army-technology",
+    "url": "https://www.army-technology.com/feed/",
+    "country": "United Kingdom",
+    "country_code": "GB",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | think-tank/specialist defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "naval-technology",
+    "url": "https://www.naval-technology.com/feed/",
+    "country": "United Kingdom",
+    "country_code": "GB",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | think-tank/specialist defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "airforce-technology",
+    "url": "https://www.airforce-technology.com/feed/",
+    "country": "United Kingdom",
+    "country_code": "GB",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | think-tank/specialist defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "defence-blog",
+    "url": "https://defence-blog.com/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | think-tank/specialist defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "uk-defence-journal",
+    "url": "https://ukdefencejournal.org.uk/feed/",
+    "country": "United Kingdom",
+    "country_code": "GB",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | think-tank/specialist defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "sandboxx",
+    "url": "https://www.sandboxx.us/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 3,
+    "category": "news",
+    "notes": "transport=official-rss | think-tank/specialist defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "small-wars-journal",
+    "url": "https://smallwarsjournal.com/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | think-tank/specialist defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "mwi-westpoint",
+    "url": "https://mwi.westpoint.edu/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | think-tank/specialist defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "lieber-westpoint",
+    "url": "https://lieber.westpoint.edu/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | think-tank/specialist defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "cisa-news",
+    "url": "https://www.cisa.gov/news.xml",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | official CISA agency news | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "nga-news",
+    "url": "https://www.nga.mil/feed.xml",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | official NGA GEOINT news | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "maritime-executive",
+    "url": "https://maritime-executive.com/articles.rss",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | think-tank/specialist defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "gcaptain",
+    "url": "https://gcaptain.com/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | think-tank/specialist defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "bellingcat",
+    "url": "https://www.bellingcat.com/feed/",
+    "country": "Netherlands",
+    "country_code": "NL",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | think-tank/specialist defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "intelnews",
+    "url": "https://intelnews.org/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | think-tank/specialist defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "foreign-affairs",
+    "url": "https://www.foreignaffairs.com/rss.xml",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | think-tank/specialist defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "foreign-policy",
+    "url": "https://foreignpolicy.com/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | think-tank/specialist defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "the-diplomat",
+    "url": "https://thediplomat.com/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | Indo-Pacific analysis | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "clingendael",
+    "url": "https://www.clingendael.org/rss.xml",
+    "country": "Netherlands",
+    "country_code": "NL",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | think-tank/specialist defense OSINT | validated=2026-07-21",
+    "requires_tor": false
+  },
+  {
+    "name": "fdd",
+    "url": "https://www.fdd.org/feed/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | Foundation for Defense of Democracies; national security and defense analysis | validated=2026-08-03",
+    "requires_tor": false
+  },
+  {
+    "name": "janes-defence-news",
+    "url": "https://www.janes.com/defence-intelligence-insights/defence-news",
+    "country": "International",
+    "country_code": "INT",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html | Janes defence and security intelligence; article links only; strategic military filter | validated=2026-08-05",
+    "requires_tor": false
+  }
+]
