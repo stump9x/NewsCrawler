@@ -16,6 +16,7 @@ import {
   pickTransformFallbackChain,
   pickProviderFallbackChain,
   isNotebookStudioModel,
+  isTransformFailoverError,
   transformMaxTokensForPreset,
   TRANSFORM_PROVIDER_ORDER,
   shrinkNotebookChatContext,
@@ -50,14 +51,28 @@ describe("isNotebookStudioModel", () => {
   it("keeps paid ShopAIKey models and the fast Groq fallback", () => {
     expect(isNotebookStudioModel(model("openai_compatible", "gpt-5-mini"))).toBe(true);
     expect(isNotebookStudioModel(model("openai_compatible", "qwen3-235b-a22b"))).toBe(true);
-    expect(isNotebookStudioModel(model("groq", "llama-3.1-8b-instant"))).toBe(true);
+    expect(isNotebookStudioModel(model("groq", "openai/gpt-oss-20b"))).toBe(true);
+    expect(isNotebookStudioModel(model("groq", "openai/gpt-oss-120b"))).toBe(true);
   });
 
   it("hides unavailable, unreliable and slow interactive choices", () => {
     expect(isNotebookStudioModel(model("openai_compatible", "zai-glm-4.7"))).toBe(false);
     expect(isNotebookStudioModel(model("openrouter", "openrouter/free"))).toBe(false);
     expect(isNotebookStudioModel(model("ollama", "qwen2.5:3b"))).toBe(false);
+    expect(isNotebookStudioModel(model("groq", "llama-3.1-8b-instant"))).toBe(false);
     expect(isNotebookStudioModel(model("groq", "llama-3.3-70b-versatile"))).toBe(false);
+  });
+});
+
+describe("isTransformFailoverError", () => {
+  it("fails over when a provider retires or denies access to a model", () => {
+    expect(isTransformFailoverError({ status: 404 })).toBe(true);
+    expect(
+      isTransformFailoverError(
+        new Error("The model does not exist or you do not have access to it")
+      )
+    ).toBe(true);
+    expect(isTransformFailoverError(new Error("model_not_found"))).toBe(true);
   });
 });
 

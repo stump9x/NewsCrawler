@@ -431,8 +431,8 @@ def groq_chat_completion(
         raise RuntimeError("Groq rate budget exhausted — defer translate")
 
     model = model or (
-        getattr(settings, "GROQ_MODEL", "llama-3.3-70b-versatile")
-        or "llama-3.3-70b-versatile"
+        getattr(settings, "GROQ_MODEL", "openai/gpt-oss-120b")
+        or "openai/gpt-oss-120b"
     )
     timeout = float(
         timeout

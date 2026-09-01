@@ -100,7 +100,7 @@ _PROVIDER_SPECS: Tuple[ProviderSpec, ...] = (
             display_name="Groq",
             modalities=("language", "speech_to_text"),
             required_env=("GROQ_API_KEY",),
-            test_model="llama-3.1-8b-instant",
+            test_model="openai/gpt-oss-20b",
             docs_url="https://console.groq.com/keys",
             openai_compat_discovery_url="https://api.groq.com/openai/v1/models",
         ),

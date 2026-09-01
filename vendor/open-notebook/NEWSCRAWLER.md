@@ -1,7 +1,7 @@
 # NewsCrawler Notebook AI — vendored from https://github.com/lfnovo/open-notebook
 #
 # Free LLM defaults (compose service notebook-bootstrap):
-#   Chat: Groq llama-3.1-8b-instant (+ llama-3.3-70b-versatile)
+#   Chat: Groq openai/gpt-oss-20b (+ openai/gpt-oss-120b)
 #   Tools / transform: Ollama Qwen qwen2.5:3b
 #   Embedding: Ollama nomic-embed-text
 #

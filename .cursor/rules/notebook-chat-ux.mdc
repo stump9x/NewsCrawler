@@ -20,4 +20,4 @@ alwaysApply: false
 ## Simple chat fast path
 
 - Short / single-source / keyword-like questions → one healthy cloud model, insights-tight context, skip race + Groq polish. Keep deep multi-source analysis on the full path.
-- Social/chitchat (xin chào, cảm ơn, bạn là ai, ok/test, …) → Groq `llama-3.1-8b-instant` only via `/ai/notebook-chat/chitchat/` — no crawl, no digest, no “Đang suy nghĩ…”.
+- Social/chitchat (xin chào, cảm ơn, bạn là ai, ok/test, …) → Groq `openai/gpt-oss-20b` only via `/ai/notebook-chat/chitchat/` — no crawl, no digest, no “Đang suy nghĩ…”.

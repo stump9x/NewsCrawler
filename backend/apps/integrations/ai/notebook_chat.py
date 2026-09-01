@@ -5,7 +5,7 @@ rambling. Groq is last-resort polish only (notebook key pool) — never the
 default chat path. Ollama unload keeps RAM free after local fallback chats.
 
 Social/chitchat turns (greetings, thanks, identity) skip crawl/grounding and
-use a single fast Groq 8b reply instead of the full notebook cascade.
+use a single fast Groq GPT-OSS 20B reply instead of the full notebook cascade.
 """
 
 from __future__ import annotations
@@ -166,8 +166,8 @@ def reply_social_chitchat(
     fast = (
         getattr(settings, "NOTEBOOK_GROQ_CHAT_MODEL", "")
         or getattr(settings, "GROQ_MODEL_FAST", "")
-        or "llama-3.1-8b-instant"
-    ).strip() or "llama-3.1-8b-instant"
+        or "openai/gpt-oss-20b"
+    ).strip() or "openai/gpt-oss-20b"
 
     messages = [
         {
@@ -298,12 +298,12 @@ def polish_notebook_answer(
             "error": "notebook_chat_provider_not_configured",
         }
 
-    # Prefer fast 8b for light polish — avoid burning 70b / OSINT translate quota.
+    # Prefer fast GPT-OSS 20B for light polish — avoid burning GPT-OSS 120B / OSINT translate quota.
     fast = (
         getattr(settings, "NOTEBOOK_GROQ_CHAT_MODEL", "")
         or getattr(settings, "GROQ_MODEL_FAST", "")
-        or "llama-3.1-8b-instant"
-    ).strip() or "llama-3.1-8b-instant"
+        or "openai/gpt-oss-20b"
+    ).strip() or "openai/gpt-oss-20b"
     prompt = (
         "Bạn là trợ lý OSINT trong Notebook. Viết lại câu trả lời tiếng Việt bên dưới cho "
         "rõ, tập trung, dễ hiểu, bám sát nguồn trong bản nháp (không bịa thêm, không lan man). "

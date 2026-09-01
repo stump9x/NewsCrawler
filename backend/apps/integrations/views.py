@@ -205,7 +205,7 @@ class GenerateBriefingView(APIView):
 
 
 class NotebookChatChitchatView(APIView):
-    """Fast social/chitchat reply — Groq 8b only, no crawl or notebook grounding."""
+    """Fast social/chitchat reply — Groq GPT-OSS 20B only, no crawl or notebook grounding."""
 
     permission_classes = [IsAuthenticated]
 

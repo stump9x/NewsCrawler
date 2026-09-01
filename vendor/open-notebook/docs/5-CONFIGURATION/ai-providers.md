@@ -187,13 +187,13 @@ Only language models are supported for Anthropic-compatible credentials.
 6. Click **Discover Models** → **Register Models**
 
 **Available Models:**
-- `llama-3.3-70b-versatile` — Best on Groq (recommended)
+- `openai/gpt-oss-120b` — Best on Groq (recommended)
 - `llama-3.1-70b-versatile` — Fast, capable
 - `mixtral-8x7b-32768` — Good alternative
 - `gemma2-9b-it` — Small, very fast
 
 **Recommended:**
-- For quality: `llama-3.3-70b-versatile` (best overall)
+- For quality: `openai/gpt-oss-120b` (best overall)
 - For speed: `gemma2-9b-it` (ultra-fast)
 - For balance: `llama-3.1-70b-versatile`
 

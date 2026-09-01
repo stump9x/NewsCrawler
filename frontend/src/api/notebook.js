@@ -5,7 +5,7 @@
  * ## Chat speed path (Notebook AI)
  * Open Notebook `/chat/execute` is **synchronous** (no SSE). Source-chat has SSE;
  * notebook-level chat does not. We still surface answers ASAP by:
- * 0. Social/chitchat (xin chào / thanks / bạn là ai) → Groq 8b only, no crawl.
+ * 0. Social/chitchat (xin chào / thanks / bạn là ai) → Groq GPT-OSS 20B only, no crawl.
  * 1. Preferring ShopAIKey, with Groq/OpenRouter as bounded fallbacks.
  * 2. Racing at most 2 cloud providers; interactive Chat never waits for
  *    Cerebras 402 or local Ollama.
@@ -239,6 +239,11 @@ export function isNotebookShopAIKeyModel(m) {
   );
 }
 
+const GROQ_STUDIO_MODEL_NAMES = new Set([
+  "openai/gpt-oss-20b",
+  "openai/gpt-oss-120b",
+]);
+
 /**
  * Studio only shows models proven useful for interactive transformations.
  * Unreliable free routes, Cerebras 402 entries and slow local CPU models stay
@@ -249,7 +254,7 @@ export function isNotebookStudioModel(m) {
   if (isNotebookShopAIKeyModel(m)) return true;
   return (
     String(m.provider || "").toLowerCase() === "groq" &&
-    String(m.name || "").trim() === "llama-3.1-8b-instant"
+    GROQ_STUDIO_MODEL_NAMES.has(String(m.name || "").trim())
   );
 }
 
@@ -408,12 +413,22 @@ export function pickNotebookFallbackChain(list) {
 /** True when transform should try the next provider (402/429/quota/down). */
 export function isTransformFailoverError(err) {
   const status = err?.status || 0;
-  if (status === 402 || status === 429 || status === 503 || status === 502) {
+  if (
+    status === 402 ||
+    status === 404 ||
+    status === 429 ||
+    status === 502 ||
+    status === 503
+  ) {
     return true;
   }
   const s = String(err?.message || err || "").toLowerCase();
   return (
     s.includes("402") ||
+    s.includes("404") ||
+    s.includes("model_not_found") ||
+    s.includes("does not exist") ||
+    s.includes("do not have access") ||
     s.includes("429") ||
     s.includes("rate limit") ||
     s.includes("too many requests") ||
@@ -2080,7 +2095,7 @@ export const notebookApi = {
  */
 export const notebookCloudApi = {
   /**
-   * Fast social/chitchat reply (Groq 8b) — no crawl, no notebook grounding.
+   * Fast social/chitchat reply (Groq GPT-OSS 20B) — no crawl, no notebook grounding.
    */
   socialChitchat: ({ message = "", question = "" } = {}, { signal } = {}) =>
     apiRequest("/api/v1/ai/notebook-chat/chitchat/", {

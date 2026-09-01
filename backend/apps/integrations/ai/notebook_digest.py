@@ -570,8 +570,8 @@ def _chat_complete(
         model = (
             getattr(settings, "NOTEBOOK_GROQ_CHAT_MODEL", "")
             or getattr(settings, "GROQ_MODEL_FAST", "")
-            or "llama-3.1-8b-instant"
-        ).strip() or "llama-3.1-8b-instant"
+            or "openai/gpt-oss-20b"
+        ).strip() or "openai/gpt-oss-20b"
         result = groq_chat_completion(
             messages=messages,
             max_tokens=max_tokens,

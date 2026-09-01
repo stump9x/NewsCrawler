@@ -421,8 +421,8 @@ def refine_keyword_intent(user_prompt: str) -> dict[str, Any]:
         return base
 
     model = str(
-        getattr(settings, "GROQ_BRIEFING_FALLBACK_MODEL", "llama-3.1-8b-instant")
-        or "llama-3.1-8b-instant"
+        getattr(settings, "GROQ_BRIEFING_FALLBACK_MODEL", "openai/gpt-oss-20b")
+        or "openai/gpt-oss-20b"
     )
     timeout = float(
         getattr(settings, "GROQ_BRIEFING_TIMEOUT_SEC", None)
@@ -550,8 +550,8 @@ def optional_groq_plan_queries(focus: str, *, scope: str = "keyword") -> list[st
             ),
             max_tokens=120,
             model=str(
-                getattr(settings, "GROQ_BRIEFING_FALLBACK_MODEL", "llama-3.1-8b-instant")
-                or "llama-3.1-8b-instant"
+                getattr(settings, "GROQ_BRIEFING_FALLBACK_MODEL", "openai/gpt-oss-20b")
+                or "openai/gpt-oss-20b"
             ),
         )
         lines = [
@@ -2032,10 +2032,10 @@ def _groq_run_models(
 ) -> dict[str, Any] | None:
     from apps.integrations.ai.clients import AIProviderError, groq_complete
 
-    primary = getattr(settings, "GROQ_MODEL", "llama-3.3-70b-versatile") or "llama-3.3-70b-versatile"
+    primary = getattr(settings, "GROQ_MODEL", "openai/gpt-oss-120b") or "openai/gpt-oss-120b"
     fallback = (
-        getattr(settings, "GROQ_BRIEFING_FALLBACK_MODEL", "llama-3.1-8b-instant")
-        or "llama-3.1-8b-instant"
+        getattr(settings, "GROQ_BRIEFING_FALLBACK_MODEL", "openai/gpt-oss-20b")
+        or "openai/gpt-oss-20b"
     )
     models = [fallback, primary] if prefer_fast else [primary, fallback]
     seen: set[str] = set()

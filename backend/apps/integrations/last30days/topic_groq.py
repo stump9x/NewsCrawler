@@ -63,8 +63,8 @@ def groq_expand_topic(topic: str) -> dict[str, Any] | None:
     from apps.integrations.ai.groq_pool import groq_chat_completion
 
     model = (
-        getattr(settings, "GROQ_MODEL", "llama-3.3-70b-versatile")
-        or "llama-3.3-70b-versatile"
+        getattr(settings, "GROQ_MODEL", "openai/gpt-oss-120b")
+        or "openai/gpt-oss-120b"
     )
     timeout = float(getattr(settings, "LAST30DAYS_GROQ_TIMEOUT_SEC", 20) or 20)
     prompt = (

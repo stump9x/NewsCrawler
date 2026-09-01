@@ -186,7 +186,7 @@ def translate_last30days_finding(
             draft = groq_translate_title(title)
             note_groq_success()
             provider = (
-                f"groq:{getattr(settings, 'GROQ_MODEL', 'llama-3.3-70b-versatile')}"
+                f"groq:{getattr(settings, 'GROQ_MODEL', 'openai/gpt-oss-120b')}"
             )
             if finding.snippet and not looks_vietnamese(finding.snippet):
                 try:

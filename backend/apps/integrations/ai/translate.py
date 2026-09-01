@@ -1417,8 +1417,8 @@ def groq_translate_title(title: str) -> str:
     from apps.integrations.ai.groq_pool import groq_chat_completion
 
     model = (
-        getattr(settings, "GROQ_MODEL", "llama-3.3-70b-versatile")
-        or "llama-3.3-70b-versatile"
+        getattr(settings, "GROQ_MODEL", "openai/gpt-oss-120b")
+        or "openai/gpt-oss-120b"
     )
     timeout = float(getattr(settings, "GROQ_TIMEOUT_SEC", 45) or 45)
     try:
@@ -1828,7 +1828,7 @@ def _try_groq_fallback(threat: Threat, title: str) -> str | None:
         note_groq_failure(reason=str(exc)[:120])
         return None
     note_groq_success()
-    model = getattr(settings, "GROQ_MODEL", "llama-3.3-70b-versatile")
+    model = getattr(settings, "GROQ_MODEL", "openai/gpt-oss-120b")
     provider = f"groq:{model}"[:64]
     _persist_translation(
         threat,
@@ -2527,7 +2527,7 @@ def translate_scanned_document(
             draft = groq_translate_title(title)
             note_groq_success()
             provider = (
-                f"groq:{getattr(settings, 'GROQ_MODEL', 'llama-3.3-70b-versatile')}"
+                f"groq:{getattr(settings, 'GROQ_MODEL', 'openai/gpt-oss-120b')}"
             )
             _persist_document_translation(
                 doc,
@@ -2573,7 +2573,7 @@ def translate_scanned_document(
         try:
             if groq_translate_available():
                 draft = groq_translate_title(title)
-                provider = f"groq:{getattr(settings, 'GROQ_MODEL', 'llama-3.3-70b-versatile')}"
+                provider = f"groq:{getattr(settings, 'GROQ_MODEL', 'openai/gpt-oss-120b')}"
             else:
                 draft = ollama_translate_title(title)
                 provider = "ollama-fallback"
@@ -2628,7 +2628,7 @@ def translate_scanned_document(
                 try:
                     if groq_translate_available():
                         llm_draft = groq_translate_title(title)
-                        llm_provider = f"groq:{getattr(settings, 'GROQ_MODEL', 'llama-3.3-70b-versatile')}"
+                        llm_provider = f"groq:{getattr(settings, 'GROQ_MODEL', 'openai/gpt-oss-120b')}"
                     else:
                         llm_draft = ollama_translate_title(title)
                         llm_provider = "ollama-fallback"
@@ -2660,7 +2660,7 @@ def translate_scanned_document(
             try:
                 if groq_translate_available():
                     draft = groq_translate_title(title)
-                    provider = f"groq:{getattr(settings, 'GROQ_MODEL', 'llama-3.3-70b-versatile')}"
+                    provider = f"groq:{getattr(settings, 'GROQ_MODEL', 'openai/gpt-oss-120b')}"
                 else:
                     draft = ollama_translate_title(title)
                     provider = "ollama-fallback"

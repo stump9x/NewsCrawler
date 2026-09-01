@@ -32,7 +32,7 @@ def generate_briefing_text(
     Paid ShopAIKey is the primary route for both short and detailed reports.
     Existing cloud providers remain fallbacks; Ollama is used only after them.
 
-    prefer_fast_model: try 8b-instant before 70b (token-saving polish path).
+    prefer_fast_model: try GPT-OSS 20B before 120B (token-saving polish path).
     allow_wigolo_fallback: disable when dossier already came from Wigolo.
     allow_local_fallback: when False (final review), raise instead of the
     "LLM tạm không khả dụng" stub — caller should keep the crawled draft.
@@ -281,12 +281,12 @@ def _briefing_provider_text_usable(text: str) -> bool:
 
 def _groq_briefing_models() -> list[str]:
     primary = (
-        getattr(settings, "GROQ_MODEL", "llama-3.3-70b-versatile")
-        or "llama-3.3-70b-versatile"
+        getattr(settings, "GROQ_MODEL", "openai/gpt-oss-120b")
+        or "openai/gpt-oss-120b"
     )
     fallback = (
-        getattr(settings, "GROQ_BRIEFING_FALLBACK_MODEL", "llama-3.1-8b-instant")
-        or "llama-3.1-8b-instant"
+        getattr(settings, "GROQ_BRIEFING_FALLBACK_MODEL", "openai/gpt-oss-20b")
+        or "openai/gpt-oss-20b"
     )
     out: list[str] = []
     for model in (primary, fallback):
@@ -319,8 +319,8 @@ def groq_complete(
     key_n = len(groq_api_keys(pool="briefing"))
     use_model = (
         model
-        or getattr(settings, "GROQ_MODEL", "llama-3.3-70b-versatile")
-        or "llama-3.3-70b-versatile"
+        or getattr(settings, "GROQ_MODEL", "openai/gpt-oss-120b")
+        or "openai/gpt-oss-120b"
     )
     # Cap prompt size — Groq free-tier rejects oversized bodies with HTTP 413.
     limit = int(

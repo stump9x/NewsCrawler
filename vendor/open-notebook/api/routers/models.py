@@ -110,7 +110,12 @@ MODEL_PREFERENCES = {
     "anthropic": ["claude-3-5-sonnet", "claude-3-opus", "claude-3-sonnet"],
     "google": ["gemini-3.5-flash", "gemini-2.5-flash", "gemini-2.5-pro"],
     "mistral": ["mistral-large", "mixtral"],
-    "groq": ["llama-3.3", "llama-3.1", "mixtral"],
+    "groq": [
+        "gpt-oss-120b",
+        "gpt-oss-20b",
+        "llama-3.3",
+        "llama-3.1",
+    ],
     "dashscope": ["qwen-max", "qwen-plus", "qwen-turbo"],
     "minimax": ["MiniMax-M2.5", "MiniMax-M2.5-highspeed"],
 }

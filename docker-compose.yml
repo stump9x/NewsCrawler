@@ -77,7 +77,7 @@ services:
       # Briefing pool only — do not share translate RPM budget
       GROQ_API_KEY: ${GROQ_API_KEY_BRIEFING:-}
       GROQ_API_KEYS: ${GROQ_API_KEYS_BRIEFING:-}
-      WIGOLO_LLM_MODEL: ${WIGOLO_LLM_MODEL:-llama-3.3-70b-versatile}
+      WIGOLO_LLM_MODEL: ${WIGOLO_LLM_MODEL:-openai/gpt-oss-120b}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
       WIGOLO_SEARCH: ${WIGOLO_SEARCH:-hybrid}
       SEARXNG_URL: ${WIGOLO_SEARXNG_URL:-http://searxng:8080}
@@ -410,8 +410,8 @@ services:
     environment:
       NOTEBOOK_BOOTSTRAP_URL: http://notebook-gateway:80
       NOTEBOOK_BOOTSTRAP_URL_FALLBACK: http://notebook-ai:8502
-      NOTEBOOK_GROQ_CHAT_MODEL: ${NOTEBOOK_GROQ_CHAT_MODEL:-llama-3.1-8b-instant}
-      NOTEBOOK_GROQ_CHAT_MODEL_ALT: ${NOTEBOOK_GROQ_CHAT_MODEL_ALT:-llama-3.3-70b-versatile}
+      NOTEBOOK_GROQ_CHAT_MODEL: ${NOTEBOOK_GROQ_CHAT_MODEL:-openai/gpt-oss-20b}
+      NOTEBOOK_GROQ_CHAT_MODEL_ALT: ${NOTEBOOK_GROQ_CHAT_MODEL_ALT:-openai/gpt-oss-120b}
       NOTEBOOK_QWEN_CHAT_MODEL: ${NOTEBOOK_QWEN_CHAT_MODEL:-qwen2.5:3b}
       NOTEBOOK_QWEN_CHAT_MODEL_FAST: ${NOTEBOOK_QWEN_CHAT_MODEL_FAST:-qwen2.5:1.5b}
       # Interactive Chat: ShopAIKey primary; Groq/OpenRouter are bounded fallbacks.

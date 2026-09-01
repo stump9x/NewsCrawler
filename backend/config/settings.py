@@ -269,11 +269,11 @@ NOTEBOOK_GROQ_API_KEY = env("NOTEBOOK_GROQ_API_KEY", default="")
 NOTEBOOK_GROQ_API_KEYS = env("NOTEBOOK_GROQ_API_KEYS", default="")
 # Dedicated paid Notebook key must never fall back to title/briefing pools.
 NOTEBOOK_GROQ_STRICT_POOL = env.bool("NOTEBOOK_GROQ_STRICT_POOL", default=True)
-# llama-3.3-70b is much stronger for VI military titles than 8b-instant / local 3B.
-GROQ_MODEL = env("GROQ_MODEL", default="llama-3.3-70b-versatile")
+# GPT-OSS 120B is stronger for Vietnamese military titles; GPT-OSS 20B is the fast fallback.
+GROQ_MODEL = env("GROQ_MODEL", default="openai/gpt-oss-120b")
 # Separate free-tier quota — used when primary model hits TPD/429.
 GROQ_BRIEFING_FALLBACK_MODEL = env(
-    "GROQ_BRIEFING_FALLBACK_MODEL", default="llama-3.1-8b-instant"
+    "GROQ_BRIEFING_FALLBACK_MODEL", default="openai/gpt-oss-20b"
 )
 # Keep title calls snappy; shared Redis RPM + min-interval prevent 429 storms.
 GROQ_TIMEOUT_SEC = env.float("GROQ_TIMEOUT_SEC", default=12)
