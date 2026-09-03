@@ -20,6 +20,20 @@ const LIST_POLL_MS = 2000;
 const FINDINGS_POLL_MS = 1500;
 const DEFAULT_TREND_TOPIC = "__newscrawler_scope__";
 const TREND_API_PREFIX = "/api/v1/trend/researches";
+const NEWSNOW_BASE_URL = "https://newsnow.busiyi.world";
+const NEWSNOW_SOURCE_IDS = ["cls-hot", "weibo", "zhihu", "bilibili", "hupu", "v2ex"];
+const TREND_SCOPE_RE = new RegExp(
+  [
+    "biển\\s*đông|south\\s*china\\s*sea|南海|黄岩岛|仁爱礁|西沙|南沙",
+    "trung\\s*quốc|china|中国|philippines|菲律宾|đài\\s*loan|taiwan|台湾",
+    "nhật\\s*bản|japan|日本|mỹ|hoa\\s*kỳ|united\\s*states|美国|guam",
+    "indonesia|indonesian|印尼|malaysia|马来西亚|singapore|新加坡|campuchia|cambodia|柬埔寨",
+    "lào|laos|老挝|thái\\s*lan|thailand|泰国|úc|australia|澳大利亚|hàn\\s*quốc|korea|韩国|triều\\s*tiên|朝鲜",
+    "quốc\\s*phòng|quân\\s*sự|hải\\s*quân|tuần\\s*tra|diễn\\s*tập|tập\\s*trận|an\\s*ninh|国防|军事|海军|军演|演习|安全",
+    "xuất\\s*khẩu|trừng\\s*phạt|đối\\s*phó|công\\s*nghệ\\s*lưỡng\\s*dụng|6g|trí\\s*tuệ\\s*nhân\\s*tạo|\\bai\\b|出口管制|制裁|人工智能",
+  ].join("|"),
+  "iu"
+);
 const SOURCE_LABELS = {
   reddit: "Reddit",
   x: "X",
@@ -27,6 +41,26 @@ const SOURCE_LABELS = {
   web: "Web chọn lọc",
   hackernews: "Hacker News",
 };
+const TREND_PROVIDER_LINKS = [
+  {
+    name: "NewsNow",
+    description: "Bảng xếp hạng đa nền tảng · đã lọc theo phạm vi NewsCrawler",
+    url: "https://newsnow.busiyi.world",
+    accent: "#8fc7ff",
+  },
+  {
+    name: "SoPilot · X",
+    description: "Bài đăng nổi bật và thảo luận đang lan truyền trên X",
+    url: "https://sopilot.net/zh/hot-tweets",
+    accent: "#53d49a",
+  },
+  {
+    name: "REBANG",
+    description: "Bảng xếp hạng thịnh hành từ nhiều nền tảng",
+    url: "https://rebang.open2hub.com",
+    accent: "#ffb454",
+  },
+];
 
 // Tone and icon are deliberately source-specific so the board is scannable at a glance,
 // while remaining readable in the existing dark application theme.
@@ -88,6 +122,48 @@ function trendRequest(method, suffix = "", body) {
   return method === "post" ? api.post(path, body) : api.get(path);
 }
 
+function normalizeExternalFinding(item, sourceId, index) {
+  if (!item || typeof item !== "object") return null;
+  const extra = item.extra && typeof item.extra === "object" ? item.extra : {};
+  const title = String(item.title || item.name || item.text || "").trim();
+  if (!title || !TREND_SCOPE_RE.test(title)) return null;
+  const url = String(item.url || item.mobileUrl || item.link || "").trim();
+  return {
+    id: `newsnow-${sourceId}-${item.id || index}`,
+    source: `newsnow:${sourceId}`,
+    title,
+    title_vi: "",
+    title_vi_status: "skipped",
+    url,
+    host: "newsnow.busiyi.world",
+    snippet: String(item.description || item.content || "").slice(0, 500),
+    published_at: item.pubDate || extra.date || item.date || null,
+    score: Number(item.score || item.hot || extra.hot || extra.score || 0) || 0,
+    engagement: extra,
+  };
+}
+
+async function fetchNewsNowSource(sourceId) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 8000);
+  try {
+    const response = await fetch(
+      `${NEWSNOW_BASE_URL}/api/s?id=${encodeURIComponent(sourceId)}`,
+      { headers: { Accept: "application/json" }, signal: controller.signal }
+    );
+    if (!response.ok) throw new Error(`NewsNow ${response.status}`);
+    const payload = await response.json();
+    const items = Array.isArray(payload) ? payload : payload?.items;
+    if (!Array.isArray(items)) return [];
+    return items
+      .slice(0, 30)
+      .map((item, index) => normalizeExternalFinding(item, sourceId, index))
+      .filter(Boolean);
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 /** Drop findings whose published_at is older than lookback (FE safety net). */
 function filterFindingsByLookback(rows, lookbackDays = 30) {
   const days = Math.max(1, Math.min(Number(lookbackDays) || 30, 90));
@@ -115,6 +191,8 @@ export default function TrendPage() {
   const [rows, setRows] = useState([]);
   const [selected, setSelected] = useState(null);
   const [findings, setFindings] = useState([]);
+  const [fallbackFindings, setFallbackFindings] = useState([]);
+  const [fallbackLoading, setFallbackLoading] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [configured, setConfigured] = useState(true);
@@ -136,7 +214,30 @@ export default function TrendPage() {
   const loadList = useCallback(async () => {
     const data = await trendRequest("get", "/?page_size=30");
     const results = Array.isArray(data) ? data : data?.results;
-    setRows(Array.isArray(results) ? results : []);
+    const normalized = Array.isArray(results) ? results : [];
+    setRows(normalized);
+    return normalized;
+  }, []);
+
+  // A public-feed fallback keeps the board useful while the authenticated
+  // research worker is starting, disabled, or temporarily unavailable.
+  const loadExternalTrends = useCallback(async () => {
+    setFallbackLoading(true);
+    const settled = await Promise.allSettled(NEWSNOW_SOURCE_IDS.map(fetchNewsNowSource));
+    const merged = [];
+    const seen = new Set();
+    for (const result of settled) {
+      if (result.status !== "fulfilled") continue;
+      for (const item of result.value) {
+        const key = item.url || item.title.toLocaleLowerCase();
+        if (seen.has(key)) continue;
+        seen.add(key);
+        merged.push(item);
+      }
+    }
+    setFallbackFindings(sortFindings(merged));
+    setFallbackLoading(false);
+    return merged;
   }, []);
 
   const loadFindings = useCallback(async (id, { incremental = false, lookbackDays = 30 } = {}) => {
@@ -177,9 +278,10 @@ export default function TrendPage() {
 
   const refresh = useCallback(async () => {
     setError("");
-    const [statusResult, listResult] = await Promise.allSettled([
+    const [statusResult, listResult, fallbackResult] = await Promise.allSettled([
       trendRequest("get", "/status/"),
       loadList(),
+      loadExternalTrends(),
     ]);
     if (statusResult.status === "fulfilled") {
       setConfigured(Boolean(statusResult.value?.configured));
@@ -191,8 +293,11 @@ export default function TrendPage() {
     if (listResult.status === "rejected") {
       setError(listResult.reason?.message || "Không thể tải xu hướng");
     }
+    if (fallbackResult.status === "rejected" && listResult.status === "rejected") {
+      setError(fallbackResult.reason?.message || "Không thể tải xu hướng");
+    }
     setStatusReady(true);
-  }, [loadList]);
+  }, [loadExternalTrends, loadList]);
 
   useEffect(() => {
     refresh();
@@ -275,17 +380,21 @@ export default function TrendPage() {
 
   const findingSourceCounts = useMemo(() => {
     const counts = {};
-    for (const finding of findings) {
+    const rowsForBoard = findings.length ? findings : fallbackFindings;
+    for (const finding of rowsForBoard) {
       const source = String(finding.source || "web");
       counts[source] = (counts[source] || 0) + 1;
     }
     return counts;
-  }, [findings]);
+  }, [fallbackFindings, findings]);
   const visibleFindings = useMemo(
-    () => sourceFilter === "all"
-      ? findings
-      : findings.filter((finding) => String(finding.source || "web") === sourceFilter),
-    [findings, sourceFilter]
+    () => {
+      const rowsForBoard = findings.length ? findings : fallbackFindings;
+      return sourceFilter === "all"
+        ? rowsForBoard
+        : rowsForBoard.filter((finding) => String(finding.source || "web") === sourceFilter);
+    },
+    [fallbackFindings, findings, sourceFilter]
   );
   const trendHighlights = useMemo(() => {
     const grouped = new Map();
@@ -318,27 +427,33 @@ export default function TrendPage() {
       ) : null}
       {error ? <Alert severity="error">{error}</Alert> : null}
 
-      {!selectedLive && (busy || !statusReady) ? (
-        <Box
-          sx={{
-            p: 3,
-            borderRadius: 2,
-            border: "1px dashed rgba(143,199,255,.24)",
-            color: "text.secondary",
-            textAlign: "center",
-          }}
-        >
-          Đang tải bảng xu hướng…
-        </Box>
-      ) : null}
+      <Box sx={{ pt: 0.5 }}>
+          {!selectedLive && (busy || !statusReady || fallbackLoading) ? (
+            <Box
+              sx={{
+                mb: 1.5,
+                p: 2,
+                borderRadius: 2,
+                border: "1px dashed rgba(143,199,255,.24)",
+                color: "text.secondary",
+                textAlign: "center",
+              }}
+            >
+              Đang tải bảng xu hướng…
+            </Box>
+          ) : null}
 
-      {selectedLive ? (
-        <Box sx={{ pt: 0.5 }}>
-          {findings.length ? (
+          {!selectedLive && !busy && !fallbackLoading && !fallbackFindings.length && statusReady ? (
+            <Alert severity="info" sx={{ mb: 1.5 }}>
+              Chưa có dữ liệu phù hợp. Bấm “Làm mới” để quét lại các nguồn xu hướng.
+            </Alert>
+          ) : null}
+
+          {findings.length || fallbackFindings.length ? (
             <Stack direction="row" spacing={0.75} flexWrap="wrap" useFlexGap sx={{ mb: 1.5 }}>
               <Chip
                 size="small"
-                label={`Tất cả (${findings.length})`}
+                label={`Tất cả (${visibleFindings.length})`}
                 color={sourceFilter === "all" ? "primary" : "default"}
                 variant={sourceFilter === "all" ? "filled" : "outlined"}
                 onClick={() => setSourceFilter("all")}
@@ -556,13 +671,75 @@ export default function TrendPage() {
             </Box>
           ) : null}
 
-          {selectedLive.error_message ? (
+          {!trendHighlights.length && !fallbackLoading ? (
+            <Box
+              sx={{
+                mb: 2,
+                p: { xs: 1.25, md: 2 },
+                borderRadius: 2.5,
+                border: "1px solid rgba(143,199,255,.16)",
+                background: "rgba(9,19,34,.72)",
+              }}
+            >
+              <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
+                Nguồn xu hướng
+              </Typography>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+                  gap: 1,
+                }}
+              >
+                {TREND_PROVIDER_LINKS.map((provider) => (
+                  <Link
+                    key={provider.name}
+                    href={provider.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    underline="none"
+                    sx={{
+                      p: 1.25,
+                      borderRadius: 1.5,
+                      border: `1px solid ${provider.accent}55`,
+                      background: `${provider.accent}12`,
+                      color: "inherit",
+                      transition: "background .15s ease",
+                      "&:hover": { background: `${provider.accent}22` },
+                    }}
+                  >
+                    <Typography fontWeight={700} sx={{ color: provider.accent }}>
+                      {provider.name}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {provider.description}
+                    </Typography>
+                  </Link>
+                ))}
+              </Box>
+            </Box>
+          ) : null}
+
+          {!trendHighlights.length && selectedLive ? (
+            <Box
+              sx={{
+                p: 2.5,
+                borderRadius: 2,
+                border: "1px dashed rgba(143,199,255,.24)",
+                color: "text.secondary",
+                textAlign: "center",
+              }}
+            >
+              Nguồn đang được cập nhật. Bảng sẽ tự hiển thị khi có mục phù hợp.
+            </Box>
+          ) : null}
+
+          {selectedLive?.error_message ? (
             <Alert severity="warning" sx={{ mb: 1.5 }}>
               {selectedLive.error_message}
             </Alert>
           ) : null}
         </Box>
-      ) : null}
     </Stack>
   );
 }
