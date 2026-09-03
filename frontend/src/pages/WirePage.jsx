@@ -49,8 +49,8 @@ const POLL_MS = 10000;
 const WIRE_MAX_AGE_DAYS = 30;
 const PAGE_SIZE = 50;
 const SCOPE_TOPICS = {
-  "wire-topic-1a": "Biển Đông: thực địa",
-  "wire-topic-1b": "Biển Đông: chủ quyền",
+  "wire-topic-1a": "Biển Đông",
+  "wire-topic-1b": "Biển Đông",
   "wire-topic-2a": "TQ: biên giới, cửa khẩu",
   "wire-topic-2b": "TQ: quốc phòng, an ninh",
   "wire-topic-2c": "TQ: công nghệ, hạ tầng",
@@ -62,8 +62,24 @@ const SCOPE_TOPICS = {
   "wire-topic-4c": "Học thuyết, năng lực mới",
   "wire-topic-5": "Trừng phạt, kiểm soát XK",
 };
+const TOPIC_FILTER_OPTIONS = [
+  ["wire-topic-south-china-sea", "Biển Đông"],
+  ["wire-topic-2a", "TQ: biên giới, cửa khẩu"],
+  ["wire-topic-2b", "TQ: quốc phòng, an ninh"],
+  ["wire-topic-2c", "TQ: công nghệ, hạ tầng"],
+  ["wire-topic-3a", "Tổ chức, chiến lược QP"],
+  ["wire-topic-3b", "Hội nghị, quyết sách"],
+  ["wire-topic-3c", "Công nghệ, hiện đại hóa"],
+  ["wire-topic-4a", "Diễn tập, hoạt động QS"],
+  ["wire-topic-4b", "Hợp tác, chuyển giao QP"],
+  ["wire-topic-4c", "Học thuyết, năng lực mới"],
+  ["wire-topic-5", "Trừng phạt, kiểm soát XK"],
+  ["cyber-operations", "Tác chiến mạng"],
+];
 const TOPIC_LABELS = {
   ...SCOPE_TOPICS,
+  "wire-topic-1a": "Biển Đông",
+  "wire-topic-1b": "Biển Đông",
   "cyber-operations": "Tác chiến mạng",
 };
 const SOURCE_LABELS = {
@@ -671,10 +687,9 @@ export default function WirePage() {
           sx={{ minWidth: 180 }}
         >
           <MenuItem value="">Tất cả</MenuItem>
-          {Object.entries(SCOPE_TOPICS).map(([value, label]) => (
+          {TOPIC_FILTER_OPTIONS.map(([value, label]) => (
             <MenuItem key={value} value={value}>{label}</MenuItem>
           ))}
-          <MenuItem value="cyber-operations">Tác chiến mạng</MenuItem>
         </TextField>
         <TextField
           select

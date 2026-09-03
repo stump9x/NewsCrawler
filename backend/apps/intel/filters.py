@@ -199,7 +199,9 @@ class IndicatorFilter(django_filters.FilterSet):
 class ThreatFilter(django_filters.FilterSet):
     title = django_filters.CharFilter(field_name="title", lookup_expr="icontains")
     cve = django_filters.CharFilter(method="filter_cve")
-    tag = django_filters.CharFilter(field_name="tags__slug")
+    # The UI presents the two South China Sea subtopics as one filter. Keep the
+    # underlying 1a/1b tags for classification, but resolve the alias to OR.
+    tag = django_filters.CharFilter(method="filter_tag")
     country = django_filters.CharFilter(method="filter_country")
     # Free-text publisher / feed name (e.g. secrss, japan-mod, mod.go.jp).
     publisher = django_filters.CharFilter(method="filter_publisher")
@@ -225,6 +227,14 @@ class ThreatFilter(django_filters.FilterSet):
         if not value:
             return queryset
         return queryset.filter(cve_ids__contains=[value.upper()])
+
+    def filter_tag(self, queryset, name, value):
+        slug = str(value or "").strip().lower()
+        if slug == "wire-topic-south-china-sea":
+            return queryset.filter(
+                tags__slug__in=("wire-topic-1a", "wire-topic-1b")
+            ).distinct()
+        return queryset.filter(tags__slug=slug).distinct()
 
     def filter_country(self, queryset, name, value):
         """Filter Wire items by exact geography/flag tag slug only."""
