@@ -24,6 +24,18 @@ import { displayWireTitle } from "../utils/wireTitle";
 
 const LIST_POLL_MS = 2000;
 const FINDINGS_POLL_MS = 1500;
+const SOURCE_LABELS = {
+  reddit: "Reddit",
+  x: "X",
+  polymarket: "Polymarket",
+  web: "Web chọn lọc",
+  hackernews: "Hacker News",
+};
+
+function sourceLabel(source) {
+  const key = String(source || "web").toLowerCase();
+  return SOURCE_LABELS[key] || key;
+}
 
 /** Drop findings whose published_at is older than lookback (FE safety net). */
 function filterFindingsByLookback(rows, lookbackDays = 30) {
@@ -64,6 +76,7 @@ export default function Last30DaysPage() {
   const [xConfigured, setXConfigured] = useState(false);
   const [redditConfigured, setRedditConfigured] = useState(false);
   const [wigoloConfigured, setWigoloConfigured] = useState(false);
+  const [sourceFilter, setSourceFilter] = useState("all");
   const lastFindingIdRef = useRef(0);
 
   const active = useMemo(
@@ -206,6 +219,7 @@ export default function Last30DaysPage() {
       });
       lastFindingIdRef.current = 0;
       setFindings([]);
+      setSourceFilter("all");
       setSelected(data);
       setMsg(`Đã xếp hàng #${data.id} — kết quả và % sẽ cập nhật theo từng nguồn.`);
       await loadList();
@@ -220,6 +234,7 @@ export default function Last30DaysPage() {
     lastFindingIdRef.current = 0;
     setSelected(row);
     setFindings([]);
+    setSourceFilter("all");
     try {
       await loadFindings(row.id);
     } catch (err) {
@@ -270,9 +285,23 @@ export default function Last30DaysPage() {
   const pct = Math.max(0, Math.min(100, Number(selectedLive?.progress_pct) || 0));
   const sourceChips = selectedLive?.source_counts
     ? Object.entries(selectedLive.source_counts).map(([k, v]) => (
-        <Chip key={k} size="small" label={`${k}: ${v}`} color="primary" variant="outlined" />
+        <Chip key={k} size="small" label={`${sourceLabel(k)}: ${v}`} color="primary" variant="outlined" />
       ))
     : null;
+  const findingSourceCounts = useMemo(() => {
+    const counts = {};
+    for (const finding of findings) {
+      const source = String(finding.source || "web");
+      counts[source] = (counts[source] || 0) + 1;
+    }
+    return counts;
+  }, [findings]);
+  const visibleFindings = useMemo(
+    () => sourceFilter === "all"
+      ? findings
+      : findings.filter((finding) => String(finding.source || "web") === sourceFilter),
+    [findings, sourceFilter]
+  );
   const canAddNotebook =
     Boolean(selectedLive?.id) &&
     !selectedRunning &&
@@ -424,6 +453,28 @@ export default function Last30DaysPage() {
             ) : null}
           </Stack>
 
+          {findings.length ? (
+            <Stack direction="row" spacing={0.75} flexWrap="wrap" useFlexGap sx={{ mb: 1.5 }}>
+              <Chip
+                size="small"
+                label={`Tất cả (${findings.length})`}
+                color={sourceFilter === "all" ? "primary" : "default"}
+                variant={sourceFilter === "all" ? "filled" : "outlined"}
+                onClick={() => setSourceFilter("all")}
+              />
+              {Object.entries(findingSourceCounts).sort(([a], [b]) => a.localeCompare(b)).map(([source, count]) => (
+                <Chip
+                  key={source}
+                  size="small"
+                  label={`${sourceLabel(source)} (${count})`}
+                  color={sourceFilter === source ? "primary" : "default"}
+                  variant={sourceFilter === source ? "filled" : "outlined"}
+                  onClick={() => setSourceFilter(source)}
+                />
+              ))}
+            </Stack>
+          ) : null}
+
           {(selectedRunning || pct > 0) && (
             <Box sx={{ mb: 2 }}>
               <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
@@ -456,7 +507,7 @@ export default function Last30DaysPage() {
           ) : null}
 
           <DataTable
-            rows={findings}
+            rows={visibleFindings}
             empty={
               selectedRunning
                 ? "Đang thu thập — kết quả sẽ xuất hiện dần theo từng nguồn…"
@@ -467,7 +518,7 @@ export default function Last30DaysPage() {
                 id: "source",
                 label: "Nguồn",
                 width: 110,
-                render: (row) => <Chip size="small" label={row.source} />,
+                render: (row) => <Chip size="small" label={sourceLabel(row.source)} />,
               },
               {
                 id: "title",
@@ -512,6 +563,12 @@ export default function Last30DaysPage() {
                     </Stack>
                   );
                 },
+              },
+              {
+                id: "score",
+                label: "Điểm",
+                width: 80,
+                render: (row) => Number(row.score || 0).toFixed(0),
               },
               {
                 id: "published_at",

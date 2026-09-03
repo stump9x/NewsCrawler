@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import logging
+import re
 import time
 from datetime import datetime, timedelta, timezone as dt_timezone
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import parse_qsl, urlencode, urlparse, urlunparse
 
 from django.conf import settings
 from django.db.models import Q
@@ -116,17 +117,50 @@ def _item_url(item: dict[str, Any]) -> str:
     for key in ("url", "permalink", "link", "hn_url"):
         val = item.get(key)
         if isinstance(val, str) and val.startswith("http"):
-            return val[:2048]
+            return _canonical_url(val)
     meta = item.get("metadata") if isinstance(item.get("metadata"), dict) else {}
     for key in ("hn_url", "url", "permalink"):
         val = meta.get(key)
         if isinstance(val, str) and val.startswith("http"):
-            return val[:2048]
+            return _canonical_url(val)
     item_id = str(item.get("item_id") or "").strip()
     source = str(item.get("source") or "").strip().lower()
     if source == "hackernews" and item_id.isdigit():
-        return f"https://news.ycombinator.com/item?id={item_id}"
+        return _canonical_url(f"https://news.ycombinator.com/item?id={item_id}")
     return ""
+
+
+_TRACKING_QUERY_KEYS = frozenset(
+    {
+        "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content",
+        "fbclid", "gclid", "ref", "ref_src", "source", "share",
+    }
+)
+
+
+def _canonical_url(raw: str) -> str:
+    """Collapse tracking variants so one page is shown once across platforms."""
+    text = str(raw or "").strip()
+    if not text.startswith(("http://", "https://")):
+        return text[:2048]
+    parsed = urlparse(text)
+    host = (parsed.hostname or "").lower().removeprefix("www.")
+    if not host:
+        return text[:2048]
+    path = re.sub(r"/{2,}", "/", parsed.path or "/").rstrip("/") or "/"
+    query = urlencode(
+        [
+            (key, value)
+            for key, value in parse_qsl(parsed.query, keep_blank_values=True)
+            if key.casefold() not in _TRACKING_QUERY_KEYS
+        ]
+    )
+    return urlunparse(("https", host, path, "", query, ""))[:2048]
+
+
+def _title_key(title: str) -> str:
+    """Stable title fingerprint for cross-platform syndicated copies."""
+    return re.sub(r"[^a-z0-9à-ỹđ]+", " ", str(title or "").casefold()).strip()
 
 
 def _item_title(item: dict[str, Any]) -> str:
@@ -187,14 +221,25 @@ def persist_findings(
     }
 
     existing_urls: set[str] = set()
+    existing_titles: set[str] = set()
     if skip_existing_urls:
         existing_urls = set(
-            research.findings.exclude(url="").values_list("url", flat=True)
+            _canonical_url(url)
+            for url in research.findings.exclude(url="").values_list("url", flat=True)
         )
+        existing_titles = {
+            key
+            for key in (
+                _title_key(title)
+                for title in research.findings.values_list("title", flat=True)
+            )
+            if len(key) >= 24
+        }
 
     created = 0
     skipped_stale = 0
     seen_urls: set[str] = set(existing_urls)
+    seen_titles: set[str] = set(existing_titles)
     cutoff = lookback_cutoff(research)
     for item in items:
         url = _item_url(item)
@@ -204,6 +249,7 @@ def persist_findings(
             seen_urls.add(url)
         source = str(item.get("source") or "unknown")[:64]
         title = _item_title(item)
+        title_key = _title_key(title)
         eng = _engagement_blob(item)
         score = _as_float(
             item.get("local_rank_score")
@@ -225,6 +271,12 @@ def persist_findings(
         if published_at is not None and published_at < cutoff:
             skipped_stale += 1
             continue
+        # Syndicated copies often carry different platform URLs but the same
+        # headline. Keep one representative item in the trend panel.
+        if len(title_key) >= 24:
+            if title_key in seen_titles:
+                continue
+            seen_titles.add(title_key)
         host = ""
         if url:
             try:
@@ -238,7 +290,7 @@ def persist_findings(
                 if not isinstance(c, dict):
                     continue
                 ids = c.get("candidate_ids") or c.get("representative_ids") or []
-                if url in ids:
+                if any(_canonical_url(str(candidate)) == url for candidate in ids):
                     cluster_id = str(c.get("cluster_id") or "")[:64]
                     break
 
