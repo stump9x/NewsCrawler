@@ -42,7 +42,7 @@ const NAV = [
   { to: "/mindmap", label: "Mindmap", icon: <AccountTreeOutlinedIcon fontSize="small" /> },
   { to: "/intelligence", label: "Báo cáo nhanh", icon: <AutoAwesomeOutlinedIcon fontSize="small" /> },
   { to: "/notebook-ai", label: "Phân tích sâu", icon: <MenuBookOutlinedIcon fontSize="small" /> },
-  { to: "/last30days", label: "Xu hướng", icon: <TravelExploreOutlinedIcon fontSize="small" /> },
+  { to: "/trend", label: "Xu hướng", icon: <TravelExploreOutlinedIcon fontSize="small" /> },
   { to: "/sources", label: "Nguồn RSS", icon: <RssFeedOutlinedIcon fontSize="small" /> },
   {
     to: "/users",

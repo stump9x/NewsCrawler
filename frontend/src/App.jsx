@@ -8,7 +8,7 @@ import WirePage from "./pages/WirePage";
 import BriefingsPage from "./pages/BriefingsPage";
 import NotebookAIPage from "./pages/NotebookAIPage";
 import FeedSourcesPage from "./pages/FeedSourcesPage";
-import Last30DaysPage from "./pages/Last30DaysPage";
+import TrendPage from "./pages/TrendPage";
 import UsersPage from "./pages/UsersPage";
 import PolicyPage from "./pages/PolicyPage";
 
@@ -38,7 +38,8 @@ export default function App() {
         <Route path="/feeds" element={<WirePage />} />
         {/* Document scan UI disabled — DOCUMENT_SCAN_ENABLED=false */}
         <Route path="/documents" element={<Navigate to="/" replace />} />
-        <Route path="/last30days" element={<Last30DaysPage />} />
+        <Route path="/trend" element={<TrendPage />} />
+        <Route path="/last30days" element={<Navigate to="/trend" replace />} />
         <Route
           path="/mindmap"
           element={(

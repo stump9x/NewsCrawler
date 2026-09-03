@@ -5,12 +5,8 @@ import {
   Box,
   Button,
   Chip,
-  FormControl,
-  InputLabel,
   LinearProgress,
   Link,
-  MenuItem,
-  Select,
   Stack,
   TextField,
   Typography,
@@ -82,14 +78,12 @@ function sortFindings(rows) {
   });
 }
 
-export default function Last30DaysPage() {
+export default function TrendPage() {
   const navigate = useNavigate();
   const [rows, setRows] = useState([]);
   const [selected, setSelected] = useState(null);
   const [findings, setFindings] = useState([]);
   const [topic, setTopic] = useState("Biển Đông Philippines");
-  const [depth, setDepth] = useState("quick");
-  const [days, setDays] = useState(30);
   const [busy, setBusy] = useState(false);
   const [notebookBusy, setNotebookBusy] = useState(false);
   const [error, setError] = useState("");
@@ -116,7 +110,7 @@ export default function Last30DaysPage() {
     (selectedLive.status === "queued" || selectedLive.status === "running");
 
   const loadList = useCallback(async () => {
-    const data = await api.get("/api/v1/last30days/researches/?page_size=30");
+    const data = await api.get("/api/v1/trend/researches/?page_size=30");
     setRows(data.results || []);
   }, []);
 
@@ -128,7 +122,7 @@ export default function Last30DaysPage() {
     }
     if (incremental && lastFindingIdRef.current > 0) {
       const data = await api.get(
-        `/api/v1/last30days/researches/${id}/findings/?page_size=100&after_id=${lastFindingIdRef.current}`
+        `/api/v1/trend/researches/${id}/findings/?page_size=100&after_id=${lastFindingIdRef.current}`
       );
       const batch = filterFindingsByLookback(data.results || data || [], lookbackDays);
       if (batch.length) {
@@ -148,7 +142,7 @@ export default function Last30DaysPage() {
       return;
     }
     const data = await api.get(
-      `/api/v1/last30days/researches/${id}/findings/?page_size=100`
+      `/api/v1/trend/researches/${id}/findings/?page_size=100`
     );
     const all = sortFindings(
       filterFindingsByLookback(data.results || data || [], lookbackDays)
@@ -160,7 +154,7 @@ export default function Last30DaysPage() {
   const refresh = useCallback(async () => {
     setError("");
     try {
-      const status = await api.get("/api/v1/last30days/researches/status/");
+      const status = await api.get("/api/v1/trend/researches/status/");
       setConfigured(Boolean(status.configured));
       setXConfigured(Boolean(status.x_configured));
       setRedditConfigured(Boolean(status.reddit_configured));
@@ -174,6 +168,10 @@ export default function Last30DaysPage() {
   useEffect(() => {
     refresh();
   }, [refresh]);
+
+  useEffect(() => {
+    if (!selected && rows.length) setSelected(rows[0]);
+  }, [rows, selected]);
 
   useEffect(() => {
     if (!active) return undefined;
@@ -234,10 +232,10 @@ export default function Last30DaysPage() {
     setError("");
     setMsg("");
     try {
-      const data = await api.post("/api/v1/last30days/researches/", {
+      const data = await api.post("/api/v1/trend/researches/", {
         topic: t,
-        depth,
-        lookback_days: Number(days) || 30,
+        depth: "quick",
+        lookback_days: 30,
       });
       lastFindingIdRef.current = 0;
       setFindings([]);
@@ -252,33 +250,6 @@ export default function Last30DaysPage() {
     }
   }
 
-  async function openResearch(row) {
-    lastFindingIdRef.current = 0;
-    setSelected(row);
-    setFindings([]);
-    setSourceFilter("all");
-    try {
-      await loadFindings(row.id);
-    } catch (err) {
-      setError(err.message || "Không thể tải kết quả");
-    }
-  }
-
-  async function removeResearch(row) {
-    if (!window.confirm(`Xóa nghiên cứu #${row.id}?`)) return;
-    try {
-      await api.delete(`/api/v1/last30days/researches/${row.id}/`);
-      if (selected?.id === row.id) {
-        setSelected(null);
-        setFindings([]);
-        lastFindingIdRef.current = 0;
-      }
-      await loadList();
-    } catch (err) {
-      setError(err.message || "Không thể xóa");
-    }
-  }
-
   async function addToNotebookAI() {
     if (!selectedLive?.id) return;
     setNotebookBusy(true);
@@ -286,7 +257,7 @@ export default function Last30DaysPage() {
     setMsg("");
     try {
       const data = await api.post(
-        `/api/v1/last30days/researches/${selectedLive.id}/to-notebook/`,
+        `/api/v1/trend/researches/${selectedLive.id}/to-notebook/`,
         {}
       );
       const name = data.notebook_name || "Notebook mới";
@@ -346,7 +317,7 @@ export default function Last30DaysPage() {
     <Stack spacing={2}>
       <PageHeader
         title="Xu hướng"
-        subtitle="Reddit · X · Polymarket · Wigolo web — Groq hiểu chủ đề + dịch VI."
+        subtitle="Tổng hợp đa nền tảng · xếp hạng nổi bật · hiển thị tiếng Việt"
         action={
           <Button variant="outlined" onClick={refresh} startIcon={<TravelExploreOutlinedIcon />}>
             Làm mới
@@ -354,7 +325,7 @@ export default function Last30DaysPage() {
         }
       />
       {!configured ? (
-        <Alert severity="warning">Module Last30Days chưa sẵn sàng.</Alert>
+        <Alert severity="warning">Module Xu hướng chưa sẵn sàng.</Alert>
       ) : null}
       <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
         <Chip
@@ -388,97 +359,34 @@ export default function Last30DaysPage() {
 
       <Stack direction={{ xs: "column", md: "row" }} spacing={1.5} alignItems={{ md: "center" }}>
         <TextField
-          label="Chủ đề"
+          label="Tìm xu hướng"
+          placeholder="vd. Biển Đông, diễn tập SEACAT, công nghệ quốc phòng…"
           value={topic}
           onChange={(e) => setTopic(e.target.value)}
           fullWidth
           size="small"
           disabled={busy || Boolean(active)}
         />
-        <FormControl size="small" sx={{ minWidth: 140 }}>
-          <InputLabel>Độ sâu</InputLabel>
-          <Select
-            label="Độ sâu"
-            value={depth}
-            onChange={(e) => setDepth(e.target.value)}
-            disabled={busy || Boolean(active)}
-          >
-            <MenuItem value="quick">Nhanh</MenuItem>
-            <MenuItem value="default">Mặc định</MenuItem>
-            <MenuItem value="deep">Sâu</MenuItem>
-          </Select>
-        </FormControl>
-        <TextField
-          label="Số ngày"
-          type="number"
-          size="small"
-          value={days}
-          onChange={(e) => setDays(e.target.value)}
-          inputProps={{ min: 1, max: 90 }}
-          sx={{ width: 110 }}
-          disabled={busy || Boolean(active)}
-        />
         <Button
           variant="contained"
           onClick={startResearch}
           disabled={busy || Boolean(active) || !configured}
-          sx={{ whiteSpace: "nowrap" }}
+          sx={{ whiteSpace: "nowrap", minWidth: 170 }}
         >
-          {active ? "Đang chạy…" : "Nghiên cứu"}
+          {active ? "Đang cập nhật…" : "Cập nhật xu hướng"}
         </Button>
       </Stack>
 
-      <Typography variant="subtitle1" fontWeight={700}>
-        Danh sách nghiên cứu
-      </Typography>
-      <DataTable
-        rows={rows}
-        columns={[
-          { id: "id", label: "ID", width: 64 },
-          { id: "topic", label: "Chủ đề" },
-          {
-            id: "status",
-            label: "Trạng thái",
-            render: (row) => <StatusChip value={row.status} />,
-          },
-          { id: "item_count", label: "Mục", width: 72 },
-          {
-            id: "progress_pct",
-            label: "%",
-            width: 72,
-            render: (row) => `${row.progress_pct ?? 0}%`,
-          },
-          {
-            id: "progress",
-            label: "Tiến độ",
-            render: (row) => row.progress || "—",
-          },
-          {
-            id: "actions",
-            label: "",
-            render: (row) => (
-              <Stack direction="row" spacing={1}>
-                <Button size="small" onClick={() => openResearch(row)}>
-                  Xem
-                </Button>
-                <Button
-                  size="small"
-                  color="inherit"
-                  disabled={row.status === "queued" || row.status === "running"}
-                  onClick={() => removeResearch(row)}
-                >
-                  Xóa
-                </Button>
-              </Stack>
-            ),
-          },
-        ]}
-      />
+      {!selectedLive ? (
+        <Alert severity="info">
+          Chưa có bảng xu hướng. Nhập một chủ đề để tạo nghiên cứu tích hợp đầu tiên.
+        </Alert>
+      ) : null}
 
       {selectedLive ? (
         <Box sx={{ borderTop: 1, borderColor: "divider", pt: 2 }}>
           <Typography variant="h6" sx={{ mb: 1 }}>
-            #{selectedLive.id} · {selectedLive.topic}
+            Bảng xu hướng · {selectedLive.topic}
           </Typography>
           <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mb: 1.5 }}>
             <StatusChip value={selectedLive.status} />

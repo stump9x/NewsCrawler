@@ -33,6 +33,11 @@ router.register(r"ai/briefings", AIBriefingViewSet, basename="ai-briefing")
 router.register(r"integrations/logs", IntegrationSyncLogViewSet, basename="integration-log")
 router.register(r"github/scans", GitHubScanViewSet, basename="github-scan")
 router.register(
+    r"trend/researches",
+    Last30DaysResearchViewSet,
+    basename="trend-research",
+)
+router.register(
     r"last30days/researches",
     Last30DaysResearchViewSet,
     basename="last30days-research",
