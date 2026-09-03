@@ -1368,5 +1368,169 @@
     "category": "news",
     "notes": "transport=official-html | Janes defence and security intelligence; article links only; strategic military filter | validated=2026-08-05",
     "requires_tor": false
+  },
+  {
+    "name": "china-mod-curated", "url": "https://www.mod.gov.cn/", "country": "China", "country_code": "CN", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | Ministry of National Defense of China | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "xinhua-english-china", "url": "https://www.xinhuanet.com/english/rss/chinarss.xml", "country": "China", "country_code": "CN", "confidence": 1, "category": "news",
+    "notes": "transport=official-rss | Xinhua English China desk | homepage=https://english.news.cn/ | wire-topic-v2", "requires_tor": false
+  },
+  {
+    "name": "xinhua-english-world", "url": "https://www.xinhuanet.com/english/rss/worldrss.xml", "country": "China", "country_code": "CN", "confidence": 1, "category": "news",
+    "notes": "transport=official-rss | Xinhua English World desk | homepage=https://english.news.cn/ | wire-topic-v2", "requires_tor": false
+  },
+  {
+    "name": "people-cn-curated", "url": "https://www.people.com.cn/", "country": "China", "country_code": "CN", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | People's Daily People.cn | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "global-times-curated", "url": "https://www.globaltimes.cn/", "country": "China", "country_code": "CN", "confidence": 2, "category": "news",
+    "notes": "transport=official-html-curated | Global Times China international desk | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "china-gov-curated", "url": "https://www.gov.cn/", "country": "China", "country_code": "CN", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | China Government policy and State Council | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "miit-curated", "url": "https://www.miit.gov.cn/", "country": "China", "country_code": "CN", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | MIIT China technology and industry policy | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "mofcom-curated", "url": "https://www.mofcom.gov.cn/", "country": "China", "country_code": "CN", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | MOFCOM China trade measures | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "china-export-control", "url": "https://exportcontrol.mofcom.gov.cn/", "country": "China", "country_code": "CN", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | China Export Control Information | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "guangxi-gov-curated", "url": "https://www.gxzf.gov.cn/", "country": "China", "country_code": "CN", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | Guangxi Government border/coastal policy | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "yunnan-gov-curated", "url": "https://www.yn.gov.cn/", "country": "China", "country_code": "CN", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | Yunnan Government border/opening policy | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "hainan-ocean-curated", "url": "https://oc.hainan.gov.cn/", "country": "China", "country_code": "CN", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | Hainan Ocean Department marine policy | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "fangchenggang-gov-curated", "url": "https://www.fcgs.gov.cn/", "country": "China", "country_code": "CN", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | Fangchenggang Government port/border policy | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "pna-curated", "url": "https://www.pna.gov.ph/", "country": "Philippines", "country_code": "PH", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | Philippine News Agency | West Philippine Sea/defense filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "gma-news-curated", "url": "https://www.gmanetwork.com/news/", "country": "Philippines", "country_code": "PH", "confidence": 2, "category": "news",
+    "notes": "transport=official-html-curated | GMA News Philippines | security/foreign affairs filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "dfa-ph-curated", "url": "https://dfa.gov.ph/", "country": "Philippines", "country_code": "PH", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | Philippine Department of Foreign Affairs | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "dnd-ph-curated", "url": "https://www.dnd.gov.ph/", "country": "Philippines", "country_code": "PH", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | Philippine Department of National Defense | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "malaysia-mod-curated", "url": "https://www.mod.gov.my/", "country": "Malaysia", "country_code": "MY", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | Malaysia Ministry of Defence | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "midas-malaysia-curated", "url": "https://midas.mod.gov.my/", "country": "Malaysia", "country_code": "MY", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | Malaysia Institute of Defence and Security | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "bernama-curated", "url": "https://www.bernama.com/", "country": "Malaysia", "country_code": "MY", "confidence": 2, "category": "news",
+    "notes": "transport=official-html-curated | BERNAMA Malaysia | defense/foreign affairs filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "taiwan-mnd-curated", "url": "https://www.mnd.gov.tw/en/", "country": "Taiwan", "country_code": "TW", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | Taiwan Ministry of National Defense | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "taiwan-mna-curated", "url": "https://mna.mnd.gov.tw/en/", "country": "Taiwan", "country_code": "TW", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | Taiwan Military News Agency | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "singapore-mindef-curated", "url": "https://www.mindef.gov.sg/", "country": "Singapore", "country_code": "SG", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | Singapore MINDEF | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "indonesia-kemhan-curated", "url": "https://www.kemhan.go.id/", "country": "Indonesia", "country_code": "ID", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | Indonesia Ministry of Defence Kemhan | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "tni-ppid-curated", "url": "https://ppid.tni.mil.id/", "country": "Indonesia", "country_code": "ID", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | TNI PPID Indonesia military releases | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "japan-mofa-curated", "url": "https://www.mofa.go.jp/", "country": "Japan", "country_code": "JP", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | Japan Ministry of Foreign Affairs | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "ustr-curated", "url": "https://ustr.gov/", "country": "United States", "country_code": "US", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | USTR trade enforcement and labor measures | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "cbp-curated", "url": "https://www.cbp.gov/", "country": "United States", "country_code": "US", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | US Customs and Border Protection | sanctions/export and border measures filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "dhs-curated", "url": "https://www.dhs.gov/", "country": "United States", "country_code": "US", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | US Department of Homeland Security | strategic security policy filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "bis-curated", "url": "https://www.bis.gov/", "country": "United States", "country_code": "US", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | US Bureau of Industry and Security | export controls/enforcement filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "federal-register-curated", "url": "https://www.federalregister.gov/", "country": "United States", "country_code": "US", "confidence": 1, "category": "news",
+    "notes": "transport=official-html-curated | US Federal Register rules and notices | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "reuters-asia-curated", "url": "https://www.reuters.com/world/asia-pacific/", "country": "International", "country_code": "INT", "confidence": 2, "category": "news",
+    "notes": "transport=official-html-curated | Reuters Asia-Pacific | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "ap-asia-curated", "url": "https://apnews.com/hub/asia-pacific", "country": "International", "country_code": "INT", "confidence": 2, "category": "news",
+    "notes": "transport=official-html-curated | Associated Press Asia-Pacific | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "jakarta-post-curated", "url": "https://www.thejakartapost.com/", "country": "Indonesia", "country_code": "ID", "confidence": 2, "category": "news",
+    "notes": "transport=official-html-curated | The Jakarta Post | defense/foreign affairs filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "star-malaysia-curated", "url": "https://www.thestar.com.my/", "country": "Malaysia", "country_code": "MY", "confidence": 2, "category": "news",
+    "notes": "transport=official-html-curated | The Star Malaysia | security/foreign affairs filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "cna-curated", "url": "https://www.channelnewsasia.com/", "country": "Singapore", "country_code": "SG", "confidence": 2, "category": "news",
+    "notes": "transport=official-html-curated | Channel NewsAsia | regional security filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "straits-times-curated", "url": "https://www.straitstimes.com/", "country": "Singapore", "country_code": "SG", "confidence": 2, "category": "news",
+    "notes": "transport=official-html-curated | The Straits Times | regional security filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "japan-times-curated", "url": "https://www.japantimes.co.jp/", "country": "Japan", "country_code": "JP", "confidence": 2, "category": "news",
+    "notes": "transport=official-html-curated | The Japan Times | defense/foreign affairs filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "nikkei-asia-curated", "url": "https://asia.nikkei.com/", "country": "Japan", "country_code": "JP", "confidence": 2, "category": "news",
+    "notes": "transport=official-html-curated | Nikkei Asia | strategic economy/security filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "kyodo-english-curated", "url": "https://english.kyodonews.net/", "country": "Japan", "country_code": "JP", "confidence": 2, "category": "news",
+    "notes": "transport=official-html-curated | Kyodo News English | regional security filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+  },
+  {
+    "name": "focus-taiwan-curated", "url": "https://focustaiwan.tw/", "country": "Taiwan", "country_code": "TW", "confidence": 2, "category": "news",
+    "notes": "transport=official-html-curated | Focus Taiwan | defense/foreign affairs filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
   }
 ]

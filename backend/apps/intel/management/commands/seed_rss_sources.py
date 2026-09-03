@@ -137,8 +137,10 @@ class Command(BaseCommand):
         # source UI can revive them.
         removed_non_rss = FeedSource.objects.filter(
             (Q(notes__icontains="transport=official-html")
+             & ~Q(notes__icontains="official-html-curated")
              & ~Q(name="janes-defence-news"))
-            | Q(name__in=["japan-times", "focus-taiwan"])
+            | (Q(name__in=["japan-times", "focus-taiwan"])
+               & ~Q(notes__icontains="official-html-curated"))
             | Q(
                 url__in=(
                     "http://military.cnr.cn",
