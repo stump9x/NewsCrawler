@@ -48,7 +48,24 @@ import {
 const POLL_MS = 10000;
 const WIRE_MAX_AGE_DAYS = 30;
 const PAGE_SIZE = 50;
+const SCOPE_TOPICS = {
+  "wire-topic-1a": "1a. Biển Đông: hoạt động thực địa",
+  "wire-topic-1b": "1b. Biển Đông: biện pháp chủ quyền",
+  "wire-topic-2a": "2a. Trung Quốc: biên giới, cửa khẩu",
+  "wire-topic-2b": "2b. Trung Quốc: quốc phòng, an ninh",
+  "wire-topic-2c": "2c. Trung Quốc: công nghệ, hạ tầng chiến lược",
+  "wire-topic-3a": "3a. Tổ chức và chiến lược quốc phòng",
+  "wire-topic-3b": "3b. Hội nghị và quyết sách trọng điểm",
+  "wire-topic-3c": "3c. Chính sách công nghệ, hiện đại hóa",
+  "wire-topic-4a": "4a. Diễn tập và hoạt động quân sự",
+  "wire-topic-4b": "4b. Hợp tác, chuyển giao quốc phòng",
+  "wire-topic-4c": "4c. Học thuyết và năng lực mới",
+  "wire-topic-5": "5. Trừng phạt, kiểm soát xuất khẩu",
+  "wire-topic-6": "6. Chuyến thăm, đối ngoại liên quan Việt Nam",
+  "wire-topic-7": "7. Dư luận về sự kiện, chính sách Việt Nam",
+};
 const TOPIC_LABELS = {
+  ...SCOPE_TOPICS,
   exercises: "Diễn tập",
   maritime: "Hàng hải",
   procurement: "Mua sắm quốc phòng",
@@ -267,6 +284,12 @@ function WireCard({ row, onFavoriteToggle, favoriteBusy }) {
           </Stack>
 
           <Box minWidth={0}>
+            {Number(row.personal_interest_score) >= 3 && !row.is_favorite ? (
+              <Chip size="small" color="success" variant="outlined"
+                label="Cùng chủ đề tin đang theo dõi"
+                title="Cùng phân nhóm và quốc gia với một tin bạn đang theo dõi"
+                sx={{ mb: 0.75 }} />
+            ) : null}
             <ExternalTitleLink
               title={displayWireTitle(row)}
               href={resolveThreatHref(row)}
@@ -665,6 +688,9 @@ export default function WirePage() {
           sx={{ minWidth: 180 }}
         >
           <MenuItem value="">Tất cả</MenuItem>
+          {Object.entries(SCOPE_TOPICS).map(([value, label]) => (
+            <MenuItem key={value} value={value}>{label}</MenuItem>
+          ))}
           <MenuItem value="exercises">Diễn tập</MenuItem>
           <MenuItem value="maritime">Hàng hải</MenuItem>
           <MenuItem value="procurement">Mua sắm quốc phòng</MenuItem>

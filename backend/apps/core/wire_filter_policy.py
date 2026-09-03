@@ -3,7 +3,7 @@
 The owner-less record is the administrator policy used by the global ingest
 worker. Each operational user may keep a private policy draft without changing
 the shared corpus or another account. Only explicit ``GIỮ:`` and ``LOẠI:``
-directives affect matching; core military/country/safety rules stay fixed.
+directives affect matching; the seven evidence-based topic gates stay fixed.
 """
 
 from __future__ import annotations
@@ -17,11 +17,12 @@ from django.db.models import Case, IntegerField, Q, Value, When
 from django.db.utils import OperationalError, ProgrammingError
 
 from .models import WireFilterPrompt
+from .wire_prompt import DEFAULT_WIRE_FILTER_PROMPT
 
 MAX_WIRE_FILTER_PROMPT_CHARS = 12000
 WIRE_FILTER_PROMPT_CACHE_SECONDS = 30
 
-DEFAULT_WIRE_FILTER_PROMPT = """MỤC ĐÍCH
+LEGACY_WIRE_FILTER_PROMPT = """MỤC ĐÍCH
 Đánh giá từng tin để quyết định có đưa vào Trạm tin tức hay không. Bộ lọc dùng quy tắc xác định, không gọi AI và không tiêu tốn token.
 
 DỮ LIỆU CẦN ĐỌC
@@ -237,7 +238,8 @@ def apply_user_wire_policy(queryset, user, *, prioritize: bool = True):
     the canonical newest-first display order; the policy still filters excluded rows.
     """
     queryset = queryset.exclude(global_wire_display_exclusion_query())
-    queryset = queryset.exclude(global_external_weapon_procurement_query())
+    # Scope is evaluated on article evidence at ingest/reclassification time.
+    # A blanket procurement veto would also hide Zumwalt/Guam modernization.
     directives = parse_wire_filter_directives(
         get_effective_user_wire_filter_prompt(user)
     )
@@ -277,60 +279,41 @@ def get_user_wire_recommendations_enabled(user) -> bool:
 
 
 def annotate_favorite_recommendations(queryset, user):
-    """Annotate a selective per-user interest score.
+    """Require a specific subtopic AND country shared with the same favorite.
 
-    A single shared country/topic is intentionally insufficient. A story must
-    share at least two tags with the user's followed stories; a matching source
-    adds a stronger score. The score never changes canonical wire_rank.
+    Generic topic/source tags never count. Favorites rejected by the current
+    scope do not train recommendations. Keep the publication timeline intact.
     """
     if not get_user_wire_recommendations_enabled(user):
         return queryset.annotate(
             personal_interest_score=Value(0, output_field=IntegerField())
         )
 
-    from django.db.models import Count, Exists, OuterRef, Subquery
-    from django.db.models.functions import Coalesce
+    from django.db.models import Exists, OuterRef, Subquery
     from apps.intel.models import ThreatFavorite
+    from apps.intel.filters import WIRE_COUNTRY_FILTER_SLUGS
+    from .wire_topics import TOPIC_TAG_PREFIX
 
     through = queryset.model.tags.through
-    favorite_threat_ids = ThreatFavorite.objects.filter(
-        user=user
-    ).values("threat_id")
-    favorite_tag_ids = through.objects.filter(
-        threat_id__in=Subquery(favorite_threat_ids)
+    # These subqueries are nested inside the favorite EXISTS, so the second
+    # OuterRef resolves to the candidate article, not the favorite record.
+    candidate_topics = through.objects.filter(
+        threat_id=OuterRef(OuterRef("pk")),
+        tag__slug__startswith=TOPIC_TAG_PREFIX,
     ).values("tag_id")
-    tag_overlap_count = (
-        through.objects.filter(
-            threat_id=OuterRef("pk"),
-            tag_id__in=Subquery(favorite_tag_ids),
-        )
-        .order_by()
-        .values("threat_id")
-        .annotate(match_count=Count("tag_id", distinct=True))
-        .values("match_count")[:1]
+    candidate_countries = through.objects.filter(
+        threat_id=OuterRef(OuterRef("pk")),
+        tag__slug__in=WIRE_COUNTRY_FILTER_SLUGS,
+    ).values("tag_id")
+    matches = (
+        ThreatFavorite.objects.filter(user=user, threat__wire_relevant=True)
+        .exclude(threat_id=OuterRef("pk"))
+        .filter(threat__tags__in=Subquery(candidate_topics))
+        .filter(threat__tags__in=Subquery(candidate_countries))
     )
-    favorite_sources = queryset.model.objects.filter(
-        favorites__user=user
-    ).values("source")
-
     return queryset.annotate(
-        personal_tag_count=Coalesce(
-            Subquery(tag_overlap_count, output_field=IntegerField()),
-            Value(0),
-        ),
-        personal_source_match=Case(
-            When(source__in=Subquery(favorite_sources), then=Value(1)),
-            default=Value(0),
-            output_field=IntegerField(),
-        ),
-    ).annotate(
         personal_interest_score=Case(
-            When(
-                personal_tag_count__gte=2,
-                personal_source_match=1,
-                then=Value(4),
-            ),
-            When(personal_tag_count__gte=2, then=Value(3)),
+            When(Q(wire_relevant=True) & Exists(matches), then=Value(3)),
             default=Value(0),
             output_field=IntegerField(),
         )
@@ -366,12 +349,12 @@ def parse_wire_filter_directives(prompt: str) -> WireFilterDirectives:
     return WireFilterDirectives(keep=tuple(keep), exclude=tuple(exclude))
 
 
-def evaluate_wire_filter_prompt(text: str) -> tuple[bool, bool]:
+def evaluate_wire_filter_prompt(text: str, *, prompt: str | None = None) -> tuple[bool, bool]:
     """Return ``(explicit_keep, explicit_exclude)`` for normalized article text."""
     normalized = " ".join((text or "").casefold().split())
     if not normalized:
         return False, False
-    directives = parse_wire_filter_directives(get_wire_filter_prompt())
+    directives = parse_wire_filter_directives(get_wire_filter_prompt() if prompt is None else prompt)
     explicit_exclude = any(phrase in normalized for phrase in directives.exclude)
     explicit_keep = any(phrase in normalized for phrase in directives.keep)
     return explicit_keep, explicit_exclude

@@ -19,6 +19,7 @@ from apps.core.wire_filter_policy import (
     GLOBAL_WIRE_NOISE_GROUPS,
     evaluate_wire_filter_prompt,
 )
+from apps.core.wire_topics import TOPIC_LABELS, classify_wire_topics
 from apps.intel.models import CompromisedCredential, DataLeak, Indicator, Tag, Threat
 from apps.intel.watching import (
     match_indicator_against_rules,
@@ -1097,83 +1098,22 @@ def is_global_wire_noise(text: str) -> bool:
     return any(all(phrase in normalized for phrase in group) for group in GLOBAL_WIRE_NOISE_GROUPS)
 
 
-def is_wire_relevant(item: dict[str, Any]) -> bool:
-    """Keep substantive military and defense news tied to monitored countries."""
+def is_wire_relevant(item: dict[str, Any], *, prompt: str | None = None) -> bool:
+    """Keep evidenced developments in the seven configured editorial clusters."""
     category = str(item.get("category") or "news").lower()
     # Substantive gates inspect article content, not feed/country metadata.
     content_text = " ".join(
         str(item.get(key) or "")
         for key in ("title", "title_vi", "summary", "description", "content")
     ).casefold()
-    text = content_text
-    metadata_text = " ".join(
-        str(item.get(key) or "")
-        for key in ("feed", "country", "country_code")
-    ).casefold()
-    # URLs catch /sports/ paths and host cues that titles alone may omit.
-    url_text = " ".join(
-        str(item.get(key) or "")
-        for key in ("link", "url", "feed_url", "source_url")
-    ).casefold()
-    explicit_keep, explicit_exclude = evaluate_wire_filter_prompt(f"{content_text} {metadata_text} {url_text}")
+    _, explicit_exclude = evaluate_wire_filter_prompt(content_text, prompt=prompt)
     if is_global_wire_noise(content_text):
         return False
     if explicit_exclude:
         return False
-    if is_external_weapon_procurement(item):
-        return False
-
-    # Only regular news items enter this product; import metadata never bypasses
-    # the monitored-country and substantive military-content gates.
     if category not in {"news", "other"}:
         return False
-
-    if is_secrss_item(item):
-        # SecRSS is curated, but still requires substantive defense/security.
-        relevant = (
-            is_military_context(text)
-            or is_military_cyber_context(text)
-            or is_defense_security_signal(text)
-            or is_secrss_analysis_signal(text)
-        )
-    else:
-        country_ok = is_monitored_country_context(text) or feed_implies_monitored_country(
-            item
-        )
-        military_ok = is_military_context(text) or is_military_cyber_context(text)
-        relevant = country_ok and military_ok
-
-    if not relevant:
-        # An administrator may extend the accepted focus via a GIỮ directive,
-        # but cannot bypass the monitored-country and military-context guards.
-        country_ok = is_secrss_item(item) or is_monitored_country_context(
-            text
-        ) or feed_implies_monitored_country(item)
-        military_ok = is_military_context(text) or is_military_cyber_context(text)
-        if not (explicit_keep and country_ok and military_ok):
-            return False
-        relevant = True
-    # News must contain substantive defense subject matter, not merely mention
-    # a service, base, official, or monitored country in lifestyle/PR copy.
-    if not explicit_keep and not (
-        is_defense_focus_topic(text)
-        or is_military_cyber_context(text)
-        or (is_secrss_item(item) and is_secrss_analysis_signal(text))
-    ):
-        return False
-    # De-emphasize isolated product/platform coverage: retain weapons news only
-    # when it involves multiple countries, a named region, or wider strategic,
-    # alliance, transfer, conflict, deterrence, or cross-border consequences.
-    if is_local_single_country_weapon_news(item):
-        return False
-    # Drop Canada/Pakistan/etc.-only stories even when feed metadata or impact
-    # keywords would otherwise accept them; co-mentions with priority countries stay.
-    if is_non_priority_country_only(item):
-        return False
-    # Lifestyle / sports / ceremonial / community-PR / tabloid noise.
-    if is_soft_news_noise(f"{text} {url_text}"):
-        return False
-    return True
+    return classify_wire_topics(item).relevant
 
 
 def website_tag_slug(item: dict[str, Any]) -> str:
@@ -1206,20 +1146,11 @@ def _classify_rss_item(item: dict[str, Any]) -> tuple[str, str, list[str], Decim
     discovery = str(item.get("discovery") or "")
     is_x_wire = discovery == "x-wire" or str(item.get("engine") or "") == "x_twitter"
     text = f"{item.get('title') or ''} {item.get('summary') or ''} {item.get('description') or ''}".lower()
-    meta = (
-        f"{item.get('feed') or ''} {item.get('country') or ''} "
-        f"{item.get('country_code') or ''} {item.get('link') or ''} {item.get('url') or ''}"
-    )
-    vietnam = threat_looks_vietnam_related(
-        title=str(item.get("title") or ""),
-        summary=f"{item.get('summary') or ''} {item.get('description') or ''}",
-        source_url=str(item.get("link") or item.get("url") or ""),
-        raw_payload=item,
-        country_code=str(item.get("country_code") or ""),
-    ) or is_vietnam_related(meta)
+    topic_match = classify_wire_topics(item)
+    vietnam = is_vietnam_related(" ".join(topic_match.evidence))
 
     # Emit only source and substantive military topic tags.
-    tags: list[str] = []
+    tags: list[str] = list(topic_match.tags)
     if is_x_wire:
         tags.append("x")
         handle = str(item.get("x_handle") or "").lstrip("@").strip().lower()
@@ -1317,15 +1248,10 @@ def _classify_rss_item(item: dict[str, Any]) -> tuple[str, str, list[str], Decim
             wire_priority = max(wire_priority, secrss_wire_priority())
 
     for geo_tag in detect_geography_tag_slugs(
-        item.get("title"),
-        item.get("title_vi"),
-        item.get("summary"),
-        item.get("description"),
-        item.get("content"),
-        "",
+        *topic_match.evidence,
         country_code="",
-        feed_url=str(item.get("feed_url") or ""),
-        source_url=str(item.get("link") or item.get("url") or ""),
+        feed_url="",
+        source_url="",
     ):
         if geo_tag not in tags:
             tags.append(geo_tag)
@@ -1344,7 +1270,7 @@ def _ensure_tags(slugs: list[str]) -> list[Tag]:
         if not clean:
             continue
         tag, _ = Tag.objects.get_or_create(
-            slug=clean, defaults={"name": clean.replace("-", " ").title()}
+            slug=clean, defaults={"name": TOPIC_LABELS.get(clean, clean.replace("-", " ").title())}
         )
         out.append(tag)
     return out
@@ -1809,7 +1735,8 @@ def ingest_rss_items(items: list[dict[str, Any]], *, source_label: str = "rss") 
                 evidence_score=score,
                 wire_priority=wire_priority,
                 wire_relevant=True,
-                raw_payload={**item, "feed_source": source_label},
+                raw_payload={**item, "feed_source": source_label,
+                             "wire_scope": classify_wire_topics(item).as_payload()},
                 source_url=link,
                 published_at=published_at,
             )

@@ -363,7 +363,7 @@ export default function PolicyPage() {
                 label="Tự động nhận dạng tin và chủ đề yêu thích để tăng đề xuất tương tự"
               />
               <Typography variant="caption" color="text.secondary" sx={{ display: "block", ml: 6 }}>
-                Dựa trên các tin bạn bấm Theo dõi, cùng thẻ chủ đề, quốc gia, năng lực và nguồn tin. Chỉ áp dụng cho tài khoản này; không đổi số thứ tự hoặc ảnh hưởng người dùng khác.
+                Đề xuất tin cùng phân nhóm cụ thể và quốc gia với một tin bạn đang theo dõi. Cùng nguồn hoặc thẻ chung chưa đủ. Chỉ áp dụng cho tài khoản này; giữ thứ tự theo thời gian xuất bản.
               </Typography>
             </Box>
           ) : null}

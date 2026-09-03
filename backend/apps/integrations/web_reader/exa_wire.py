@@ -12,21 +12,23 @@ from django.utils import timezone
 from apps.integrations.searx.site_discovery import UNSTABLE_INTEL_DOMAINS
 from apps.integrations.web_reader.exa import exa_configured, search_exa
 from apps.workers.feed_dates import parse_feed_datetime
+from apps.core.wire_topics import WIRE_DISCOVERY_QUERIES, discovery_queries
+from apps.workers.services import is_wire_relevant
 # Defense queries Exa ranks well on (natural language, not Boolean dorks).
-DEFAULT_WIRE_QUERIES = (
-    "Latest military operations and national defense strategy in the Indo-Pacific",
-    "Latest defense procurement military exercises and force posture news",
-    "Latest military cyber operations electronic warfare and critical infrastructure security",
-)
+DEFAULT_WIRE_QUERIES = WIRE_DISCOVERY_QUERIES
 
 
-def _wire_queries() -> list[str]:
+def _wire_queries(*, now=None, max_queries=None) -> list[str]:
     raw = getattr(settings, "EXA_WIRE_QUERIES", "") or ""
     custom = [q.strip() for q in str(raw).split("|") if q.strip()]
     cap = max(1, min(int(getattr(settings, "EXA_WIRE_QUERY_COUNT", 2) or 2), 6))
+    if max_queries is not None:
+        cap = min(cap, max(1, int(max_queries)))
     if custom:
         return custom[:cap]
-    return list(DEFAULT_WIRE_QUERIES)[:cap]
+    current = now or timezone.now()
+    # Existing calls are budgeted; rotate the focus instead of multiplying calls.
+    return discovery_queries(count=cap, slot=int(current.timestamp()) // 3600)
 
 
 def _wire_enabled() -> bool:
@@ -94,16 +96,21 @@ def discover_exa_wire_news(
 
     if limit is None:
         limit = int(getattr(settings, "EXA_WIRE_LIMIT", 8) or 8)
+    limit = max(1, min(int(limit), 72))
     current = now or timezone.now()
     max_age = int(getattr(settings, "EXA_WIRE_MAX_AGE_DAYS", 30) or 30)
     oldest = current - timedelta(days=max(1, min(max_age, 90)))
     per_query = max(3, min(int(limit or 8), 12))
-    queries = _wire_queries()
+    queries = _wire_queries(now=current, max_queries=limit)
     items: list[dict[str, Any]] = []
     seen: set[str] = set()
     skipped_undated = 0
 
-    for query in queries:
+    for index, query in enumerate(queries):
+        # Reserve room for every selected subtopic; early broad hits must not
+        # starve the remaining query. Noise never consumes the result budget.
+        quota = limit // len(queries) + (1 if index < limit % len(queries) else 0)
+        kept = 0
         hits = search_exa(
             query,
             limit=per_query,
@@ -125,8 +132,11 @@ def discover_exa_wire_news(
                 oldest=oldest,
                 seen=seen,
             )
-            if row:
+            if row and is_wire_relevant(row):
                 items.append(row)
+                kept += 1
+            if kept >= quota:
+                break
             if len(items) >= limit:
                 return items, {
                     "skipped": False,

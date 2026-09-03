@@ -806,8 +806,8 @@ def attach_threat_geography_tags(threat) -> list[str]:
         payload.get("content") or "",
         str(payload.get("country") or "") if country_code else "",
         country_code=country_code,
-        feed_url=str(payload.get("feed_url") or ""),
-        source_url=str(getattr(threat, "source_url", "") or payload.get("link") or ""),
+        feed_url="" if payload.get("wire_scope") else str(payload.get("feed_url") or ""),
+        source_url="" if payload.get("wire_scope") else str(getattr(threat, "source_url", "") or payload.get("link") or ""),
     )
     if not slugs:
         return []

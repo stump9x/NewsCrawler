@@ -218,7 +218,7 @@ export function orderedWireTags(row, maxTags = 8, maxGeography = 6) {
       !HIDDEN_TAGS.has(slug) &&
       !isGeographyTag(tag)
     );
-  });
+  }).sort((a, b) => Number(slugOf(b).startsWith("wire-topic-")) - Number(slugOf(a).startsWith("wire-topic-")));
 
   const geoSelected = geography;
   const headBudget = Math.max(0, maxTags - geoSelected.length);

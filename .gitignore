@@ -16,6 +16,7 @@ __pycache__/
 *.db
 *.sqlite3
 backend/celerybeat-schedule
+.wire-backups/
 backend/core.*
 data/
 surrealdb/

@@ -16,12 +16,7 @@ from apps.integrations.web_reader.channels.x_twitter import (
     x_twitter_configured,
 )
 from apps.workers.feed_dates import parse_feed_datetime
-from apps.workers.services import (
-    is_defense_security_signal,
-    is_military_context,
-    is_military_cyber_context,
-    is_monitored_country_context,
-)
+from apps.workers.services import is_wire_relevant
 
 logger = logging.getLogger(__name__)
 
@@ -63,13 +58,8 @@ def x_wire_accounts() -> list[str]:
 
 
 def _is_important_post(title: str, summary: str) -> bool:
-    """Keep reviewed military/defense signal only."""
-    text = f"{title} {summary}".casefold()
-    return is_monitored_country_context(text) and (
-        is_military_context(text)
-        or is_military_cyber_context(text)
-        or is_defense_security_signal(text)
-    )
+    """Use the same scope as RSS, including non-military strategic policies."""
+    return is_wire_relevant({"title": title, "summary": summary, "category": "news"})
 
 
 def _clean_wire_title(screen: str, text: str) -> str:
