@@ -14,7 +14,7 @@ class TrendCatalogView(APIView):
 
     def get(self, request):
         return Response({
-            "newsnow": [{"id": row[0], "source_id": SOURCE_ALIASES.get(row[0], row[0]), "name": row[1], "subtitle": row[2], "accent": row[3]} for row in NEWSNOW],
+            "newsnow": [{"id": row[0], "name": row[1], "subtitle": row[2], "accent": row[3]} for row in NEWSNOW],
             "rebang": [{"id": key, "name": name} for key, name in CHANNELS.items()],
             "providers": PROVIDER_URLS,
         })
@@ -28,8 +28,6 @@ class TrendBoardsView(APIView):
         source = request.query_params.get("source", "baidu" if provider == "newsnow" else "all")
         if provider not in PROVIDER_URLS or (provider == "newsnow" and source not in {row[0] for row in NEWSNOW}) or (provider == "rebang" and source not in CHANNELS):
             return Response({"detail": "Nguồn xu hướng không hợp lệ."}, status=400)
-        if provider == "sopilot":
-            source = "all"
         cache = trend_cache()
         upstream_source = SOURCE_ALIASES.get(source, source) if provider == "newsnow" else source
         key = f"board:v2:{provider}:{upstream_source}"
@@ -38,7 +36,7 @@ class TrendBoardsView(APIView):
         error = ""
         if not saved or time.time() - saved["fetched_at"] > 180:
             try:
-                boards = collect_boards(provider, upstream_source)
+                boards = collect_boards(provider, source)
                 # Never replace last-good content with an empty/error response.
                 if not any(board["items"] for board in boards) and saved:
                     raise ValueError("Nguồn chưa có bản cập nhật mới.")

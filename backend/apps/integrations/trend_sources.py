@@ -2,8 +2,6 @@
 from __future__ import annotations
 
 import hashlib
-import json
-import re
 from pathlib import Path
 from urllib.parse import urljoin, urlsplit
 
@@ -14,19 +12,15 @@ from django.core.cache.backends.filebased import FileBasedCache
 
 # One curated overview; source order follows the user's priorities.
 # The user's NewsNow "Tik Tok" screenshot resolves to source ID douyin.
-# Keep both requested display slots, sharing that feed and translation cache.
+# Display that feed once as TikTok, preserving its upstream/cache identity.
 NEWSNOW = [
     ("baidu", "Baidu", "Tìm kiếm thịnh hành", "#548fdd"),
-    ("tiktok", "TikTok", "Bảng Douyin trên NewsNow", "#52bac4"),
+    ("tiktok", "TikTok", "Xu hướng video", "#52bac4"),
     ("weibo", "Weibo", "Tìm kiếm thịnh hành", "#e66d6b"),
-    ("douyin", "Douyin", "Xu hướng video", "#c083d8"),
     ("tencent-hot", "Tencent News", "Tin tức tổng hợp", "#53a4df"),
     ("sputniknewscn", "Sputnik", "Tin quốc tế", "#d99665"),
-    ("nowcoder", "Nowcoder", "Bài đăng nổi bật", "#4facb1"),
     ("hackernews", "Hacker News", "Bài đăng nổi bật", "#e79d56"),
     ("github-trending-today", "GitHub", "Dự án nổi bật hôm nay", "#8d9eb4"),
-    ("aihot", "AIHOT", "Tin trí tuệ nhân tạo", "#709beb"),
-    ("zhihu", "Zhihu", "Thảo luận nổi bật", "#508ee5"),
     ("bing", "Bing", "Tin tức tổng hợp", "#42b5a4"),
     ("ifeng", "Phoenix", "Tin Phượng Hoàng", "#dd7467"),
     ("freebuf", "Freebuf", "An ninh mạng", "#69b488"),
@@ -34,7 +28,7 @@ NEWSNOW = [
 SOURCE_ALIASES = {"tiktok": "douyin"}
 CHANNELS = {"all": "Tin tức tổng hợp"}
 PLATFORM_NAMES = {"抖音": "Douyin", "微博": "Weibo", "百度": "Baidu", "快手": "Kuaishou", "知乎": "Zhihu", "腾讯网": "Tencent News", "哔哩哔哩": "Bilibili", "豆瓣": "Douban", "百度贴吧": "Baidu Tieba", "必应": "Bing", "梨视频": "Pear Video", "知乎日报": "Nhật báo Zhihu", "简书": "Jianshu"}
-PROVIDER_URLS = {"newsnow": "https://newsnow.busiyi.world", "sopilot": "https://sopilot.net/zh/hot-tweets", "rebang": "https://top.open2hub.com"}
+PROVIDER_URLS = {"newsnow": "https://newsnow.busiyi.world", "rebang": "https://top.open2hub.com"}
 
 
 def trend_cache():
@@ -108,50 +102,6 @@ def parse_rebang(html):
     return boards
 
 
-def parse_sopilot(html):
-    """Decode public Next.js serialized data, never execute downloaded JavaScript."""
-    soup = BeautifulSoup(html, "html.parser")
-    stream = ""
-    for tag in soup.select("script"):
-        text = (tag.string or "").strip().rstrip(";")
-        if not text.startswith("self.__next_f.push("):
-            continue
-        try:
-            packet = json.loads(text[len("self.__next_f.push("):-1])
-            if len(packet) > 1 and isinstance(packet[1], str):
-                stream += packet[1]
-        except (ValueError, TypeError):
-            continue
-    match = re.search(r'"initialTweets"\s*:', stream)
-    if not match:
-        raise ValueError("SoPilot chưa trả về bài đăng.")
-    rows, _ = json.JSONDecoder().raw_decode(stream[match.end():].lstrip())
-    # Long posts are separate React Flight text frames. Frame lengths are UTF-8
-    # bytes, not Python characters; resolving them avoids returning "$13" or
-    # silently dropping the tail of a Chinese post.
-    encoded = stream.encode("utf-8")
-    references, consumed = {}, 0
-    for frame in re.finditer(rb"([0-9a-f]+):T([0-9a-f]+),", encoded):
-        if frame.start() < consumed:
-            continue
-        end = frame.end() + int(frame.group(2), 16)
-        if end <= len(encoded):
-            references["$" + frame.group(1).decode()] = encoded[frame.end():end].decode("utf-8")
-            consumed = end
-    items = []
-    for rank, row in enumerate(rows, 1):
-        if not isinstance(row, dict) or not row.get("text"):
-            continue
-        handle = str(row.get("screen_name") or "")
-        tweet_id = str(row.get("tweet_id") or "")
-        url = f"https://x.com/{handle}/status/{tweet_id}" if re.fullmatch(r"\w+", handle) and tweet_id.isdigit() else PROVIDER_URLS["sopilot"]
-        text = references.get(str(row["text"]), str(row["text"]))
-        if re.fullmatch(r"\$[0-9a-f]+", text):
-            raise ValueError("Chưa đọc đủ nội dung bài đăng SoPilot.")
-        items.append({"rank": rank, "title": text.removeprefix("$") if text.startswith("$$") else text, "url": url, "author": str(row.get("nickname") or handle), "handle": handle, "avatar": safe_url(row.get("avatar")), "published_at": str(row.get("created_at") or "").removeprefix("$D"), "category": str(row.get("type") or ""), "metrics": {"likes": row.get("favorites"), "reposts": row.get("retweets"), "comments": row.get("replies"), "views": row.get("views"), "followers": row.get("followers_count"), "probability": row.get("viral_score"), "predicted_views": row.get("predicted_views")}})
-    return [{"id": "sopilot:hot", "provider": "sopilot", "name": "SoPilot · X", "subtitle": "Bài đăng đang lan truyền", "accent": "#7260ed", "url": PROVIDER_URLS["sopilot"], "items": dedupe_items(items)}]
-
-
 def collect_boards(provider, source):
     if provider == "newsnow" and source == "bing":
         boards = parse_rebang(fetch_url(PROVIDER_URLS["rebang"] + "/channel/all").text)
@@ -165,4 +115,4 @@ def collect_boards(provider, source):
         return parse_newsnow(fetch_url(PROVIDER_URLS[provider] + "/api/s", params={"id": SOURCE_ALIASES.get(source, source)}).json(), source)
     if provider == "rebang":
         return parse_rebang(fetch_url(PROVIDER_URLS[provider] + "/channel/" + source).text)
-    return parse_sopilot(fetch_url(PROVIDER_URLS[provider]).text)
+    raise ValueError("Nguồn xu hướng không hợp lệ.")

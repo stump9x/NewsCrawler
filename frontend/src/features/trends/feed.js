@@ -1,9 +1,5 @@
 import { api } from "../../api/client";
 
-export const PROVIDERS = [
-  { id: "newsnow", label: "NewsNow", url: "https://newsnow.busiyi.world" },
-  { id: "sopilot", label: "SoPilot · X", url: "https://sopilot.net/zh/hot-tweets" },
-];
 export const CJK = /[\u3400-\u9fff\u3040-\u30ff\uac00-\ud7af]/;
 
 export function readSaved(key, fallback) {
@@ -30,8 +26,8 @@ export async function request(path, { method = "get", body, signal } = {}) {
   }
 }
 
-// Keep every character, including the tail of long X posts. The server accepts
-// bounded batches, so long posts are translated as complete paragraph chunks.
+// Keep every character, including the tail of long feed entries. The server accepts
+// bounded batches, so long entries are translated as complete paragraph chunks.
 export function textChunks(text, limit = 1800) {
   const chunks = [];
   let remaining = String(text || "");
@@ -71,13 +67,4 @@ export function pendingTexts(boards, dictionary) {
     }
   }
   return [...new Set(texts)].filter((text) => !dictionary[text]);
-}
-export function count(value) {
-  const number = Number(value);
-  return value == null || !Number.isFinite(number) ? "—" : new Intl.NumberFormat("vi-VN", { notation: "compact", maximumFractionDigits: 1 }).format(number);
-}
-export function dateLabel(value) {
-  if (!value) return "";
-  const date = new Date(typeof value === "number" ? value * 1000 : value);
-  return Number.isNaN(date.getTime()) ? "" : date.toLocaleString("vi-VN", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" });
 }

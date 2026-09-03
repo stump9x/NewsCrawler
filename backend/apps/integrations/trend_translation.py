@@ -41,7 +41,7 @@ def valid_translation(original, translated):
     if len(translated.split()) > 4 and not looks_vietnamese(translated):
         return False
     if original.casefold() == translated.casefold():
-        return looks_vietnamese(original) or bool(re.fullmatch(r"(?:https?://\S+|(?:Windows|OpenAI|V2EX|GitHub|Web3|AI|iPhone|Baidu|Weibo|SoPilot|NewsNow|REBANG)(?:\s+[\d.]+)?)", original, re.I))
+        return looks_vietnamese(original) or bool(re.fullmatch(r"(?:https?://\S+|(?:Windows|OpenAI|V2EX|GitHub|Web3|AI|iPhone|Baidu|Weibo|NewsNow|REBANG)(?:\s+[\d.]+)?)", original, re.I))
     return True
 
 
