@@ -1,11 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Alert,
   Box,
   Button,
   Chip,
-  LinearProgress,
   Link,
   Stack,
   TextField,
@@ -16,9 +14,7 @@ import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
 import WhatshotOutlinedIcon from "@mui/icons-material/WhatshotOutlined";
 import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
 import { api } from "../api/client";
-import { DataTable } from "../components/DataTable";
 import { PageHeader } from "../components/PageHeader";
-import { StatusChip } from "../components/StatusChips";
 import { displayWireTitle } from "../utils/wireTitle";
 
 const LIST_POLL_MS = 2000;
@@ -110,19 +106,13 @@ function sortFindings(rows) {
 }
 
 export default function TrendPage() {
-  const navigate = useNavigate();
   const [rows, setRows] = useState([]);
   const [selected, setSelected] = useState(null);
   const [findings, setFindings] = useState([]);
   const [topic, setTopic] = useState("Biển Đông Philippines");
   const [busy, setBusy] = useState(false);
-  const [notebookBusy, setNotebookBusy] = useState(false);
   const [error, setError] = useState("");
-  const [msg, setMsg] = useState("");
   const [configured, setConfigured] = useState(true);
-  const [xConfigured, setXConfigured] = useState(false);
-  const [redditConfigured, setRedditConfigured] = useState(false);
-  const [wigoloConfigured, setWigoloConfigured] = useState(false);
   const [sourceFilter, setSourceFilter] = useState("all");
   const [trendSort, setTrendSort] = useState("hot");
   const lastFindingIdRef = useRef(0);
@@ -136,10 +126,6 @@ export default function TrendPage() {
     if (!selected?.id) return selected;
     return rows.find((r) => r.id === selected.id) || selected;
   }, [rows, selected]);
-
-  const selectedRunning =
-    selectedLive &&
-    (selectedLive.status === "queued" || selectedLive.status === "running");
 
   const loadList = useCallback(async () => {
     const data = await api.get("/api/v1/trend/researches/?page_size=30");
@@ -188,9 +174,6 @@ export default function TrendPage() {
     try {
       const status = await api.get("/api/v1/trend/researches/status/");
       setConfigured(Boolean(status.configured));
-      setXConfigured(Boolean(status.x_configured));
-      setRedditConfigured(Boolean(status.reddit_configured));
-      setWigoloConfigured(Boolean(status.wigolo_configured));
       await loadList();
     } catch (err) {
       setError(err.message || "Không thể tải nghiên cứu");
@@ -262,7 +245,6 @@ export default function TrendPage() {
     }
     setBusy(true);
     setError("");
-    setMsg("");
     try {
       const data = await api.post("/api/v1/trend/researches/", {
         topic: t,
@@ -273,7 +255,6 @@ export default function TrendPage() {
       setFindings([]);
       setSourceFilter("all");
       setSelected(data);
-      setMsg(`Đã xếp hàng #${data.id} — kết quả và % sẽ cập nhật theo từng nguồn.`);
       await loadList();
     } catch (err) {
       setError(err.message || "Không thể bắt đầu nghiên cứu");
@@ -282,37 +263,6 @@ export default function TrendPage() {
     }
   }
 
-  async function addToNotebookAI() {
-    if (!selectedLive?.id) return;
-    setNotebookBusy(true);
-    setError("");
-    setMsg("");
-    try {
-      const data = await api.post(
-        `/api/v1/trend/researches/${selectedLive.id}/to-notebook/`,
-        {}
-      );
-      const name = data.notebook_name || "Notebook mới";
-      const n = data.sources_queued || 0;
-      setMsg(`Đã tạo notebook mới «${name}» trong Phân tích sâu — xếp hàng ${n} nguồn.`);
-      if (data.notebook_id) {
-        navigate(`/notebook-ai?notebook=${encodeURIComponent(data.notebook_id)}`);
-      } else if (data.open_url) {
-        window.open(data.open_url, "_blank", "noopener,noreferrer");
-      }
-    } catch (err) {
-      setError(err.message || "Không thêm được vào Phân tích sâu");
-    } finally {
-      setNotebookBusy(false);
-    }
-  }
-
-  const pct = Math.max(0, Math.min(100, Number(selectedLive?.progress_pct) || 0));
-  const sourceChips = selectedLive?.source_counts
-    ? Object.entries(selectedLive.source_counts).map(([k, v]) => (
-        <Chip key={k} size="small" label={`${sourceLabel(k)}: ${v}`} color="primary" variant="outlined" />
-      ))
-    : null;
   const findingSourceCounts = useMemo(() => {
     const counts = {};
     for (const finding of findings) {
@@ -342,11 +292,6 @@ export default function TrendPage() {
     }
     return [...grouped.entries()];
   }, [visibleFindings, trendSort]);
-  const canAddNotebook =
-    Boolean(selectedLive?.id) &&
-    !selectedRunning &&
-    (findings.length > 0 || Number(selectedLive?.item_count) > 0);
-
   return (
     <Stack spacing={2}>
       <PageHeader
@@ -361,35 +306,7 @@ export default function TrendPage() {
       {!configured ? (
         <Alert severity="warning">Module Xu hướng chưa sẵn sàng.</Alert>
       ) : null}
-      <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-        <Chip
-          size="small"
-          color={redditConfigured ? "success" : "default"}
-          label={redditConfigured ? "Reddit: có cookie" : "Reddit: chưa cookie"}
-        />
-        <Chip
-          size="small"
-          color={xConfigured ? "success" : "default"}
-          label={xConfigured ? "X: có credential" : "X: chưa credential"}
-        />
-        <Chip
-          size="small"
-          color={wigoloConfigured ? "success" : "default"}
-          label={wigoloConfigured ? "Wigolo: sẵn sàng" : "Wigolo: chưa cấu hình"}
-        />
-      </Stack>
       {error ? <Alert severity="error">{error}</Alert> : null}
-      {msg ? <Alert severity="success">{msg}</Alert> : null}
-
-      <Box sx={{ border: 1, borderColor: "divider", borderRadius: 1.5, p: 1.5 }}>
-        <Typography variant="subtitle1" fontWeight={700}>
-          Nghiên cứu tích hợp đa nguồn
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          Gom các mục nổi bật từ X, Reddit, Web chọn lọc, Polymarket và Hacker News;
-          chuẩn hóa tiếng Việt, xếp hạng theo điểm và loại bản sao trùng trang hoặc tiêu đề.
-        </Typography>
-      </Box>
 
       <Stack direction={{ xs: "column", md: "row" }} spacing={1.5} alignItems={{ md: "center" }}>
         <TextField
@@ -411,38 +328,8 @@ export default function TrendPage() {
         </Button>
       </Stack>
 
-      {!selectedLive ? (
-        <Alert severity="info">
-          Chưa có bảng xu hướng. Nhập một chủ đề để tạo nghiên cứu tích hợp đầu tiên.
-        </Alert>
-      ) : null}
-
       {selectedLive ? (
-        <Box sx={{ borderTop: 1, borderColor: "divider", pt: 2 }}>
-          <Typography variant="h6" sx={{ mb: 1 }}>
-            Bảng xu hướng · {selectedLive.topic}
-          </Typography>
-          <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap sx={{ mb: 1.5 }}>
-            <StatusChip value={selectedLive.status} />
-            <Chip size="small" label={`${selectedLive.lookback_days || 30} ngày`} />
-            <Chip size="small" label={`${pct}%`} color="primary" />
-            <Chip size="small" label={`${findings.length || selectedLive.item_count || 0} mục`} />
-            {selectedLive.duration_ms ? (
-              <Chip size="small" label={`${Math.round(selectedLive.duration_ms / 1000)}s`} />
-            ) : null}
-            {sourceChips}
-            {canAddNotebook ? (
-              <Button
-                size="small"
-                variant="outlined"
-                disabled={notebookBusy}
-                onClick={addToNotebookAI}
-              >
-                {notebookBusy ? "Đang thêm…" : "Thêm vào Phân tích sâu"}
-              </Button>
-            ) : null}
-          </Stack>
-
+        <Box sx={{ pt: 0.5 }}>
           {findings.length ? (
             <Stack direction="row" spacing={0.75} flexWrap="wrap" useFlexGap sx={{ mb: 1.5 }}>
               <Chip
@@ -665,115 +552,11 @@ export default function TrendPage() {
             </Box>
           ) : null}
 
-          {(selectedRunning || pct > 0) && (
-            <Box sx={{ mb: 2 }}>
-              <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
-                <Typography variant="body2" color="text.secondary">
-                  {selectedLive.progress ||
-                    (selectedRunning
-                      ? "Đang chạy…"
-                      : selectedLive.status === "partial"
-                        ? "Hoàn thành một phần"
-                        : selectedLive.status === "failed"
-                          ? "Thất bại"
-                          : "Hoàn thành")}
-                </Typography>
-                <Typography variant="body2" fontWeight={600}>
-                  {pct}%
-                </Typography>
-              </Stack>
-              <LinearProgress
-                variant="determinate"
-                value={pct}
-                sx={{ height: 8, borderRadius: 1 }}
-              />
-            </Box>
-          )}
-
           {selectedLive.error_message ? (
             <Alert severity="warning" sx={{ mb: 1.5 }}>
               {selectedLive.error_message}
             </Alert>
           ) : null}
-
-          <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
-            Kết quả nghiên cứu tích hợp
-          </Typography>
-          <DataTable
-            rows={visibleFindings}
-            empty={
-              selectedRunning
-                ? "Đang thu thập — kết quả sẽ xuất hiện dần theo từng nguồn…"
-                : "Chưa có kết quả."
-            }
-            columns={[
-              {
-                id: "source",
-                label: "Nguồn",
-                width: 110,
-                render: (row) => <Chip size="small" label={sourceLabel(row.source)} />,
-              },
-              {
-                id: "title",
-                label: "Tiêu đề",
-                render: (row) => {
-                  const vi = displayWireTitle(row);
-                  const original = (row.title || "").trim();
-                  const showOriginal =
-                    original &&
-                    vi &&
-                    vi !== original &&
-                    row.title_vi_status !== "pending";
-                  const body = row.url ? (
-                    <Link href={row.url} target="_blank" rel="noreferrer">
-                      {vi}
-                    </Link>
-                  ) : (
-                    vi
-                  );
-                  return (
-                    <Stack spacing={0.25}>
-                      {body}
-                      {showOriginal ? (
-                        <Typography variant="caption" color="text.secondary">
-                          {original}
-                        </Typography>
-                      ) : null}
-                      {row.snippet_vi || row.snippet ? (
-                        <Typography
-                          variant="caption"
-                          color="text.secondary"
-                          sx={{
-                            display: "-webkit-box",
-                            WebkitLineClamp: 2,
-                            WebkitBoxOrient: "vertical",
-                            overflow: "hidden",
-                          }}
-                        >
-                          {row.snippet_vi || row.snippet}
-                        </Typography>
-                      ) : null}
-                    </Stack>
-                  );
-                },
-              },
-              {
-                id: "score",
-                label: "Điểm",
-                width: 80,
-                render: (row) => Number(row.score || 0).toFixed(0),
-              },
-              {
-                id: "published_at",
-                label: "Ngày",
-                width: 120,
-                render: (row) =>
-                  row.published_at
-                    ? new Date(row.published_at).toLocaleDateString("vi-VN")
-                    : "—",
-              },
-            ]}
-          />
         </Box>
       ) : null}
     </Stack>
