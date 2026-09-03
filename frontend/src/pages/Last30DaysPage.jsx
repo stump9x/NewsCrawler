@@ -302,6 +302,19 @@ export default function Last30DaysPage() {
       : findings.filter((finding) => String(finding.source || "web") === sourceFilter),
     [findings, sourceFilter]
   );
+  const trendHighlights = useMemo(() => {
+    const grouped = new Map();
+    const ranked = [...visibleFindings].sort(
+      (a, b) => Number(b.score || 0) - Number(a.score || 0)
+    );
+    for (const finding of ranked) {
+      const source = String(finding.source || "web");
+      const rowsForSource = grouped.get(source) || [];
+      if (rowsForSource.length < 3) rowsForSource.push(finding);
+      grouped.set(source, rowsForSource);
+    }
+    return [...grouped.entries()];
+  }, [visibleFindings]);
   const canAddNotebook =
     Boolean(selectedLive?.id) &&
     !selectedRunning &&
@@ -486,6 +499,82 @@ export default function Last30DaysPage() {
                 />
               ))}
             </Stack>
+          ) : null}
+
+          {trendHighlights.length ? (
+            <Box sx={{ mb: 2 }}>
+              <Stack direction="row" alignItems="baseline" spacing={1} sx={{ mb: 1 }}>
+                <Typography variant="subtitle1" fontWeight={700}>
+                  Xu hướng nổi bật
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Xếp hạng theo điểm · tối đa 3 mục mỗi nguồn
+                </Typography>
+              </Stack>
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(auto-fit, minmax(270px, 1fr))",
+                  gap: 1,
+                }}
+              >
+                {trendHighlights.map(([source, sourceRows]) => (
+                  <Box
+                    key={source}
+                    sx={{
+                      border: 1,
+                      borderColor: "divider",
+                      borderRadius: 1.5,
+                      p: 1.25,
+                      minWidth: 0,
+                    }}
+                  >
+                    <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.75 }}>
+                      <Chip size="small" color="primary" variant="outlined" label={sourceLabel(source)} />
+                      <Typography variant="caption" color="text.secondary">
+                        {sourceRows.length} nổi bật
+                      </Typography>
+                    </Stack>
+                    <Stack spacing={0.8}>
+                      {sourceRows.map((finding, index) => {
+                        const title = displayWireTitle(finding);
+                        const content = (
+                          <Stack direction="row" spacing={0.75} alignItems="flex-start">
+                            <Typography variant="caption" color="text.secondary" sx={{ minWidth: 16 }}>
+                              {index + 1}.
+                            </Typography>
+                            <Box sx={{ minWidth: 0, flex: 1 }}>
+                              <Typography
+                                variant="body2"
+                                sx={{
+                                  fontWeight: 600,
+                                  display: "-webkit-box",
+                                  WebkitLineClamp: 2,
+                                  WebkitBoxOrient: "vertical",
+                                  overflow: "hidden",
+                                }}
+                              >
+                                {title}
+                              </Typography>
+                              <Typography variant="caption" color="text.secondary">
+                                Điểm {Number(finding.score || 0).toFixed(0)}
+                              </Typography>
+                            </Box>
+                          </Stack>
+                        );
+                        return finding.url ? (
+                          <Link key={finding.id} href={finding.url} target="_blank" rel="noreferrer" underline="hover">
+                            {content}
+                          </Link>
+                        ) : (
+                          <Box key={finding.id}>{content}</Box>
+                        );
+                      })}
+                    </Stack>
+                  </Box>
+                ))}
+              </Box>
+            </Box>
           ) : null}
 
           {(selectedRunning || pct > 0) && (
