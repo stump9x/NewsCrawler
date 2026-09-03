@@ -111,7 +111,7 @@ export default function TrendPage() {
   const [findings, setFindings] = useState([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [configured, setConfigured] = useState(null);
+  const [configured, setConfigured] = useState(true);
   const [statusReady, setStatusReady] = useState(false);
   const [sourceFilter, setSourceFilter] = useState("all");
   const [trendSort, setTrendSort] = useState("hot");
@@ -129,7 +129,8 @@ export default function TrendPage() {
 
   const loadList = useCallback(async () => {
     const data = await api.get("/api/v1/trend/researches/?page_size=30");
-    setRows(data.results || []);
+    const results = Array.isArray(data) ? data : data?.results;
+    setRows(Array.isArray(results) ? results : []);
   }, []);
 
   const loadFindings = useCallback(async (id, { incremental = false, lookbackDays = 30 } = {}) => {
@@ -171,15 +172,21 @@ export default function TrendPage() {
 
   const refresh = useCallback(async () => {
     setError("");
-    try {
-      const status = await api.get("/api/v1/trend/researches/status/");
-      setConfigured(Boolean(status.configured));
-      await loadList();
-      setStatusReady(true);
-    } catch (err) {
-      setError(err.message || "Không thể tải nghiên cứu");
-      setStatusReady(true);
+    const [statusResult, listResult] = await Promise.allSettled([
+      api.get("/api/v1/trend/researches/status/"),
+      loadList(),
+    ]);
+    if (statusResult.status === "fulfilled") {
+      setConfigured(Boolean(statusResult.value?.configured));
+    } else {
+      // Status is informational; keep the board usable if a proxy serves a
+      // stale route while the research endpoints are healthy.
+      setConfigured(true);
     }
+    if (listResult.status === "rejected") {
+      setError(listResult.reason?.message || "Không thể tải xu hướng");
+    }
+    setStatusReady(true);
   }, [loadList]);
 
   useEffect(() => {
@@ -305,6 +312,20 @@ export default function TrendPage() {
         <Alert severity="warning">Module Xu hướng chưa sẵn sàng.</Alert>
       ) : null}
       {error ? <Alert severity="error">{error}</Alert> : null}
+
+      {!selectedLive && (busy || !statusReady) ? (
+        <Box
+          sx={{
+            p: 3,
+            borderRadius: 2,
+            border: "1px dashed rgba(143,199,255,.24)",
+            color: "text.secondary",
+            textAlign: "center",
+          }}
+        >
+          Đang tải bảng xu hướng…
+        </Box>
+      ) : null}
 
       {selectedLive ? (
         <Box sx={{ pt: 0.5 }}>
