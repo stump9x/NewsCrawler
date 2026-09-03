@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.core.permissions import IsStaffUser
-from .trend_sources import CHANNELS, NEWSNOW, PROVIDER_URLS, collect_boards, trend_cache
+from .trend_sources import CHANNELS, NEWSNOW, PROVIDER_URLS, SOURCE_ALIASES, collect_boards, trend_cache
 from .trend_translation import cached_translation, translate_batch
 
 
@@ -14,7 +14,7 @@ class TrendCatalogView(APIView):
 
     def get(self, request):
         return Response({
-            "newsnow": [{"id": row[0], "name": row[1], "subtitle": row[2], "mode": row[3], "accent": row[4]} for row in NEWSNOW],
+            "newsnow": [{"id": row[0], "source_id": SOURCE_ALIASES.get(row[0], row[0]), "name": row[1], "subtitle": row[2], "accent": row[3]} for row in NEWSNOW],
             "rebang": [{"id": key, "name": name} for key, name in CHANNELS.items()],
             "providers": PROVIDER_URLS,
         })
@@ -31,13 +31,14 @@ class TrendBoardsView(APIView):
         if provider == "sopilot":
             source = "all"
         cache = trend_cache()
-        key = f"board:v2:{provider}:{source}"
+        upstream_source = SOURCE_ALIASES.get(source, source) if provider == "newsnow" else source
+        key = f"board:v2:{provider}:{upstream_source}"
         saved = cache.get(key)
         stale = False
         error = ""
         if not saved or time.time() - saved["fetched_at"] > 180:
             try:
-                boards = collect_boards(provider, source)
+                boards = collect_boards(provider, upstream_source)
                 # Never replace last-good content with an empty/error response.
                 if not any(board["items"] for board in boards) and saved:
                     raise ValueError("Nguồn chưa có bản cập nhật mới.")
@@ -49,6 +50,9 @@ class TrendBoardsView(APIView):
         if not saved:
             return Response({"boards": [], "stale": False, "error": error}, status=502)
         for board in saved["boards"]:
+            if provider == "newsnow":
+                config = next(row for row in NEWSNOW if row[0] == source)
+                board.update(id=f"newsnow:{source}", name=config[1], subtitle=config[2], accent=config[3])
             board["name_vi"] = cached_translation(board["name"])
             board["subtitle_vi"] = cached_translation(board["subtitle"])
             for item in board["items"]:

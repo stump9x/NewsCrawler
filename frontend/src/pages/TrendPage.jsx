@@ -12,20 +12,16 @@ function Vietnamese({ text, supplied, dictionary, name = false }) {
   return <span className="trend-translating">Đang dịch sang tiếng Việt…</span>;
 }
 
-function RankingCard({ board, state, dictionary, starred, toggleStar, refresh, minimal }) {
-  const source = board.id.replace("newsnow:", "");
+function RankingCard({ board, state, dictionary, refresh }) {
   return (
-    <section className={`trend-card ${minimal ? "trend-card-minimal" : ""}`} style={{ "--accent": board.accent || "#689bd9" }} aria-label={board.name}>
+    <section className="trend-card" style={{ "--accent": board.accent || "#689bd9" }} aria-label={board.name}>
       <header className="trend-card-header">
         {board.icon ? <img className="trend-source-icon" src={board.icon} alt="" loading="lazy" /> : <span className="trend-source-icon">{board.name.slice(0, 2).toUpperCase()}</span>}
         <div className="trend-card-heading">
           <h2><Vietnamese text={board.name} supplied={board.name_vi} dictionary={dictionary} name /></h2>
           <p><Vietnamese text={board.subtitle} supplied={board.subtitle_vi} dictionary={dictionary} />{state?.stale ? " · Bản lưu gần nhất" : ""}</p>
         </div>
-        {!minimal && <>
-          <button className="trend-icon-button" aria-label={`Làm mới ${board.name}`} disabled={state?.loading} onClick={() => refresh(source)}>↻</button>
-          <button className={`trend-icon-button ${starred ? "is-starred" : ""}`} aria-label={`${starred ? "Bỏ" : "Thêm"} theo dõi ${board.name}`} aria-pressed={starred} onClick={() => toggleStar(board.id)}>{starred ? "★" : "☆"}</button>
-        </>}
+        <button className="trend-icon-button" aria-label={`Làm mới ${board.name}`} disabled={state?.loading} onClick={refresh}>↻</button>
       </header>
       <div className="trend-ranking-scroll" tabIndex={0} aria-label={`Danh sách ${board.name}`}>
         {board.items.map((item) => (
@@ -36,7 +32,7 @@ function RankingCard({ board, state, dictionary, starred, toggleStar, refresh, m
         ))}
         {!board.items.length && <div className="trend-board-message" role="status">
           {state?.loading ? <><span className="trend-skeleton" /><span className="trend-skeleton" /><span className="trend-skeleton" />Đang tải bảng…</> : state?.error || "Nguồn chưa có mục mới."}
-          {!state?.loading && <button className="trend-text-button" onClick={() => refresh(source)}>Thử lại</button>}
+          {!state?.loading && <button className="trend-text-button" onClick={refresh}>Thử lại</button>}
         </div>}
       </div>
       {state?.error && board.items.length > 0 && <p className="trend-card-note">Giữ bản gần nhất · Chưa kết nối lại được nguồn</p>}
@@ -70,9 +66,7 @@ function TweetCard({ item, dictionary }) {
 
 export default function TrendPage() {
   const [provider, setProvider] = useState("newsnow");
-  const [mode, setMode] = useState("hot");
-  const [channel, setChannel] = useState("all");
-  const [catalog, setCatalog] = useState(() => readSaved("catalog", null));
+  const [catalog, setCatalog] = useState(() => readSaved("catalog:overview", null));
   const [states, setStates] = useState({});
   const [catalogError, setCatalogError] = useState("");
   const [dictionary, setDictionary] = useState(() => readSaved("translations", {}));
@@ -80,23 +74,20 @@ export default function TrendPage() {
   const [translationStatus, setTranslationStatus] = useState({ active: 0, pending: 0, reason: "" });
   const translationQueue = useRef(null);
   const [revision, setRevision] = useState(0);
-  const [limit, setLimit] = useState(9);
-  const [stars, setStars] = useState(() => readSaved("stars", []));
   const mounted = useRef(true);
   const active = useRef(new Map());
 
   useEffect(() => {
     mounted.current = true;
     const controller = new AbortController();
-    request("catalog/", { signal: controller.signal }).then((data) => { setCatalog(data); save("catalog", data); setCatalogError(""); }).catch((err) => { if (!controller.signal.aborted) setCatalogError(err.status ? err.message : "Chưa tải được danh sách nguồn. Hãy thử lại."); });
+    request("catalog/", { signal: controller.signal }).then((data) => { setCatalog(data); save("catalog:overview", data); setCatalogError(""); }).catch((err) => { if (!controller.signal.aborted) setCatalogError(err.status ? err.message : "Chưa tải được danh sách nguồn. Hãy thử lại."); });
     return () => { mounted.current = false; controller.abort(); active.current.forEach((c) => c.abort()); active.current.clear(); };
   }, [revision]);
 
   const selectedSources = useMemo(() => {
-    if (provider !== "newsnow") return [{ id: provider === "rebang" ? channel : "all" }];
-    return (catalog?.newsnow || []).filter((source) => mode === "follow" ? stars.includes(`newsnow:${source.id}`) : source.mode === mode).slice(0, limit);
-  }, [catalog, channel, limit, mode, provider, stars]);
-  const sourceKey = selectedSources.map((source) => source.id).join(",");
+    return provider === "newsnow" ? catalog?.newsnow || [] : [{ id: "all" }];
+  }, [catalog, provider]);
+  const sourceKey = [...new Set(selectedSources.map((source) => source.source_id || source.id))].join(",");
 
   async function loadSource(source, targetProvider = provider) {
     const key = `${targetProvider}:${source}`;
@@ -104,11 +95,14 @@ export default function TrendPage() {
     const controller = new AbortController();
     active.current.set(key, controller);
     const saved = readSaved(key, null);
+    const previous = states[key] || saved;
     setStates((prev) => ({ ...prev, [key]: { ...(prev[key] || saved), loading: true } }));
     try {
       const data = await request(`boards/?provider=${targetProvider}&source=${encodeURIComponent(source)}`, { signal: controller.signal });
       if (controller.signal.aborted || !mounted.current) return;
-      const value = { ...data, loading: false };
+      const value = !data.boards?.some((board) => board.items?.length) && previous?.boards?.some((board) => board.items?.length)
+        ? { ...previous, loading: false, stale: true, error: "Nguồn chưa có bản mới. Đang giữ bản gần nhất." }
+        : { ...data, loading: false };
       setStates((prev) => ({ ...prev, [key]: value }));
       save(key, value);
     } catch (err) {
@@ -131,10 +125,11 @@ export default function TrendPage() {
   }, [sourceKey, provider, revision]);
 
   const boards = useMemo(() => selectedSources.flatMap((source) => {
-    const state = states[`${provider}:${source.id}`];
-    if (state?.boards?.length) return state.boards.map((board) => ({ ...board, state, requestSource: source.id }));
+    const requestSource = source.source_id || source.id;
+    const state = states[`${provider}:${requestSource}`];
+    if (state?.boards?.length) return state.boards.map((board) => ({ ...board, ...(source.name ? { id: `newsnow:${source.id}`, name: source.name, name_vi: source.name, subtitle: source.subtitle, subtitle_vi: source.subtitle, accent: source.accent } : {}), state, requestSource }));
     if (provider !== "newsnow") return [];
-    return [{ ...source, subtitle_vi: source.subtitle, id: `newsnow:${source.id}`, provider, items: [], state: state || { loading: true }, requestSource: source.id }];
+    return [{ ...source, subtitle_vi: source.subtitle, id: `newsnow:${source.id}`, provider, items: [], state: state || { loading: true }, requestSource }];
   }), [provider, selectedSources, states]);
   const texts = useMemo(() => pendingTexts(boards, dictionary), [boards, dictionary]);
   const textsKey = texts.join("\u0000");
@@ -161,14 +156,12 @@ export default function TrendPage() {
   useEffect(() => {
     const timer = setInterval(() => {
       if (document.visibilityState !== "visible") return;
-      selectedSources.filter((source) => states[`${provider}:${source.id}`]?.error).slice(0, 3).forEach((source) => loadSource(source.id));
+      sourceKey.split(",").filter((source) => states[`${provider}:${source}`]?.error).slice(0, 3).forEach((source) => loadSource(source));
     }, 30000);
     return () => clearInterval(timer);
   }, [sourceKey, provider, states]);
-  const providerState = states[`${provider}:${provider === "rebang" ? channel : "all"}`];
+  const providerState = states[`${provider}:all`];
   const isLoading = boards.some((board) => board.state?.loading) || (provider !== "newsnow" && (!providerState || providerState.loading));
-  const totalSources = (catalog?.newsnow || []).filter((source) => mode === "follow" ? stars.includes(`newsnow:${source.id}`) : source.mode === mode).length;
-  const toggleStar = (id) => setStars((prev) => { const next = prev.includes(id) ? prev.filter((value) => value !== id) : [...prev, id]; save("stars", next); return next; });
   const refresh = () => { translationQueue.current?.retry(); setRevision((n) => n + 1); };
   const totalItems = boards.reduce((n, board) => n + board.items.length, 0);
   const translatedItems = boards.reduce((n, board) => n + board.items.filter((item) => translation(item.title, dictionary, item.title_vi)).length, 0);
@@ -178,16 +171,12 @@ export default function TrendPage() {
     <div className={`trend-page trend-${provider}`}>
       <div className="trend-platform-bar">
         <h1>Xu hướng</h1>
-        <nav aria-label="Nền tảng xu hướng">{PROVIDERS.map((entry) => <button key={entry.id} className={provider === entry.id ? "active" : ""} aria-pressed={provider === entry.id} onClick={() => { setProvider(entry.id); setLimit(9); }}>{entry.label}</button>)}</nav>
+        <nav aria-label="Nền tảng xu hướng">{PROVIDERS.map((entry) => <button key={entry.id} className={provider === entry.id ? "active" : ""} aria-pressed={provider === entry.id} onClick={() => setProvider(entry.id)}>{entry.label}</button>)}</nav>
         <button className="trend-refresh" onClick={refresh} aria-label="Làm mới bảng xu hướng">↻ <span>Làm mới</span></button>
       </div>
       <div className="trend-hero">
-        <div className="trend-brand">{provider === "newsnow" ? <><b>News</b><b>Now<span> · Tiếng Việt</span></b></> : provider === "rebang" ? "REBANG" : "Bài đăng đang lan truyền trên X"}</div>
-        <p>{provider === "newsnow" ? "Các bảng xếp hạng, cập nhật từ NewsNow" : provider === "rebang" ? "Bảng xếp hạng tối giản · Tiếng Việt" : "Nội dung nổi bật và số liệu tương tác từ SoPilot"}</p>
-        <div className="trend-mode-nav">
-          {provider === "newsnow" && [["hot", "Nóng nhất"], ["latest", "Thời gian thực"], ["follow", "Đang theo dõi"]].map(([key, label]) => <button key={key} className={mode === key ? "active" : ""} onClick={() => { setMode(key); setLimit(9); }}>{label}</button>)}
-          {provider === "rebang" && (catalog?.rebang || []).map((entry) => <button key={entry.id} className={channel === entry.id ? "active" : ""} onClick={() => setChannel(entry.id)}>{entry.name}</button>)}
-        </div>
+        <div className="trend-brand">{provider === "newsnow" ? <><b>News</b><b>Now<span> · Tiếng Việt</span></b></> : "Bài đăng đang lan truyền trên X"}</div>
+        <p>{provider === "newsnow" ? "Tin tức tổng hợp từ các nền tảng" : "Nội dung nổi bật và số liệu tương tác từ SoPilot"}</p>
       </div>
       <div className="trend-status-line" role="status">
         <span>{isLoading ? "Đang cập nhật các nguồn…" : `${totalItems} mục · Giữ thứ tự xếp hạng của nguồn`}</span>
@@ -195,10 +184,9 @@ export default function TrendPage() {
       </div>
       {catalogError && <p className="trend-notice" role="alert">{catalogError}<button onClick={refresh}>Thử lại</button></p>}
       {provider !== "newsnow" && providerState?.error && <p className="trend-notice" role="alert">{providerState.error}<button onClick={refresh}>Thử lại</button></p>}
-      {provider === "sopilot" ? <div className="trend-tweet-list">{boards.flatMap((board) => board.items).map((item) => <TweetCard key={item.id} item={item} dictionary={dictionary} />)}</div> : <div className="trend-grid">{boards.map((board) => <RankingCard key={board.id} board={board} state={board.state} dictionary={dictionary} minimal={provider === "rebang"} starred={stars.includes(board.id)} toggleStar={toggleStar} refresh={() => loadSource(board.requestSource)} />)}</div>}
-      {!boards.length && <div className="trend-board-message">{provider === "newsnow" && mode === "follow" ? "Nhấn ☆ trên một bảng để thêm vào danh sách theo dõi." : isLoading ? "Đang lấy bảng từ nguồn…" : "Chưa tải được bảng. Các nguồn sẽ được thử lại tự động."}</div>}
-      {provider === "newsnow" && totalSources > limit && <button className="trend-load-more" onClick={() => setLimit((n) => n + 9)}>Hiển thị thêm bảng ({totalSources - limit})</button>}
-      <footer className="trend-footer">Nguồn: <a href={PROVIDERS.find((entry) => entry.id === provider).url} target="_blank" rel="noreferrer">{PROVIDERS.find((entry) => entry.id === provider).label} ↗</a> · Nội dung được dịch tự động sang tiếng Việt.</footer>
+      {provider === "sopilot" ? <div className="trend-tweet-list">{boards.flatMap((board) => board.items).map((item) => <TweetCard key={item.id} item={item} dictionary={dictionary} />)}</div> : <div className="trend-grid">{boards.map((board) => <RankingCard key={board.id} board={board} state={board.state} dictionary={dictionary} refresh={() => loadSource(board.requestSource)} />)}</div>}
+      {!boards.length && <div className="trend-board-message">{isLoading ? "Đang lấy bảng từ nguồn…" : "Chưa tải được bảng. Các nguồn sẽ được thử lại tự động."}</div>}
+      <footer className="trend-footer">Nguồn: <a href={PROVIDERS.find((entry) => entry.id === provider).url} target="_blank" rel="noreferrer">{PROVIDERS.find((entry) => entry.id === provider).label} ↗</a>{provider === "newsnow" && <> · Bing từ <a href="https://rebang.open2hub.com/channel/all" target="_blank" rel="noreferrer">REBANG ↗</a></>} · Nội dung được dịch tự động sang tiếng Việt.</footer>
     </div>
   );
 }

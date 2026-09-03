@@ -12,57 +12,27 @@ from bs4 import BeautifulSoup
 from django.conf import settings
 from django.core.cache.backends.filebased import FileBasedCache
 
-# Canonical IDs from NewsNow's published source directory; aliases occur once.
+# One curated overview; source order follows the user's priorities.
+# The user's NewsNow "Tik Tok" screenshot resolves to source ID douyin.
+# Keep both requested display slots, sharing that feed and translation cache.
 NEWSNOW = [
-    ("baidu", "Baidu", "Tìm kiếm thịnh hành", "hot", "#548fdd"),
-    ("bilibili-hot-search", "Bilibili", "Tìm kiếm thịnh hành", "hot", "#45bce4"),
-    ("chongbuluo-hot", "Chongbuluo", "Bài viết nổi bật", "hot", "#66b867"),
-    ("cls-hot", "Tài Liên Xã", "Tin nổi bật", "hot", "#ef6868"),
-    ("coolapk", "Coolapk", "Nổi bật hôm nay", "hot", "#41b586"),
-    ("douban", "Douban", "Phim nổi bật", "hot", "#57b966"),
-    ("weibo", "Weibo", "Tìm kiếm thời gian thực", "hot", "#e66d6b"),
-    ("zhihu", "Zhihu", "Thảo luận nổi bật", "hot", "#508ee5"),
-    ("douyin", "Douyin", "Xu hướng video", "hot", "#c083d8"),
-    ("hupu", "Hupu", "Bài đăng nổi bật", "hot", "#df6f66"),
-    ("v2ex-share", "V2EX", "Chia sẻ mới nhất", "latest", "#8098b0"),
-    ("tieba", "Baidu Tieba", "Thảo luận nổi bật", "hot", "#5a99dd"),
-    ("toutiao", "Toutiao", "Tin nổi bật", "hot", "#e46b74"),
-    ("thepaper", "The Paper", "Bảng tin nổi bật", "hot", "#7a95b3"),
-    ("ifeng", "Phượng Hoàng", "Tin nổi bật", "hot", "#dd7467"),
-    ("tencent-hot", "Tencent News", "Bản tin tổng hợp", "hot", "#53a4df"),
-    ("nowcoder", "Nowcoder", "Bài đăng nổi bật", "hot", "#4facb1"),
-    ("sspai", "SSPAI", "Bài viết nổi bật", "hot", "#d86e7a"),
-    ("juejin", "Juejin", "Bài viết công nghệ", "hot", "#559cde"),
-    ("github-trending-today", "GitHub", "Dự án nổi bật hôm nay", "hot", "#8d9eb4"),
-    ("hackernews", "Hacker News", "Bài đăng nổi bật", "hot", "#e79d56"),
-    ("producthunt", "Product Hunt", "Sản phẩm nổi bật", "hot", "#eb8467"),
-    ("xueqiu-hotstock", "Xueqiu", "Cổ phiếu nổi bật", "hot", "#679ce0"),
-    ("steam", "Steam", "Số người đang chơi", "hot", "#6c9dc9"),
-    ("freebuf", "Freebuf", "An ninh mạng", "hot", "#69b488"),
-    ("qqvideo-tv-hotsearch", "Tencent Video", "Chương trình thịnh hành", "hot", "#55abc7"),
-    ("iqiyi-hot-ranklist", "iQIYI", "Chương trình được xem nhiều", "hot", "#7bb854"),
-    ("wallstreetcn-hot", "Phố Wall", "Tin được đọc nhiều", "hot", "#6992c7"),
-    ("wallstreetcn-quick", "Phố Wall", "Tin nhanh", "latest", "#6992c7"),
-    ("wallstreetcn-news", "Phố Wall", "Tin mới nhất", "latest", "#6992c7"),
-    ("cls-telegraph", "Tài Liên Xã", "Tin nhanh", "latest", "#ef6868"),
-    ("cls-depth", "Tài Liên Xã", "Phân tích chuyên sâu", "latest", "#ef6868"),
-    ("zaobao", "Liên Hợp Tảo Báo", "Tin mới nhất", "latest", "#e58585"),
-    ("ithome", "IT Home", "Tin công nghệ mới", "latest", "#e0768c"),
-    ("solidot", "Solidot", "Tin công nghệ", "latest", "#57afa9"),
-    ("dongqiudi", "Dongqiudi", "Tin bóng đá", "latest", "#78b858"),
-    ("aihot", "AIHOT", "Tin trí tuệ nhân tạo", "latest", "#709beb"),
-    ("sputniknewscn", "Sputnik", "Tin quốc tế", "latest", "#d99665"),
-    ("cankaoxiaoxi", "Tin Tham Khảo", "Tin mới nhất", "latest", "#cd8588"),
-    ("pcbeta-windows11", "PCBeta", "Windows 11", "latest", "#69a3d4"),
-    ("mktnews-flash", "MKTNews", "Tin nhanh thị trường", "latest", "#9291cf"),
-    ("gelonghui", "Gelonghui", "Sự kiện mới nhất", "latest", "#749ec7"),
-    ("fastbull-express", "FastBull", "Tin nhanh", "latest", "#61b294"),
-    ("fastbull-news", "FastBull", "Tin tiêu điểm", "latest", "#61b294"),
-    ("jin10", "Jin10", "Dữ liệu và tin nhanh", "latest", "#6d9de8"),
-    ("kaopu", "Kaopu News", "Tin quốc tế", "latest", "#8e9aad"),
-    ("chongbuluo-latest", "Chongbuluo", "Bài viết mới", "latest", "#66b867"),
+    ("baidu", "Baidu", "Tìm kiếm thịnh hành", "#548fdd"),
+    ("tiktok", "TikTok", "Bảng Douyin trên NewsNow", "#52bac4"),
+    ("weibo", "Weibo", "Tìm kiếm thịnh hành", "#e66d6b"),
+    ("douyin", "Douyin", "Xu hướng video", "#c083d8"),
+    ("tencent-hot", "Tencent News", "Tin tức tổng hợp", "#53a4df"),
+    ("sputniknewscn", "Sputnik", "Tin quốc tế", "#d99665"),
+    ("nowcoder", "Nowcoder", "Bài đăng nổi bật", "#4facb1"),
+    ("hackernews", "Hacker News", "Bài đăng nổi bật", "#e79d56"),
+    ("github-trending-today", "GitHub", "Dự án nổi bật hôm nay", "#8d9eb4"),
+    ("aihot", "AIHOT", "Tin trí tuệ nhân tạo", "#709beb"),
+    ("zhihu", "Zhihu", "Thảo luận nổi bật", "#508ee5"),
+    ("bing", "Bing", "Tin tức tổng hợp", "#42b5a4"),
+    ("ifeng", "Phoenix", "Tin Phượng Hoàng", "#dd7467"),
+    ("freebuf", "Freebuf", "An ninh mạng", "#69b488"),
 ]
-CHANNELS = {"all": "Tổng hợp", "news": "Tin tức", "finance": "Tài chính", "tech": "Công nghệ", "ent": "Giải trí", "sports": "Thể thao", "video": "Video", "other": "Khác"}
+SOURCE_ALIASES = {"tiktok": "douyin"}
+CHANNELS = {"all": "Tin tức tổng hợp"}
 PLATFORM_NAMES = {"抖音": "Douyin", "微博": "Weibo", "百度": "Baidu", "快手": "Kuaishou", "知乎": "Zhihu", "腾讯网": "Tencent News", "哔哩哔哩": "Bilibili", "豆瓣": "Douban", "百度贴吧": "Baidu Tieba", "必应": "Bing", "梨视频": "Pear Video", "知乎日报": "Nhật báo Zhihu", "简书": "Jianshu"}
 PROVIDER_URLS = {"newsnow": "https://newsnow.busiyi.world", "sopilot": "https://sopilot.net/zh/hot-tweets", "rebang": "https://top.open2hub.com"}
 
@@ -108,7 +78,7 @@ def parse_newsnow(payload, source):
         if not isinstance(row, dict) or not row.get("title"):
             continue
         items.append({"rank": rank, "title": str(row["title"]), "url": safe_url(row.get("url") or row.get("mobileUrl"), PROVIDER_URLS["newsnow"]), "metrics": {}})
-    return [{"id": "newsnow:" + source, "provider": "newsnow", "name": config[1], "subtitle": config[2], "accent": config[4], "url": PROVIDER_URLS["newsnow"], "items": dedupe_items(items)}]
+    return [{"id": "newsnow:" + source, "provider": "newsnow", "name": config[1], "subtitle": config[2], "accent": config[3], "url": PROVIDER_URLS["newsnow"], "items": dedupe_items(items)}]
 
 
 def parse_rebang(html):
@@ -183,8 +153,16 @@ def parse_sopilot(html):
 
 
 def collect_boards(provider, source):
+    if provider == "newsnow" and source == "bing":
+        boards = parse_rebang(fetch_url(PROVIDER_URLS["rebang"] + "/channel/all").text)
+        board = next((row for row in boards if row["name"] == "Bing"), None)
+        if not board:
+            raise ValueError("REBANG chưa trả về bảng Bing.")
+        config = next(row for row in NEWSNOW if row[0] == "bing")
+        # Stable overview ID, with actual source retained for attribution.
+        return [{**board, "id": "newsnow:bing", "subtitle": config[2], "accent": config[3]}]
     if provider == "newsnow":
-        return parse_newsnow(fetch_url(PROVIDER_URLS[provider] + "/api/s", params={"id": source}).json(), source)
+        return parse_newsnow(fetch_url(PROVIDER_URLS[provider] + "/api/s", params={"id": SOURCE_ALIASES.get(source, source)}).json(), source)
     if provider == "rebang":
         return parse_rebang(fetch_url(PROVIDER_URLS[provider] + "/channel/" + source).text)
     return parse_sopilot(fetch_url(PROVIDER_URLS[provider]).text)

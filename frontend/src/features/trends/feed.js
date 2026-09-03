@@ -3,7 +3,6 @@ import { api } from "../../api/client";
 export const PROVIDERS = [
   { id: "newsnow", label: "NewsNow", url: "https://newsnow.busiyi.world" },
   { id: "sopilot", label: "SoPilot · X", url: "https://sopilot.net/zh/hot-tweets" },
-  { id: "rebang", label: "REBANG", url: "https://rebang.open2hub.com" },
 ];
 export const CJK = /[\u3400-\u9fff\u3040-\u30ff\uac00-\ud7af]/;
 
