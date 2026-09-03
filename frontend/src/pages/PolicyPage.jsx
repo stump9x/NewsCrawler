@@ -341,7 +341,12 @@ export default function PolicyPage() {
           >
             <Box>
               <Typography color="text.secondary" sx={{ mt: 0.5, mb: 2 }}>
-                "Nhập hướng dẫn bằng tiếng Việt để xác định tin cần giữ hoặc loại. Dòng GIỮ: dùng để ưu tiên nội dung phù hợp; dòng LOẠI: dùng để loại nội dung không phù hợp. Có thể tham khảo chính sách hiện tại của Quản trị viên, thay đổi của bạn sẽ không làm ảnh hưởng tới người dùng khác."
+                Chính sách bên dưới mô tả năm nhóm chủ đề, phạm vi quốc gia và điều kiện chọn tin của Trạm tin tức. Các ví dụ chỉ minh họa để nhận diện diễn biến tương tự, không giới hạn tin vào đúng những sự kiện được nêu.
+              </Typography>
+              <Typography color="text.secondary" sx={{ mb: 2 }}>
+                {isSuperuser
+                  ? "Bạn đang chỉnh sửa chính sách quản trị dùng để lọc tin đầu vào chung của hệ thống."
+                  : "Bạn có thể tham khảo chính sách hiện tại của Quản trị viên. Tùy chỉnh của bạn chỉ áp dụng cho tài khoản này, không thay đổi chính sách hay kết quả hiển thị của người dùng khác."}
               </Typography>
             </Box>
             {!isSuperuser ? (
@@ -353,7 +358,7 @@ export default function PolicyPage() {
 
           {!loading ? (
             <Alert severity="info" sx={{ mb: 1.5 }}>
-              Viết hoặc chỉnh sửa bằng tiếng Việt. Nếu muốn bộ lọc áp dụng chắc chắn, giữ nguyên hai dòng bắt đầu bằng <strong>GIỮ:</strong> và <strong>LOẠI:</strong>; các cụm từ trong hai dòng được ngăn cách bằng dấu chấm phẩy. Không cần thêm mã kỹ thuật hay câu lệnh tiếng Anh.
+              Chỉnh sửa từ khóa bằng tiếng Việt trong hai dòng bắt đầu bằng <strong>GIỮ:</strong> và <strong>LOẠI:</strong>, ngăn cách các cụm từ bằng dấu chấm phẩy. <strong>GIỮ:</strong> ưu tiên tin đã đáp ứng điều kiện về chủ đề, quốc gia và bằng chứng; <strong>LOẠI:</strong> loại tin khớp cụm từ và được ưu tiên khi tin khớp cả hai dòng. Phần mô tả còn lại giải thích tiêu chí, không tự thay đổi các điều kiện lọc cố định. Không cần thêm mã kỹ thuật hay câu lệnh tiếng Anh.
             </Alert>
           ) : null}
           {!loading ? (
