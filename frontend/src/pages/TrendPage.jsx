@@ -20,7 +20,6 @@ const LIST_POLL_MS = 2000;
 const FINDINGS_POLL_MS = 1500;
 const DEFAULT_TREND_TOPIC = "__newscrawler_scope__";
 const TREND_API_PREFIX = "/api/v1/trend/researches";
-const LEGACY_TREND_API_PREFIX = "/api/v1/last30days/researches";
 const SOURCE_LABELS = {
   reddit: "Reddit",
   x: "X",
@@ -84,17 +83,9 @@ function engagementLabel(finding) {
   return parts.join(" · ");
 }
 
-async function trendRequest(method, suffix = "", body) {
-  const primary = `${TREND_API_PREFIX}${suffix}`;
-  const legacy = `${LEGACY_TREND_API_PREFIX}${suffix}`;
-  try {
-    return method === "post" ? await api.post(primary, body) : await api.get(primary);
-  } catch (err) {
-    // Older VPS containers may still expose only /last30days/researches.
-    // Keep the new /trend route canonical while making rollout fail-safe.
-    if (err?.status !== 404 && err?.status !== 405) throw err;
-    return method === "post" ? api.post(legacy, body) : api.get(legacy);
-  }
+function trendRequest(method, suffix = "", body) {
+  const path = `${TREND_API_PREFIX}${suffix}`;
+  return method === "post" ? api.post(path, body) : api.get(path);
 }
 
 /** Drop findings whose published_at is older than lookback (FE safety net). */

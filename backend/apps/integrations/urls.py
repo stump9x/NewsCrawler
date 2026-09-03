@@ -37,11 +37,6 @@ router.register(
     Last30DaysResearchViewSet,
     basename="trend-research",
 )
-router.register(
-    r"last30days/researches",
-    Last30DaysResearchViewSet,
-    basename="last30days-research",
-)
 
 urlpatterns = [
     path("integrations/health/", IntegrationsHealthView.as_view(), name="integrations-health"),

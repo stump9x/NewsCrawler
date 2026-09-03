@@ -39,7 +39,6 @@ export default function App() {
         {/* Document scan UI disabled — DOCUMENT_SCAN_ENABLED=false */}
         <Route path="/documents" element={<Navigate to="/" replace />} />
         <Route path="/trend" element={<TrendPage />} />
-        <Route path="/last30days" element={<Navigate to="/trend" replace />} />
         <Route
           path="/mindmap"
           element={(
