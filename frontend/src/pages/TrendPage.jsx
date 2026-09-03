@@ -19,6 +19,8 @@ import { displayWireTitle } from "../utils/wireTitle";
 const LIST_POLL_MS = 2000;
 const FINDINGS_POLL_MS = 1500;
 const DEFAULT_TREND_TOPIC = "__newscrawler_scope__";
+const TREND_API_PREFIX = "/api/v1/trend/researches";
+const LEGACY_TREND_API_PREFIX = "/api/v1/last30days/researches";
 const SOURCE_LABELS = {
   reddit: "Reddit",
   x: "X",
@@ -82,6 +84,19 @@ function engagementLabel(finding) {
   return parts.join(" · ");
 }
 
+async function trendRequest(method, suffix = "", body) {
+  const primary = `${TREND_API_PREFIX}${suffix}`;
+  const legacy = `${LEGACY_TREND_API_PREFIX}${suffix}`;
+  try {
+    return method === "post" ? await api.post(primary, body) : await api.get(primary);
+  } catch (err) {
+    // Older VPS containers may still expose only /last30days/researches.
+    // Keep the new /trend route canonical while making rollout fail-safe.
+    if (err?.status !== 404 && err?.status !== 405) throw err;
+    return method === "post" ? api.post(legacy, body) : api.get(legacy);
+  }
+}
+
 /** Drop findings whose published_at is older than lookback (FE safety net). */
 function filterFindingsByLookback(rows, lookbackDays = 30) {
   const days = Math.max(1, Math.min(Number(lookbackDays) || 30, 90));
@@ -128,7 +143,7 @@ export default function TrendPage() {
   }, [rows, selected]);
 
   const loadList = useCallback(async () => {
-    const data = await api.get("/api/v1/trend/researches/?page_size=30");
+    const data = await trendRequest("get", "/?page_size=30");
     const results = Array.isArray(data) ? data : data?.results;
     setRows(Array.isArray(results) ? results : []);
   }, []);
@@ -140,8 +155,9 @@ export default function TrendPage() {
       return;
     }
     if (incremental && lastFindingIdRef.current > 0) {
-      const data = await api.get(
-        `/api/v1/trend/researches/${id}/findings/?page_size=100&after_id=${lastFindingIdRef.current}`
+      const data = await trendRequest(
+        "get",
+        `/${id}/findings/?page_size=100&after_id=${lastFindingIdRef.current}`
       );
       const batch = filterFindingsByLookback(data.results || data || [], lookbackDays);
       if (batch.length) {
@@ -160,9 +176,7 @@ export default function TrendPage() {
       }
       return;
     }
-    const data = await api.get(
-      `/api/v1/trend/researches/${id}/findings/?page_size=100`
-    );
+    const data = await trendRequest("get", `/${id}/findings/?page_size=100`);
     const all = sortFindings(
       filterFindingsByLookback(data.results || data || [], lookbackDays)
     );
@@ -173,7 +187,7 @@ export default function TrendPage() {
   const refresh = useCallback(async () => {
     setError("");
     const [statusResult, listResult] = await Promise.allSettled([
-      api.get("/api/v1/trend/researches/status/"),
+      trendRequest("get", "/status/"),
       loadList(),
     ]);
     if (statusResult.status === "fulfilled") {
@@ -204,7 +218,7 @@ export default function TrendPage() {
     if (!statusReady || configured !== true || busy || active || hasScopedRun) return;
     setBusy(true);
     setError("");
-    api.post("/api/v1/trend/researches/", {
+    trendRequest("post", "/", {
       topic: DEFAULT_TREND_TOPIC,
       depth: "quick",
       lookback_days: 30,
