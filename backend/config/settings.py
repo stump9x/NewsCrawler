@@ -776,6 +776,17 @@ LAST30DAYS_BRIEF_MAX_TOKENS = env.int("LAST30DAYS_BRIEF_MAX_TOKENS", default=450
 LAST30DAYS_BRIEF_MIN_CHARS = env.int("LAST30DAYS_BRIEF_MIN_CHARS", default=900)
 # auto|brave|exa|serper|parallel|wigolo|keyless|none — empty → wigolo if up else exa/none
 LAST30DAYS_WEB_BACKEND = env("LAST30DAYS_WEB_BACKEND", default="")
+# Public NewsNow feeds used by the Xu hướng board. Keep this list intentionally
+# small because NewsNow also carries entertainment and lifestyle noise; the
+# collector applies the NewsCrawler topic gate after fetching each feed.
+TREND_NEWSNOW_ENABLED = env.bool("TREND_NEWSNOW_ENABLED", default=True)
+TREND_NEWSNOW_BASE_URL = env(
+    "TREND_NEWSNOW_BASE_URL", default="https://newsnow.busiyi.world"
+)
+TREND_NEWSNOW_SOURCE_IDS = env(
+    "TREND_NEWSNOW_SOURCE_IDS", default="cls,weibo,zhihu,bilibili,hupu,v2ex"
+)
+TREND_NEWSNOW_TIMEOUT_SEC = env.float("TREND_NEWSNOW_TIMEOUT_SEC", default=8.0)
 
 # Zone-H / defacement archive → The Wire.
 # Default provider=haxor (haxor.id) bypasses zone-h.org captcha from cloud IPs.

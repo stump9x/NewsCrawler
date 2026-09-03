@@ -16,7 +16,7 @@ from .paths import LAST30DAYS_SCRIPT, vendor_root
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_SOURCES = ("reddit", "x", "polymarket")
+DEFAULT_SOURCES = ("reddit", "x", "polymarket", "newsnow")
 
 
 @dataclass(frozen=True)

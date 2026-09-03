@@ -405,6 +405,7 @@ def run_last30days_research(research: Last30DaysResearch) -> Last30DaysResearch:
         "reddit",
         "x",
         "web",
+        "newsnow",
     }
     sources = [s for s in requested if s in known and s != "github"]
     # Auto-add Wigolo web grounding when enabled and not already listed.
@@ -421,6 +422,14 @@ def run_last30days_research(research: Last30DaysResearch) -> Last30DaysResearch:
             sources.append("web")
     except Exception:  # noqa: BLE001
         pass
+    # NewsNow is a public ranked-feed source. Add it automatically when enabled
+    # so existing LAST30DAYS_SOURCES settings gain the integration safely.
+    if (
+        bool(getattr(settings, "TREND_NEWSNOW_ENABLED", True))
+        and "newsnow" in known
+        and "newsnow" not in sources
+    ):
+        sources.append("newsnow")
     if not sources:
         sources = ["reddit", "x", "polymarket"]
 

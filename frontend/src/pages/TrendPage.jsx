@@ -43,11 +43,24 @@ const SOURCE_TONES = {
 
 function sourceLabel(source) {
   const key = String(source || "web").toLowerCase();
+  if (key.startsWith("newsnow:")) {
+    const newsnowId = key.slice("newsnow:".length);
+    const labels = {
+      cls: "NewsNow · Tài chính",
+      weibo: "NewsNow · Weibo",
+      zhihu: "NewsNow · Zhihu",
+      bilibili: "NewsNow · Bilibili",
+      hupu: "NewsNow · Hupu",
+      v2ex: "NewsNow · V2EX",
+    };
+    return labels[newsnowId] || `NewsNow · ${newsnowId}`;
+  }
   return SOURCE_LABELS[key] || key;
 }
 
 function sourceTone(source) {
-  return SOURCE_TONES[String(source || "web").toLowerCase()] || SOURCE_TONES.web;
+  const key = String(source || "web").toLowerCase();
+  return SOURCE_TONES[key.startsWith("newsnow:") ? "web" : key] || SOURCE_TONES.web;
 }
 
 function compactCount(value) {
