@@ -64,16 +64,7 @@ const SCOPE_TOPICS = {
 };
 const TOPIC_LABELS = {
   ...SCOPE_TOPICS,
-  exercises: "Diễn tập",
-  maritime: "Hàng hải",
-  procurement: "Mua sắm QP",
-  "force-posture": "Bố trí lực lượng",
-  "combat-trends": "Xu hướng QS",
-  "national-strategy": "Chiến lược QS",
   "cyber-operations": "Tác chiến mạng",
-  "security-cooperation": "Hợp tác AN",
-  "defense-policy": "Chính sách QP",
-  analysis: "Phân tích",
 };
 const SOURCE_LABELS = {
   manual: "Thủ công",
@@ -683,16 +674,7 @@ export default function WirePage() {
           {Object.entries(SCOPE_TOPICS).map(([value, label]) => (
             <MenuItem key={value} value={value}>{label}</MenuItem>
           ))}
-          <MenuItem value="exercises">Diễn tập</MenuItem>
-          <MenuItem value="maritime">Hàng hải</MenuItem>
-          <MenuItem value="procurement">Mua sắm quốc phòng</MenuItem>
-          <MenuItem value="force-posture">Bố trí lực lượng</MenuItem>
-          <MenuItem value="combat-trends">Xu hướng tác chiến</MenuItem>
-          <MenuItem value="national-strategy">Chiến lược quân sự</MenuItem>
-          <MenuItem value="cyber-operations">Hoạt động mạng</MenuItem>
-          <MenuItem value="security-cooperation">Hợp tác an ninh</MenuItem>
-          <MenuItem value="defense-policy">Chính sách quốc phòng</MenuItem>
-          <MenuItem value="analysis">Phân tích</MenuItem>
+          <MenuItem value="cyber-operations">Tác chiến mạng</MenuItem>
         </TextField>
         <TextField
           select
