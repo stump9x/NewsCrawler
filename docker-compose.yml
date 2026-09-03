@@ -1,3 +1,6 @@
+# Existing VPS update (same workflow as the12w):
+#   git pull --ff-only origin main && docker compose up -d --build
+# Backend startup performs migrations and the backed-up topic upgrade once.
 services:
   db:
     image: postgres:16-alpine
@@ -109,6 +112,7 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
+      GUNICORN_WORKERS: ${GUNICORN_WORKERS:-1}
       POSTGRES_HOST: db
       REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
       CELERY_BROKER_URL: redis://:${REDIS_PASSWORD}@redis:6379/0
@@ -161,15 +165,9 @@ services:
       test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health/', timeout=3)\""]
       interval: 10s
       timeout: 5s
-      retries: 20
-      start_period: 35s
-    command: >
-      sh -c "python manage.py migrate --noinput &&
-             python manage.py ensure_superuser &&
-             python manage.py seed_rss_sources --deactivate-missing --force-activate &&
-             python manage.py seed_document_scan_keywords &&
-             gunicorn config.wsgi:application --bind 0.0.0.0:8000
-             --workers ${GUNICORN_WORKERS:-1} --timeout 120"
+      retries: 30
+      start_period: 180s
+    command: ["sh", "/app/start-backend.sh"]
 
   celery:
     image: newscrawler-backend:latest

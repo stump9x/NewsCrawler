@@ -2,6 +2,14 @@ from django.conf import settings
 from django.db import models
 
 
+class WireTopicRollout(models.Model):
+    """Record completed topic upgrades in the same database as the news corpus."""
+
+    version = models.CharField(max_length=64, primary_key=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    backup_path = models.CharField(max_length=1024, blank=True)
+
+
 class WireFilterPrompt(models.Model):
     """System policy or one private policy draft owned by an operational user."""
 

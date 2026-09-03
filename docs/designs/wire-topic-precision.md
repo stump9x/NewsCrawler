@@ -26,29 +26,26 @@ Bộ kiểm tra gồm 69 ví dụ phạm vi (một số tiêu đề mơ hồ đ�
 
 ## Triển khai bằng terminal, sau khi push GitHub
 
-Tại thư mục NewsCrawler trên VPS, kiểm tra nhánh/commit, trạng thái Git, `.env`, Docker Compose và cổng 3000. Nếu VPS có chỉnh sửa chưa commit, giữ lại và đối chiếu trước khi tích hợp; không `reset --hard`.
+Cùng cách với the12w, tại thư mục NewsCrawler trên VPS:
 
 ```sh
-git fetch origin
-git merge --ff-only origin/main
-docker compose build backend frontend
-docker compose run --rm --no-deps -T backend python manage.py test apps.workers.tests.test_wire_topics apps.workers.tests.test_wire_noise_filter apps.workers.tests.test_wire_discovery_scope apps.core.tests.test_wire_topic_recommendations apps.core.tests.test_wire_filter_policy_api --settings=config.test_settings --noinput
-docker compose run --rm --no-deps -T backend python manage.py reclassify_wire_topics --update-prompt --sample 20
+git pull --ff-only origin main && docker compose up -d --build
 ```
 
-Sau khi kiểm tra số lượng và mẫu tin giữ/ẩn:
+Compose gọi `backend/start-backend.sh`: chạy migration, tạo quản trị, gọi
+`prepare_wire_topics`, seed nguồn và khởi động Gunicorn. Worker/giao diện dùng
+điều kiện backend khỏe sẵn có. Healthcheck dành thêm thời gian cho nâng cấp lần đầu.
 
-```sh
-mkdir -p backend/.wire-backups
-stamp=$(date -u +%Y%m%dT%H%M%SZ)
-docker compose stop celery celery-beat
-docker compose run --rm --no-deps -T backend python manage.py reclassify_wire_topics --apply --update-prompt --backup /app/.wire-backups/wire-$stamp.jsonl
-docker compose up -d --no-deps backend celery celery-beat frontend
-docker compose ps
-curl -f http://127.0.0.1:3000/ -o /dev/null
-```
+`WireTopicRollout` lưu phiên bản hoàn tất trong PostgreSQL, không dùng file đánh
+dấu trên container. Khóa hàng/khóa duy nhất ngăn hai backend nâng cấp đồng thời.
+Toàn bộ cập nhật dữ liệu và dấu hoàn tất nằm trong một transaction; nếu lỗi,
+transaction rollback, API chưa phục vụ và lần khởi động sau thử lại. Backup JSONL
+được ghi trước các thay đổi, ở bind mount `backend/.wire-backups/`, loại khỏi Docker
+build context. Sau khi đã hoàn tất, khởi động lại không ghi đè prompt tùy chỉnh.
 
-Nếu lệnh áp dụng thất bại, khởi động lại worker đang dừng và xem lỗi/backup; không để dừng vô thời hạn. Giữ nguyên Postgres, Redis, Notebook, `.env`, dữ liệu và cổng công khai. Kiểm tra health API và log sau cập nhật. Chạy các script post-build-cleanup hiện có của NewsCrawler/BreachSentinel sau khi đã kiểm tra nội dung và sức khỏe dịch vụ.
+Vẫn có thể dùng `reclassify_wire_topics` để xem trước/áp dụng thủ công khi cần,
+nhưng không cần các lệnh đó trong cập nhật thông thường. Giữ nguyên `.env`, cổng
+3000, container và volume hiện có. Nếu Git có xung đột, xử lý trước khi tiếp tục.
 
 Khôi phục dữ liệu trước khi quay về phiên bản mã cũ (dùng đúng tên file đã tạo):
 
