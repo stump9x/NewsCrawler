@@ -7,7 +7,7 @@ import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
 import { PageHeader } from "../components/PageHeader";
 import { displayWireTitle } from "../utils/wireTitle";
 
-const NEWSNOW_BASE_URL = "https://newsnow.busiyi.world";
+const NEWSNOW_FEED_PATH = "/trend-feed/";
 const NEWSNOW_SOURCE_IDS = ["cls-hot", "weibo", "zhihu", "bilibili", "hupu", "v2ex"];
 const TREND_SCOPE_RE = new RegExp([
   "biển\\s*đông|south\\s*china\\s*sea|南海|黄岩岛|仁爱礁|西沙|南沙",
@@ -84,7 +84,7 @@ async function fetchNewsNowSource(sourceId) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
   try {
-    const response = await fetch(`${NEWSNOW_BASE_URL}/api/s?id=${encodeURIComponent(sourceId)}`, { headers: { Accept: "application/json" }, signal: controller.signal });
+    const response = await fetch(`${NEWSNOW_FEED_PATH}?id=${encodeURIComponent(sourceId)}`, { headers: { Accept: "application/json" }, signal: controller.signal });
     if (!response.ok) throw new Error(`NewsNow ${response.status}`);
     const payload = await response.json();
     const items = Array.isArray(payload) ? payload : payload?.items || payload?.data?.items || payload?.data;
