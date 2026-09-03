@@ -6,7 +6,6 @@ import {
   Chip,
   Link,
   Stack,
-  TextField,
   Typography,
 } from "@mui/material";
 import TravelExploreOutlinedIcon from "@mui/icons-material/TravelExploreOutlined";
@@ -19,6 +18,7 @@ import { displayWireTitle } from "../utils/wireTitle";
 
 const LIST_POLL_MS = 2000;
 const FINDINGS_POLL_MS = 1500;
+const DEFAULT_TREND_TOPIC = "__newscrawler_scope__";
 const SOURCE_LABELS = {
   reddit: "Reddit",
   x: "X",
@@ -109,10 +109,10 @@ export default function TrendPage() {
   const [rows, setRows] = useState([]);
   const [selected, setSelected] = useState(null);
   const [findings, setFindings] = useState([]);
-  const [topic, setTopic] = useState("Biển Đông Philippines");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-  const [configured, setConfigured] = useState(true);
+  const [configured, setConfigured] = useState(null);
+  const [statusReady, setStatusReady] = useState(false);
   const [sourceFilter, setSourceFilter] = useState("all");
   const [trendSort, setTrendSort] = useState("hot");
   const lastFindingIdRef = useRef(0);
@@ -175,8 +175,10 @@ export default function TrendPage() {
       const status = await api.get("/api/v1/trend/researches/status/");
       setConfigured(Boolean(status.configured));
       await loadList();
+      setStatusReady(true);
     } catch (err) {
       setError(err.message || "Không thể tải nghiên cứu");
+      setStatusReady(true);
     }
   }, [loadList]);
 
@@ -187,6 +189,28 @@ export default function TrendPage() {
   useEffect(() => {
     if (!selected && rows.length) setSelected(rows[0]);
   }, [rows, selected]);
+
+  // The board is intentionally search-free. Start one scoped sweep on first
+  // visit (or upgrade an old topic run) so the cards always have data.
+  useEffect(() => {
+    const hasScopedRun = rows.some((row) => row.topic === DEFAULT_TREND_TOPIC);
+    if (!statusReady || configured !== true || busy || active || hasScopedRun) return;
+    setBusy(true);
+    setError("");
+    api.post("/api/v1/trend/researches/", {
+      topic: DEFAULT_TREND_TOPIC,
+      depth: "quick",
+      lookback_days: 30,
+    }).then((data) => {
+      lastFindingIdRef.current = 0;
+      setFindings([]);
+      setSourceFilter("all");
+      setSelected(data);
+      return loadList();
+    }).catch((err) => {
+      setError(err.message || "Không thể tải xu hướng");
+    }).finally(() => setBusy(false));
+  }, [active, busy, configured, loadList, rows, statusReady]);
 
   useEffect(() => {
     if (!active) return undefined;
@@ -237,32 +261,6 @@ export default function TrendPage() {
     loadList,
   ]);
 
-  async function startResearch() {
-    const t = topic.trim();
-    if (t.length < 2) {
-      setError("Nhập chủ đề (ít nhất 2 ký tự).");
-      return;
-    }
-    setBusy(true);
-    setError("");
-    try {
-      const data = await api.post("/api/v1/trend/researches/", {
-        topic: t,
-        depth: "quick",
-        lookback_days: 30,
-      });
-      lastFindingIdRef.current = 0;
-      setFindings([]);
-      setSourceFilter("all");
-      setSelected(data);
-      await loadList();
-    } catch (err) {
-      setError(err.message || "Không thể bắt đầu nghiên cứu");
-    } finally {
-      setBusy(false);
-    }
-  }
-
   const findingSourceCounts = useMemo(() => {
     const counts = {};
     for (const finding of findings) {
@@ -296,7 +294,7 @@ export default function TrendPage() {
     <Stack spacing={2}>
       <PageHeader
         title="Xu hướng"
-        subtitle="Tổng hợp đa nền tảng · xếp hạng nổi bật · hiển thị tiếng Việt"
+        subtitle="Tổng hợp đa nền tảng · tự động lọc theo phạm vi NewsCrawler · tiếng Việt"
         action={
           <Button variant="outlined" onClick={refresh} startIcon={<TravelExploreOutlinedIcon />}>
             Làm mới
@@ -307,26 +305,6 @@ export default function TrendPage() {
         <Alert severity="warning">Module Xu hướng chưa sẵn sàng.</Alert>
       ) : null}
       {error ? <Alert severity="error">{error}</Alert> : null}
-
-      <Stack direction={{ xs: "column", md: "row" }} spacing={1.5} alignItems={{ md: "center" }}>
-        <TextField
-          label="Tìm xu hướng"
-          placeholder="vd. Biển Đông, diễn tập SEACAT, công nghệ quốc phòng…"
-          value={topic}
-          onChange={(e) => setTopic(e.target.value)}
-          fullWidth
-          size="small"
-          disabled={busy || Boolean(active)}
-        />
-        <Button
-          variant="contained"
-          onClick={startResearch}
-          disabled={busy || Boolean(active) || !configured}
-          sx={{ whiteSpace: "nowrap", minWidth: 170 }}
-        >
-          {active ? "Đang cập nhật…" : "Cập nhật xu hướng"}
-        </Button>
-      </Stack>
 
       {selectedLive ? (
         <Box sx={{ pt: 0.5 }}>

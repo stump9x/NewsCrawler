@@ -109,6 +109,38 @@ _TOPIC_GROUPS: tuple[tuple[str, ...], ...] = (
 )
 
 _MATCH_MIN_CHARS = 4
+DEFAULT_TREND_TOPIC = "__newscrawler_scope__"
+
+# The automatic Xu hướng board uses a bounded strategic scope rather than a
+# free-text query. A country/entity must appear with a strategic signal; this
+# prevents generic celebrity, sport and consumer stories from leaking in.
+_TREND_SCOPE_COUNTRIES = (
+    "trung quốc", "china", "中国", "philippines", "đài loan", "taiwan", "台湾",
+    "nhật bản", "japan", "malaysia", "indonesia", "campuchia", "cambodia",
+    "lào", "laos", "thái lan", "thailand", "singapore", "brunei", "myanmar",
+    "australia", "úc", "united states", "usa", "mỹ", "north korea", "triều tiên",
+    "south korea", "hàn quốc", "việt nam", "vietnam",
+)
+_TREND_SCOPE_SIGNALS = (
+    "quốc phòng", "quân sự", "hải quân", "không quân", "diễn tập", "huấn luyện",
+    "an ninh", "biên giới", "cửa khẩu", "chủ quyền", "biển đông", "south china sea",
+    "taiwan strait", "maritime", "navy", "military", "defense", "defence", "exercise",
+    "drill", "border", "sovereignty", "radar", "ra-đa", "tên lửa", "missile",
+    "phòng không", "air defense", "điều khiển", "command and control", "tàu không người lái",
+    "unmanned", "6g", "trí tuệ nhân tạo", "artificial intelligence", "hạt nhân", "nuclear",
+    "kiểm soát xuất khẩu", "export control", "trừng phạt", "sanctions", "đối phó",
+    "học thuyết", "doctrine", "sách trắng", "white paper", "hợp tác quốc phòng",
+    "defense cooperation", "an ninh mạng", "cybersecurity", "cyber attack",
+)
+_TREND_SCOPE_REGION_SIGNALS = (
+    "biển đông", "south china sea", "west philippine sea", "quần đảo trường sa",
+    "spratly", "hoàng sa", "paracel", "bãi cạn", "shoal", "taiwan strait", "eo biển đài loan",
+)
+_TREND_SCOPE_SEARCH_ALIASES = (
+    "South China Sea military", "Taiwan Strait defense", "China military", "maritime security",
+    "military exercise", "defense cooperation", "border security", "cybersecurity",
+    "export controls", "unmanned vessel", "6G artificial intelligence",
+)
 _EN_STOP = frozenset(
     {"the", "a", "an", "of", "and", "or", "to", "in", "on", "for", "at"}
 )
@@ -155,6 +187,8 @@ def expand_topic_aliases(topic: str, *, limit: int = 12) -> list[str]:
     raw = " ".join((topic or "").split()).strip()
     if not raw:
         return []
+    if normalize_phrase(raw) == DEFAULT_TREND_TOPIC:
+        return list(_TREND_SCOPE_SEARCH_ALIASES)[: max(1, limit)]
 
     out: list[str] = []
     seen: set[str] = set()
@@ -232,6 +266,14 @@ class TopicPlan:
 def build_topic_plan(topic: str, *, use_groq: bool = True) -> TopicPlan:
     """Lexicon + optional Groq semantic expansion (one call per research run)."""
     raw = " ".join((topic or "").split()).strip()
+    if normalize_phrase(raw) == DEFAULT_TREND_TOPIC:
+        return TopicPlan(
+            topic=DEFAULT_TREND_TOPIC,
+            aliases=tuple(_TREND_SCOPE_SEARCH_ALIASES),
+            english="South China Sea military and Asia-Pacific strategic security",
+            must_tokens=(),
+            groq_used=False,
+        )
     aliases = list(expand_topic_aliases(raw, limit=12))
     english = preferred_english_query(raw)
     must = tuple(english_phrase_tokens(english))
@@ -329,6 +371,18 @@ def filter_items_for_topic(
     plan: TopicPlan | None = None,
 ) -> list[dict]:
     kept: list[dict] = []
+    if normalize_phrase(topic) == DEFAULT_TREND_TOPIC:
+        for item in items:
+            blob = "\n".join(
+                str(item.get(k) or "")
+                for k in ("title", "snippet", "body", "content", "url", "cluster_title")
+            )
+            has_region = any(contains_phrase(blob, phrase) for phrase in _TREND_SCOPE_REGION_SIGNALS)
+            has_country = any(contains_phrase(blob, phrase) for phrase in _TREND_SCOPE_COUNTRIES)
+            has_signal = any(contains_phrase(blob, phrase) for phrase in _TREND_SCOPE_SIGNALS)
+            if has_region or (has_country and has_signal):
+                kept.append(item)
+        return kept
     eng = (trust_english_query or (plan.english if plan else "") or "").strip()
     for item in items:
         blob = "\n".join(
