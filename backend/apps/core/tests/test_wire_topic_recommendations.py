@@ -1,10 +1,12 @@
 from io import StringIO
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.test import TestCase
+from django.utils import timezone
 
 from apps.core.models import WireFilterPrompt
 from apps.core.wire_filter_policy import (
@@ -51,6 +53,55 @@ class TopicRecommendationTests(TestCase):
             ThreatFavorite.objects.create(user=self.user, threat=obj)
         candidate = self.story("C", "wire-topic-1a", "geo-japan")
         self.assertEqual(self.scores()[candidate.id], 0)
+
+    def test_retired_topic_does_not_recommend_even_before_reclassification(self):
+        favorite = self.story("old visit", "wire-topic-6", "vietnam")
+        candidate = self.story("new visit", "wire-topic-6", "vietnam")
+        ThreatFavorite.objects.create(user=self.user, threat=favorite)
+        self.assertEqual(self.scores()[candidate.id], 0)
+
+    def test_fresh_source_lead_restores_hidden_article_without_duplicate(self):
+        from apps.workers.services import ingest_rss_items
+        article = self.story("Japan announces defense changes", "wire-topic-6", "geo-china", relevant=False)
+        ThreatFavorite.objects.create(user=self.user, threat=article)
+        item = {"title": article.title, "link": "https://example.com/defense",
+                "published": timezone.now().isoformat(),
+                "summary": "Japan publishes its defense white paper and national defense strategy."}
+        with patch("apps.intel.retention.trim_wire_overflow", return_value=0):
+            stats = ingest_rss_items([item])
+            second = ingest_rss_items([item])
+        article.refresh_from_db()
+        self.assertTrue(article.wire_relevant)
+        self.assertIn("defense white paper", article.summary)
+        self.assertTrue(article.tags.filter(slug="wire-topic-3a").exists())
+        self.assertFalse(article.tags.filter(slug__in=["wire-topic-6", "geo-china"]).exists())
+        self.assertEqual(stats["updated"], 1)
+        self.assertEqual(second["skipped_existing"], 1)
+        self.assertEqual(Threat.objects.count(), 1)
+        self.assertEqual(ThreatFavorite.objects.get().threat_id, article.pk)
+
+    def test_existing_labels_and_retired_topics_are_migrated_and_restorable(self):
+        from apps.core.wire_topics import TOPIC_LABELS
+        active = Tag.objects.create(slug="wire-topic-1a", name="1A. Biển Đông: hoạt động thực địa")
+        retired = self.story("Dư luận quốc tế đánh giá chuyến thăm Việt Nam của tàu sân bay Mỹ", "wire-topic-6", "vietnam")
+        Tag.objects.create(slug="wire-topic-7", name="7. Dư luận")
+        ThreatFavorite.objects.create(user=self.user, threat=retired)
+        with TemporaryDirectory() as temp:
+            backup = str(Path(temp) / "topics.jsonl")
+            call_command("reclassify_wire_topics", apply=True, update_prompt=True, backup=backup, stdout=StringIO())
+            active.refresh_from_db()
+            retired.refresh_from_db()
+            self.assertEqual(active.name, TOPIC_LABELS[active.slug])
+            self.assertFalse(Tag.objects.filter(slug__in=["wire-topic-6", "wire-topic-7"]).exists())
+            self.assertFalse(retired.wire_relevant)
+            self.assertEqual(ThreatFavorite.objects.count(), 1)
+            call_command("reclassify_wire_topics", apply=True, restore=backup, stdout=StringIO())
+            active.refresh_from_db()
+            retired.refresh_from_db()
+            self.assertEqual(active.name, "1A. Biển Đông: hoạt động thực địa")
+            self.assertTrue(retired.tags.filter(slug="wire-topic-6").exists())
+            self.assertEqual(Tag.objects.get(slug="wire-topic-7").name, "7. Dư luận")
+            self.assertTrue(retired.wire_relevant)
 
     def test_disabled_recommendations_and_other_users_are_respected(self):
         other = get_user_model().objects.create_user("other")

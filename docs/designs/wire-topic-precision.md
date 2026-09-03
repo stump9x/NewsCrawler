@@ -1,18 +1,34 @@
-# Trạm tin tức: lọc sát bảy nhóm nhiệm vụ
+# Trạm tin tức: lọc sát năm nhóm nhiệm vụ
 
 Chỉ giữ tin có chủ thể/địa bàn, lĩnh vực cụ thể và diễn biến hoặc quyết sách được nêu trong nội dung. Tên nguồn, thẻ quốc gia và từ khóa chung không thay thế bằng chứng. Các ví dụ người dùng cung cấp là mẫu phạm vi, không phải sự kiện đã được xác minh.
 
 Triển khai đồng bộ danh mục chủ đề, prompt, truy vấn tìm kiếm và đề xuất theo tin theo dõi. Đánh giá lại tin cũ bằng cờ `wire_relevant`, không xóa tin hoặc danh sách theo dõi. Cập nhật prompt quản trị có lưu phiên bản cũ; giữ nguyên chính sách riêng đã tùy chỉnh.
 
+Bản v2 bỏ hai nhóm chuyến thăm và dư luận. Tên chủ đề không còn tiền tố `1a`,
+`2a`…; mã nội bộ của 12 chủ đề còn lại được giữ ổn định. Bước nâng cấp đổi tên
+thẻ hiện có và xóa hai thẻ đã bỏ, có sao lưu tên và liên kết để khôi phục.
+
+Đoạn dẫn RSS được tách khỏi HTML trước khi giới hạn 650 ký tự. Bộ lọc nhận thêm
+cách diễn đạt tương đương, tìm đủ chứng cứ trong cửa sổ 420 ký tự thay vì luôn
+chỉ nhìn 210 ký tự sau tên quốc gia. Tiêu đề có thể nêu hệ thống/lực lượng,
+phần dẫn bổ sung sự kiện. Tên quốc gia xuất hiện muộn trong phần so sánh không
+tự xác lập chủ thể tin về chính sách Trung Quốc hoặc hoạt động quân sự.
+
+Tăng phiên bản xử lý RSS để lần quét định kỳ tiếp theo không bỏ qua nội dung
+đã cache. Nếu một tin từng bị ẩn nay có đoạn dẫn đầy đủ và vượt bộ lọc, cập nhật
+tin đó để hiện lại, giữ nguyên ID và danh sách theo dõi. Không tạo bản sao tin.
+
+[Kết quả đo thực tế ngày 03/09/2026](wire-scan-2026-09-03.md).
+
 Kiểm chứng bằng ví dụ dương/âm tiếng Việt, Anh, Trung; kiểm tra chỉ dẫn GIỮ không vượt rào chắn, không ghép bằng chứng từ các tin không liên quan, truy vấn xoay vòng đủ nhóm và đề xuất không dựa trên nguồn/quốc gia chung.
 
 ## Thực thi
 
-- `apps/core/wire_topics.py`: 14 phân nhóm thuộc 7 nhóm nhiệm vụ; nhận diện Việt/Anh/Trung, ba điều kiện đồng thời trong đoạn bằng chứng giới hạn. Chỉ dùng tiêu đề/phần đầu nội dung; nguồn và URL không làm chứng cứ. Bộ lọc xác định không gọi LLM và không khẳng định độ tin cậy của nguồn.
+- `apps/core/wire_topics.py`: 12 phân nhóm thuộc 5 nhóm nhiệm vụ; nhận diện Việt/Anh/Trung, ba điều kiện đồng thời trong đoạn bằng chứng giới hạn. Chỉ dùng tiêu đề/phần đầu nội dung; nguồn và URL không làm chứng cứ. Bộ lọc xác định không gọi LLM và không khẳng định độ tin cậy của nguồn.
 - `apps/core/wire_prompt.py`: prompt tiếng Việt có tiêu chí bao gồm/loại, ví dụ, nguyên tắc không suy diễn và hướng dẫn GIỮ/LOẠI. Văn xuôi mô tả hợp đồng biên tập; thay đổi văn xuôi tự do không biến thành quy tắc AI.
 - RSS, Exa và X cùng dùng bộ lọc; Exa xoay vòng đủ phân nhóm theo giờ trong hạn mức cũ, giữ chỗ cho từng truy vấn và không tính tin nhiễu vào hạn mức kết quả. Cấu hình truy vấn riêng của quản trị vẫn được giữ.
 - Đề xuất cần cùng phân nhóm cụ thể và quốc gia với **cùng một** tin theo dõi còn hợp lệ. Không cộng nguồn hoặc ghép hai tin yêu thích khác nhau. Thứ tự thời gian xuất bản không đổi.
-- Tin mới và tin được phân loại lại lưu `raw_payload.wire_scope` và thẻ có tên tiếng Việt. Quốc gia được suy ra từ chứng cứ nội dung, không từ tên miền nguồn. Giao diện có bộ chọn đủ 14 phân nhóm.
+- Tin mới và tin được phân loại lại lưu `raw_payload.wire_scope` và thẻ có tên tiếng Việt. Quốc gia được suy ra từ chứng cứ nội dung, không từ tên miền nguồn. Giao diện có bộ chọn đủ 12 phân nhóm.
 - `reclassify_wire_topics`: mặc định chỉ xem trước. Khi áp dụng phải có file JSONL mới để sao lưu các cờ, thẻ và prompt trước khi sửa. Không xóa bản tin, tài khoản hoặc mục theo dõi. Có lệnh khôi phục. Prompt quản trị và bản sao kế thừa được cập nhật; giữ tùy chỉnh riêng của người dùng.
 
 ## Kiểm tra
@@ -22,7 +38,7 @@ cd backend
 python manage.py test apps.workers.tests.test_wire_topics apps.workers.tests.test_wire_noise_filter apps.workers.tests.test_wire_discovery_scope apps.core.tests.test_wire_topic_recommendations apps.core.tests.test_wire_filter_policy_api --settings=config.test_settings --noinput
 ```
 
-Bộ kiểm tra gồm 69 ví dụ phạm vi (một số tiêu đề mơ hồ được bổ sung đoạn dẫn giả lập để có chứng cứ), các tin gần giống nhưng ngoài phạm vi, truy vấn xoay vòng, đề xuất riêng từng tài khoản và cập nhật/khôi phục dữ liệu. SQLite dùng cho kiểm tra ORM độc lập; không thay cấu hình PostgreSQL sản xuất. Kết quả này không phải tỷ lệ chính xác đo trên dữ liệu tin thực tế. Cần xem trước kết quả phân loại kho tin trên VPS khi triển khai.
+Bộ kiểm tra gồm 60 ví dụ phạm vi (một số tiêu đề mơ hồ được bổ sung đoạn dẫn giả lập để có chứng cứ), các tin gần giống nhưng ngoài phạm vi, truy vấn xoay vòng, đề xuất riêng từng tài khoản và cập nhật/khôi phục dữ liệu. SQLite dùng cho kiểm tra ORM độc lập; không thay cấu hình PostgreSQL sản xuất. Kết quả này không phải tỷ lệ chính xác đo trên dữ liệu tin thực tế. Cần xem trước kết quả phân loại kho tin trên VPS khi triển khai.
 
 ## Triển khai bằng terminal, sau khi push GitHub
 

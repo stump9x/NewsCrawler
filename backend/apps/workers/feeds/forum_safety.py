@@ -11,6 +11,7 @@ Policy (defensive CTI):
 from __future__ import annotations
 
 import re
+from html.parser import HTMLParser
 from typing import Any
 from urllib.parse import urlparse
 
@@ -200,18 +201,42 @@ def looks_like_sample_or_dump(
     return False
 
 
+class _SummaryText(HTMLParser):
+    """Extract visible feed text before applying the metadata length limit."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.parts = []
+        self.hidden = 0
+
+    def handle_starttag(self, tag, attrs):
+        if tag in {"script", "style"}:
+            self.hidden += 1
+
+    def handle_endtag(self, tag):
+        if tag in {"script", "style"}:
+            self.hidden = max(0, self.hidden - 1)
+
+    def handle_data(self, data):
+        if not self.hidden:
+            self.parts.append(data)
+
+
 def scrub_summary_to_metadata(summary: str, *, is_claim: bool = False) -> str:
     if is_claim:
         text = " ".join(str(summary or "").split())
         if not text or looks_like_sample_or_dump(summary=text):
             return _SAFE_CLAIM_SUMMARY
         return text[:480]
-    text = " ".join(str(summary or "").split())
+    parser = _SummaryText()
+    parser.feed(str(summary or ""))
+    parser.close()
+    text = " ".join(" ".join(parser.parts).split())
     if not text:
         return ""
     if looks_like_sample_or_dump(summary=text):
         return _SAFE_CLAIM_SUMMARY
-    return text[:480]
+    return text[:650]
 
 
 def prepare_wire_item_for_safety(item: dict[str, Any]) -> dict[str, Any] | None:

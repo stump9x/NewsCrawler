@@ -10,6 +10,7 @@ from typing import Any
 from urllib.parse import urlparse
 
 from django.db import transaction
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from django.conf import settings
@@ -19,7 +20,7 @@ from apps.core.wire_filter_policy import (
     GLOBAL_WIRE_NOISE_GROUPS,
     evaluate_wire_filter_prompt,
 )
-from apps.core.wire_topics import TOPIC_LABELS, classify_wire_topics
+from apps.core.wire_topics import TOPIC_LABELS, TOPIC_TAG_PREFIX, classify_wire_topics
 from apps.intel.models import CompromisedCredential, DataLeak, Indicator, Tag, Threat
 from apps.intel.watching import (
     match_indicator_against_rules,
@@ -1099,7 +1100,7 @@ def is_global_wire_noise(text: str) -> bool:
 
 
 def is_wire_relevant(item: dict[str, Any], *, prompt: str | None = None) -> bool:
-    """Keep evidenced developments in the seven configured editorial clusters."""
+    """Keep evidenced developments in the five configured editorial clusters."""
     category = str(item.get("category") or "news").lower()
     # Substantive gates inspect article content, not feed/country metadata.
     content_text = " ".join(
@@ -1710,6 +1711,26 @@ def ingest_rss_items(items: list[dict[str, Any]], *, source_label: str = "rss") 
                 .first()
             )
         if existing is not None:
+            if not existing.wire_relevant:
+                # A newly readable lead can rescue an article hidden during
+                # rollout. Update the same record so favorites keep their IDs.
+                with transaction.atomic():
+                    existing = Threat.objects.select_for_update().get(pk=existing.pk)
+                    scope = classify_wire_topics(item)
+                    existing.raw_payload = {
+                        **dict(existing.raw_payload or {}), **item,
+                        "wire_scope": {**scope.as_payload(), "accepted": True},
+                    }
+                    existing.summary = summary
+                    existing.wire_relevant = True
+                    existing.save(update_fields=["raw_payload", "summary", "wire_relevant", "updated_at"])
+                    existing.tags.remove(*existing.tags.filter(
+                        Q(slug__startswith=TOPIC_TAG_PREFIX) | Q(slug__startswith="geo-") | Q(slug="vietnam")
+                    ))
+                    _, _, tag_slugs, _, _ = _classify_rss_item(item)
+                    existing.tags.add(*_ensure_tags(tag_slugs))
+                updated += 1
+                continue
             image_url = str(item.get("image_url") or "").strip()
             payload = dict(existing.raw_payload or {})
             if image_url and not str(payload.get("image_url") or "").strip():

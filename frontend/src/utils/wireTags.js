@@ -1,4 +1,4 @@
-const HIDDEN_TAGS = new Set(["news", "rss", "alleged-claim", "china"]);
+const HIDDEN_TAGS = new Set(["news", "rss", "alleged-claim", "china", "wire-topic-6", "wire-topic-7"]);
 
 /** Region-level geo slugs — deprioritized vs country tags. */
 const REGION_GEO_SLUGS = new Set([

@@ -94,19 +94,6 @@ EXAMPLES = {
         "Mỹ bổ sung 43 doanh nghiệp Trung Quốc vào danh sách thực thể theo Đạo luật ngăn chặn lao động cưỡng bức người Duy Ngô Nhĩ",
         "Văn phòng Đại diện Thương mại Mỹ công bố kết luận điều tra đối với các quốc gia vi phạm các vấn đề liên quan đến lao động cưỡng bức",
     ),
-    "6": (
-        "Hoạt động chuẩn bị biểu tình của một số tổ chức Người Việt tại Úc phản đối chuyến thăm của TBT, CTN Tô Lâm",
-        "Dư luận và hoạt động chống phá liên quan đến Biên đội tàu Hải quân Mỹ thăm VN",
-        "Dư luận quốc tế đánh giá về chuyến thăm Việt Nam của Biên đội tàu sân bay CVN-73/Mỹ",
-        "Thông tin liên quan đến các doanh nghiệp quốc phòng Nga tham gia Triển lãm Quốc phòng quốc tế VN 2026",
-    ),
-    "7": (
-        "Các tổ chức, trang báo ở Úc phát tán các bài viết xuyên tạc lực lượng CAND Việt Nam",
-        "Hoạt động chống phá liên quan đến NQ số 23-NQ/TW của BCT về công tác người Việt ở nước ngoài",
-        "Dư luận, hoạt động chống phá kỳ họp không thường lệ lần thứ nhất, QH khóa XVI",
-        "Dư luận, hoạt động chống phá liên quan đến Hội nghị lần thứ 3 Ban Chấp hành TWĐ",
-        "Dư luận liên quan đến việc danh thắng Ngũ Hành Sơn, Đà Nẵng bị hiển thị trên KGM là thuộc Trung Quốc",
-    ),
 }
 
 # Title-only examples with no development/place need a source lead to qualify.
@@ -117,7 +104,6 @@ LEADS = {
     "Trung Quốc khuyến khích": "Trung Quốc công bố chính sách quản lý xuất khẩu khoáng sản lưỡng dụng chiến lược.",
     "Dự thảo nghị quyết": "Đảng Nhân dân Cách mạng Lào công bố dự thảo nghị quyết về chính sách phát triển kinh tế.",
     "Học thuyết Lá chắn": "QĐ IND công bố học thuyết mới về phòng thủ quần đảo.",
-    "Thông tin liên quan đến các doanh nghiệp": "Doanh nghiệp Nga công bố kế hoạch tham gia triển lãm quốc phòng Việt Nam.",
 }
 
 
@@ -199,6 +185,68 @@ class WireTopicTests(unittest.TestCase):
 
     def test_prompt_fits_existing_editor(self):
         self.assertLessEqual(len(DEFAULT_WIRE_FILTER_PROMPT), 12000)
+
+    def test_equivalent_developments_do_not_need_example_wording(self):
+        cases = (
+            ("US Navy Eyes 2028 Installation of SPY-6 Radar on Zumwalt-class Destroyers", "", "3c"),
+            ("Beijing ramps up coastguard patrols near Taiwan", "", "4a"),
+            ("Sentinel Samurai Strengthens Joint EOD Readiness",
+             "Air Force, Marine Corps and Navy technicians participated in Exercise Sentinel Samurai at Kadena Air Base, Japan.", "4a"),
+            ("Japan's first missile defense warship gets new radar",
+             "Japan's first missile defense ship had its radar mast installed.", "4c"),
+            ("Japan plans transfer of ageing warships",
+             "Japan plans to transfer warships to the Philippines as part of its security assistance program.", "4b"),
+            ("美国国防部即将推出的新版网络战略将聚焦三大优先事项", "", "3a"),
+            ("俄罗斯开始批量生产反星链电子战系统", "", "4c"),
+            ("台灣發表無人機戰略報告並加速推進技術自主", "", "4c"),
+        )
+        for title, summary, code in cases:
+            with self.subTest(title=title):
+                self.assertIn(code, classify_wire_topics({"title": title, "summary": summary}).codes)
+
+    def test_retired_topics_no_longer_qualify_on_their_own(self):
+        for title in (
+            "Dư luận quốc tế đánh giá chuyến thăm Việt Nam của tàu sân bay Mỹ",
+            "Các tổ chức công bố phản ứng về nghị quyết người Việt ở nước ngoài",
+            "Dư luận về việc Ngũ Hành Sơn bị hiển thị sai là thuộc Trung Quốc",
+        ):
+            with self.subTest(title=title):
+                self.assertFalse(classify_wire_topics({"title": title}).relevant)
+
+    def test_image_markup_does_not_consume_the_source_lead(self):
+        from apps.workers.feeds.forum_safety import prepare_wire_item_for_safety
+        title = "Japan announces defense changes"
+        lead = "Japan publishes its defense white paper and national defense strategy."
+        item = prepare_wire_item_for_safety({
+            "title": title, "link": "https://example.com/article",
+            "summary": '<p><img src="https://example.com/' + "a" * 800 + '.jpg"></p><p>' + lead + "</p>",
+        })
+        self.assertEqual(item["summary"], lead)
+        self.assertIn("3a", classify_wire_topics(item).codes)
+        noise = prepare_wire_item_for_safety({
+            "title": "Japan announces local project", "link": "https://example.com/news",
+            "summary": '<img alt="Japan publishes defense white paper"><script>Japan publishes defense white paper</script><p>A local playground opens.</p>',
+        })
+        self.assertFalse(classify_wire_topics(noise).relevant)
+
+    def test_late_country_comparison_and_agency_name_are_not_developments(self):
+        self.assertNotIn("2b", classify_wire_topics({
+            "title": "Critical Minerals and the US-Vietnam Partnership",
+            "summary": "This paper examines critical minerals and rare earths in US-Vietnam relations amid shifting economic dynamics. It explores opportunities and constraints in developing Vietnam's supply chains and the impact of China's market dominance.",
+        }).codes)
+        self.assertNotIn("3a", classify_wire_topics({
+            "title": "NGA's MagQuest Advances with Upcoming CubeSat Launch",
+            "summary": "The US National Geospatial-Intelligence Agency is sponsoring the launch of three small satellites.",
+        }).codes)
+
+    def test_shared_passage_handles_actor_at_start_without_reading_distant_text(self):
+        lead = "Japan " + "has completed consultations with the relevant departments. " * 4
+        self.assertIn("3a", classify_wire_topics({
+            "title": "Japan announces policy update", "summary": lead + "The government publishes its defense white paper.",
+        }).codes)
+        self.assertFalse(classify_wire_topics({
+            "title": "China announces local project", "summary": "A new neighborhood playground. " * 30 + "China approves nuclear power plants.",
+        }).relevant)
 
 
 if __name__ == "__main__":

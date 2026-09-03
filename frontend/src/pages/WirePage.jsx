@@ -49,20 +49,18 @@ const POLL_MS = 10000;
 const WIRE_MAX_AGE_DAYS = 30;
 const PAGE_SIZE = 50;
 const SCOPE_TOPICS = {
-  "wire-topic-1a": "1a. Biển Đông: hoạt động thực địa",
-  "wire-topic-1b": "1b. Biển Đông: biện pháp chủ quyền",
-  "wire-topic-2a": "2a. Trung Quốc: biên giới, cửa khẩu",
-  "wire-topic-2b": "2b. Trung Quốc: quốc phòng, an ninh",
-  "wire-topic-2c": "2c. Trung Quốc: công nghệ, hạ tầng chiến lược",
-  "wire-topic-3a": "3a. Tổ chức và chiến lược quốc phòng",
-  "wire-topic-3b": "3b. Hội nghị và quyết sách trọng điểm",
-  "wire-topic-3c": "3c. Chính sách công nghệ, hiện đại hóa",
-  "wire-topic-4a": "4a. Diễn tập và hoạt động quân sự",
-  "wire-topic-4b": "4b. Hợp tác, chuyển giao quốc phòng",
-  "wire-topic-4c": "4c. Học thuyết và năng lực mới",
-  "wire-topic-5": "5. Trừng phạt, kiểm soát xuất khẩu",
-  "wire-topic-6": "6. Chuyến thăm, đối ngoại liên quan Việt Nam",
-  "wire-topic-7": "7. Dư luận về sự kiện, chính sách Việt Nam",
+  "wire-topic-1a": "Biển Đông: hoạt động thực địa",
+  "wire-topic-1b": "Biển Đông: biện pháp chủ quyền",
+  "wire-topic-2a": "Trung Quốc: biên giới, cửa khẩu",
+  "wire-topic-2b": "Trung Quốc: quốc phòng, an ninh",
+  "wire-topic-2c": "Trung Quốc: công nghệ, hạ tầng chiến lược",
+  "wire-topic-3a": "Tổ chức và chiến lược quốc phòng",
+  "wire-topic-3b": "Hội nghị và quyết sách trọng điểm",
+  "wire-topic-3c": "Chính sách công nghệ, hiện đại hóa",
+  "wire-topic-4a": "Diễn tập và hoạt động quân sự",
+  "wire-topic-4b": "Hợp tác, chuyển giao quốc phòng",
+  "wire-topic-4c": "Học thuyết và năng lực mới",
+  "wire-topic-5": "Trừng phạt, kiểm soát xuất khẩu",
 };
 const TOPIC_LABELS = {
   ...SCOPE_TOPICS,

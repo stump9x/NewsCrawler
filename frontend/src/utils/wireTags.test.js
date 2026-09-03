@@ -12,6 +12,13 @@ import {
 } from "./wireTags";
 
 describe("Wire tag ordering", () => {
+  it("hides retired topics on cached articles", () => {
+    const result = orderedWireTags({ tags: [
+      { slug: "wire-topic-6" }, { slug: "wire-topic-7" },
+      { slug: "wire-topic-1a" }, { slug: "geo-china" },
+    ] });
+    expect(result.map((item) => item.tag.slug)).toEqual(["wire-topic-1a", "geo-china"]);
+  });
   it("reserves country geography at the end even when topics are crowded", () => {
     const result = orderedWireTags(
       {

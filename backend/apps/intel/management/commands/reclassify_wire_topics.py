@@ -15,7 +15,7 @@ from apps.core.wire_filter_policy import (
     DEFAULT_WIRE_FILTER_PROMPT, LEGACY_WIRE_FILTER_PROMPT,
     clear_wire_filter_prompt_cache, get_wire_filter_prompt_record,
 )
-from apps.core.wire_topics import TOPIC_LABELS, TOPIC_TAG_PREFIX, classify_wire_topics
+from apps.core.wire_topics import TOPIC_LABELS, TOPIC_TAG_PREFIX, RETIRED_TOPIC_TAGS, classify_wire_topics
 from apps.intel.models import Tag, Threat
 from apps.intel.management.commands.purge_irrelevant_wire import threat_as_relevance_item
 from apps.workers.services import is_wire_relevant
@@ -30,7 +30,7 @@ def backup_line(handle, data):
 
 
 class Command(BaseCommand):
-    help = "Preview or apply seven-topic Wire classification, with a reversible JSONL backup."
+    help = "Preview or apply five-topic Wire classification, with a reversible JSONL backup."
 
     def add_arguments(self, parser):
         parser.add_argument("--apply", action="store_true")
@@ -57,6 +57,19 @@ class Command(BaseCommand):
                 self._revision(policy)
         clear_wire_filter_prompt_cache()
 
+    def _sync_topic_labels(self, handle):
+        for tag in Tag.objects.filter(slug__in=[*TOPIC_LABELS, *RETIRED_TOPIC_TAGS]):
+            retired = tag.slug in RETIRED_TOPIC_TAGS
+            if not retired and tag.name == TOPIC_LABELS[tag.slug]:
+                continue
+            backup_line(handle, {
+                "kind": "tag", "slug": tag.slug, "name": tag.name,
+                "threat_ids": list(Threat.objects.filter(tags=tag).values_list("pk", flat=True)) if retired else [],
+            })
+            if not retired:
+                tag.name = TOPIC_LABELS[tag.slug]
+                tag.save(update_fields=["name"])
+
     @staticmethod
     def _revision(policy):
         WireFilterPromptRevision.objects.create(
@@ -71,13 +84,17 @@ class Command(BaseCommand):
         with Path(path).open(encoding="utf-8") as handle:
             for line in handle:
                 row = json.loads(line)
-                if row["kind"] not in {"article", "policy"}:
+                if row["kind"] not in {"article", "policy", "tag"}:
                     continue
                 restored += 1
                 if not apply:
                     continue
                 with transaction.atomic():
-                    if row["kind"] == "policy":
+                    if row["kind"] == "tag":
+                        tag, _ = Tag.objects.update_or_create(slug=row["slug"], defaults={"name": row["name"]})
+                        for obj in Threat.objects.filter(pk__in=row["threat_ids"]):
+                            obj.tags.add(tag)
+                    elif row["kind"] == "policy":
                         policy = WireFilterPrompt.objects.select_for_update().get(pk=row["id"])
                         # Preserve edits made by an administrator since rollout.
                         if policy.prompt != DEFAULT_WIRE_FILTER_PROMPT:
@@ -119,6 +136,8 @@ class Command(BaseCommand):
         samples = []
         kept_samples = []
         with (path.open("x", encoding="utf-8") if apply else nullcontext(None)) as handle:
+            if apply:
+                self._sync_topic_labels(handle)
             if apply and options["update_prompt"]:
                 self._sync_prompts(handle)
             # Personal favorites and documents remain intact. Limit to feed news.
@@ -157,4 +176,7 @@ class Command(BaseCommand):
                         tag, _ = Tag.objects.get_or_create(slug=slug, defaults={"name": TOPIC_LABELS.get(slug, slug)})
                         obj.tags.add(tag)
                     counts["changed"] += 1
+            if apply:
+                # Remove retired choices even if they had no feed articles.
+                Tag.objects.filter(slug__in=RETIRED_TOPIC_TAGS).delete()
         self.stdout.write(json.dumps({"apply": apply, **counts, "topics": topics, "kept_samples": kept_samples, "hidden_samples": samples}, ensure_ascii=False))

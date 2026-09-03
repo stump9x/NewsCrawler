@@ -17,8 +17,8 @@ from django.utils import timezone
 logger = logging.getLogger(__name__)
 
 DEFAULT_TIMEOUT = 30.0
-# v12: extract article cover images directly from RSS/Atom metadata.
-RSS_PROCESSING_VERSION = 13
+# v14: visible leads before truncation; re-evaluate cached feeds with five topics.
+RSS_PROCESSING_VERSION = 14
 
 RSS_HEADERS = {
     "User-Agent": (

@@ -12,9 +12,15 @@ git pull --ff-only origin main && docker compose up -d --build
 Trạm tin tức tiếp tục ở **http://107.161.168.82:3000**. Dùng lại file `.env` hiện có.
 
 Docker Compose tự build và khởi động các dịch vụ. Backend tự chạy migration,
-tạo bản sao prompt/thẻ/cờ hiển thị, áp dụng bảy nhóm chủ đề và phân loại lại tin cũ.
+tạo bản sao prompt/thẻ/cờ hiển thị, áp dụng năm nhóm chủ đề và phân loại lại tin cũ.
 Sau khi API sẵn sàng, Compose khởi động worker và giao diện theo thứ tự phụ thuộc.
 Không cần chạy riêng lệnh sửa prompt hay phân loại tin.
+
+Tên chủ đề hiển thị không còn tiền tố số/chữ. Hai nhóm chuyến thăm và dư luận
+đã được bỏ khỏi danh mục, truy vấn và đề xuất. Lần quét RSS định kỳ kế tiếp
+đọc lại các nguồn đã cache để áp dụng bộ lọc mới.
+
+[Kết quả đo lượng tin trước/sau trên nguồn thật](docs/designs/wire-scan-2026-09-03.md).
 
 Mỗi phiên bản bộ lọc chỉ được tự áp dụng **một lần trên mỗi cơ sở dữ liệu**.
 Khởi động lại container không ghi đè prompt bạn đã chỉnh sau đó. Nếu cập nhật

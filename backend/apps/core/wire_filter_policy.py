@@ -3,7 +3,7 @@
 The owner-less record is the administrator policy used by the global ingest
 worker. Each operational user may keep a private policy draft without changing
 the shared corpus or another account. Only explicit ``GIỮ:`` and ``LOẠI:``
-directives affect matching; the seven evidence-based topic gates stay fixed.
+directives affect matching; the five evidence-based topic gates stay fixed.
 """
 
 from __future__ import annotations
@@ -292,14 +292,14 @@ def annotate_favorite_recommendations(queryset, user):
     from django.db.models import Exists, OuterRef, Subquery
     from apps.intel.models import ThreatFavorite
     from apps.intel.filters import WIRE_COUNTRY_FILTER_SLUGS
-    from .wire_topics import TOPIC_TAG_PREFIX
+    from .wire_topics import TOPIC_LABELS
 
     through = queryset.model.tags.through
     # These subqueries are nested inside the favorite EXISTS, so the second
     # OuterRef resolves to the candidate article, not the favorite record.
     candidate_topics = through.objects.filter(
         threat_id=OuterRef(OuterRef("pk")),
-        tag__slug__startswith=TOPIC_TAG_PREFIX,
+        tag__slug__in=TOPIC_LABELS,
     ).values("tag_id")
     candidate_countries = through.objects.filter(
         threat_id=OuterRef(OuterRef("pk")),
