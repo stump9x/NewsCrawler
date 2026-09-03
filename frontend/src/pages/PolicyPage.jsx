@@ -341,12 +341,12 @@ export default function PolicyPage() {
           >
             <Box>
               <Typography color="text.secondary" sx={{ mt: 0.5, mb: 2 }}>
-                Chính sách bên dưới mô tả năm nhóm chủ đề, phạm vi quốc gia và điều kiện chọn tin của Trạm tin tức. Các ví dụ chỉ minh họa để nhận diện diễn biến tương tự, không giới hạn tin vào đúng những sự kiện được nêu.
+                Chính sách xác định năm nhóm chủ đề, phạm vi quốc gia và điều kiện chọn tin. Ví dụ chỉ để minh họa, không giới hạn sự kiện.
               </Typography>
               <Typography color="text.secondary" sx={{ mb: 2 }}>
                 {isSuperuser
-                  ? "Bạn đang chỉnh sửa chính sách quản trị dùng để lọc tin đầu vào chung của hệ thống."
-                  : "Bạn có thể tham khảo chính sách hiện tại của Quản trị viên. Tùy chỉnh của bạn chỉ áp dụng cho tài khoản này, không thay đổi chính sách hay kết quả hiển thị của người dùng khác."}
+                  ? "Thay đổi của Quản trị viên áp dụng cho luồng tin chung."
+                  : "Bạn có thể tham khảo chính sách của Quản trị viên. Tùy chỉnh chỉ áp dụng cho tài khoản này."}
               </Typography>
             </Box>
             {!isSuperuser ? (
@@ -358,7 +358,7 @@ export default function PolicyPage() {
 
           {!loading ? (
             <Alert severity="info" sx={{ mb: 1.5 }}>
-              Chỉnh sửa từ khóa bằng tiếng Việt trong hai dòng bắt đầu bằng <strong>GIỮ:</strong> và <strong>LOẠI:</strong>, ngăn cách các cụm từ bằng dấu chấm phẩy. <strong>GIỮ:</strong> ưu tiên tin đã đáp ứng điều kiện về chủ đề, quốc gia và bằng chứng; <strong>LOẠI:</strong> loại tin khớp cụm từ và được ưu tiên khi tin khớp cả hai dòng. Phần mô tả còn lại giải thích tiêu chí, không tự thay đổi các điều kiện lọc cố định. Không cần thêm mã kỹ thuật hay câu lệnh tiếng Anh.
+              Nhập từ khóa tiếng Việt tại hai dòng <strong>GIỮ:</strong> và <strong>LOẠI:</strong>, ngăn cách bằng dấu chấm phẩy. <strong>GIỮ:</strong> ưu tiên tin đã đủ điều kiện; <strong>LOẠI:</strong> loại tin khớp và được ưu tiên nếu tin khớp cả hai dòng. Không cần thêm mã kỹ thuật.
             </Alert>
           ) : null}
           {!loading ? (
