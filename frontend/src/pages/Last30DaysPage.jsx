@@ -341,6 +341,16 @@ export default function Last30DaysPage() {
       {error ? <Alert severity="error">{error}</Alert> : null}
       {msg ? <Alert severity="success">{msg}</Alert> : null}
 
+      <Box sx={{ border: 1, borderColor: "divider", borderRadius: 1.5, p: 1.5 }}>
+        <Typography variant="subtitle1" fontWeight={700}>
+          Nghiên cứu tích hợp đa nguồn
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Gom các mục nổi bật từ X, Reddit, Web chọn lọc, Polymarket và Hacker News;
+          chuẩn hóa tiếng Việt, xếp hạng theo điểm và loại bản sao trùng trang hoặc tiêu đề.
+        </Typography>
+      </Box>
+
       <Stack direction={{ xs: "column", md: "row" }} spacing={1.5} alignItems={{ md: "center" }}>
         <TextField
           label="Chủ đề"
@@ -383,6 +393,9 @@ export default function Last30DaysPage() {
         </Button>
       </Stack>
 
+      <Typography variant="subtitle1" fontWeight={700}>
+        Danh sách nghiên cứu
+      </Typography>
       <DataTable
         rows={rows}
         columns={[
@@ -506,6 +519,9 @@ export default function Last30DaysPage() {
             </Alert>
           ) : null}
 
+          <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>
+            Kết quả nghiên cứu tích hợp
+          </Typography>
           <DataTable
             rows={visibleFindings}
             empty={
