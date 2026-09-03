@@ -145,11 +145,8 @@ export default function TrendPage() {
   return (
     <div className="trend-page trend-newsnow">
       <div className="trend-platform-bar">
-        <h1>Xu hướng</h1>
+        <h1>Tin tức tổng hợp từ các nền tảng</h1>
         <button className="trend-refresh" onClick={refresh} aria-label="Làm mới bảng xu hướng">↻ <span>Làm mới</span></button>
-      </div>
-      <div className="trend-hero">
-        <p>Tin tức tổng hợp từ các nền tảng</p>
       </div>
       {catalogError && <p className="trend-notice" role="alert">{catalogError}<button onClick={refresh}>Thử lại</button></p>}
       <div className="trend-grid">{boards.map((board) => <RankingCard key={board.id} board={board} state={board.state} dictionary={dictionary} refresh={() => loadSource(board.requestSource)} />)}</div>

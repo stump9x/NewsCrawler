@@ -16,9 +16,9 @@ from django.core.cache.backends.filebased import FileBasedCache
 NEWSNOW = [
     ("baidu", "Baidu", "Tìm kiếm thịnh hành", "#548fdd"),
     ("tiktok", "TikTok", "Xu hướng video", "#52bac4"),
-    ("weibo", "Weibo", "Tìm kiếm thịnh hành", "#e66d6b"),
-    ("tencent-hot", "Tencent News", "Tin tức tổng hợp", "#53a4df"),
     ("sputniknewscn", "Sputnik", "Tin quốc tế", "#d99665"),
+    ("tencent-hot", "Tencent News", "Tin tức tổng hợp", "#53a4df"),
+    ("weibo", "Weibo", "Tìm kiếm thịnh hành", "#e66d6b"),
     ("hackernews", "Hacker News", "Bài đăng nổi bật", "#e79d56"),
     ("github-trending-today", "GitHub", "Dự án nổi bật hôm nay", "#8d9eb4"),
     ("bing", "Bing", "Tin tức tổng hợp", "#42b5a4"),
