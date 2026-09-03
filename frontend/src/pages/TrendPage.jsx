@@ -12,6 +12,9 @@ import {
   Typography,
 } from "@mui/material";
 import TravelExploreOutlinedIcon from "@mui/icons-material/TravelExploreOutlined";
+import AccessTimeOutlinedIcon from "@mui/icons-material/AccessTimeOutlined";
+import WhatshotOutlinedIcon from "@mui/icons-material/WhatshotOutlined";
+import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
 import { api } from "../api/client";
 import { DataTable } from "../components/DataTable";
 import { PageHeader } from "../components/PageHeader";
@@ -28,9 +31,23 @@ const SOURCE_LABELS = {
   hackernews: "Hacker News",
 };
 
+// Tone and icon are deliberately source-specific so the board is scannable at a glance,
+// while remaining readable in the existing dark application theme.
+const SOURCE_TONES = {
+  reddit: { accent: "#f97352", surface: "rgba(249,115,82,.14)", border: "rgba(249,115,82,.34)" },
+  x: { accent: "#8fc7ff", surface: "rgba(143,199,255,.14)", border: "rgba(143,199,255,.34)" },
+  polymarket: { accent: "#53d49a", surface: "rgba(83,212,154,.14)", border: "rgba(83,212,154,.34)" },
+  hackernews: { accent: "#ffb454", surface: "rgba(255,180,84,.14)", border: "rgba(255,180,84,.34)" },
+  web: { accent: "#b49bff", surface: "rgba(180,155,255,.14)", border: "rgba(180,155,255,.34)" },
+};
+
 function sourceLabel(source) {
   const key = String(source || "web").toLowerCase();
   return SOURCE_LABELS[key] || key;
+}
+
+function sourceTone(source) {
+  return SOURCE_TONES[String(source || "web").toLowerCase()] || SOURCE_TONES.web;
 }
 
 function compactCount(value) {
@@ -93,6 +110,7 @@ export default function TrendPage() {
   const [redditConfigured, setRedditConfigured] = useState(false);
   const [wigoloConfigured, setWigoloConfigured] = useState(false);
   const [sourceFilter, setSourceFilter] = useState("all");
+  const [trendSort, setTrendSort] = useState("hot");
   const lastFindingIdRef = useRef(0);
 
   const active = useMemo(
@@ -298,16 +316,18 @@ export default function TrendPage() {
   const trendHighlights = useMemo(() => {
     const grouped = new Map();
     const ranked = [...visibleFindings].sort(
-      (a, b) => Number(b.score || 0) - Number(a.score || 0)
+      (a, b) => trendSort === "latest"
+        ? (new Date(b.published_at || 0).getTime() - new Date(a.published_at || 0).getTime())
+        : Number(b.score || 0) - Number(a.score || 0)
     );
     for (const finding of ranked) {
       const source = String(finding.source || "web");
       const rowsForSource = grouped.get(source) || [];
-      if (rowsForSource.length < 3) rowsForSource.push(finding);
+      if (rowsForSource.length < 8) rowsForSource.push(finding);
       grouped.set(source, rowsForSource);
     }
     return [...grouped.entries()];
-  }, [visibleFindings]);
+  }, [visibleFindings, trendSort]);
   const canAddNotebook =
     Boolean(selectedLive?.id) &&
     !selectedRunning &&
@@ -432,79 +452,201 @@ export default function TrendPage() {
           ) : null}
 
           {trendHighlights.length ? (
-            <Box sx={{ mb: 2 }}>
-              <Stack direction="row" alignItems="baseline" spacing={1} sx={{ mb: 1 }}>
-                <Typography variant="subtitle1" fontWeight={700}>
-                  Xu hướng nổi bật
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  Xếp hạng theo điểm · tối đa 3 mục mỗi nguồn
-                </Typography>
+            <Box
+              sx={{
+                mb: 2,
+                p: { xs: 1.25, md: 2 },
+                borderRadius: 2.5,
+                border: "1px solid rgba(143,199,255,.16)",
+                background:
+                  "linear-gradient(145deg, rgba(22,36,59,.96), rgba(8,17,31,.96))",
+                boxShadow: "0 18px 44px rgba(0,0,0,.2)",
+              }}
+            >
+              <Stack
+                direction={{ xs: "column", sm: "row" }}
+                alignItems={{ sm: "center" }}
+                justifyContent="space-between"
+                spacing={1}
+                sx={{ mb: 1.5 }}
+              >
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Box
+                    sx={{
+                      width: 34,
+                      height: 34,
+                      display: "grid",
+                      placeItems: "center",
+                      borderRadius: 1.25,
+                      color: "#8fc7ff",
+                      background: "rgba(76,154,255,.16)",
+                    }}
+                  >
+                    <PublicOutlinedIcon fontSize="small" />
+                  </Box>
+                  <Box>
+                    <Typography variant="h6" sx={{ lineHeight: 1.1 }}>
+                      Xu hướng đa nền tảng
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {trendSort === "hot" ? "Xếp hạng nóng nhất" : "Tin mới nhất"} · tối đa 8 mục mỗi nguồn
+                    </Typography>
+                  </Box>
+                </Stack>
+                <Stack
+                  direction="row"
+                  sx={{
+                    p: 0.35,
+                    borderRadius: 1.5,
+                    border: "1px solid rgba(143,199,255,.18)",
+                    background: "rgba(6,13,25,.58)",
+                  }}
+                >
+                  <Button
+                    size="small"
+                    startIcon={<WhatshotOutlinedIcon fontSize="small" />}
+                    onClick={() => setTrendSort("hot")}
+                    variant={trendSort === "hot" ? "contained" : "text"}
+                    sx={{ minWidth: 0, px: 1.2, borderRadius: 1.1 }}
+                  >
+                    Nóng nhất
+                  </Button>
+                  <Button
+                    size="small"
+                    startIcon={<AccessTimeOutlinedIcon fontSize="small" />}
+                    onClick={() => setTrendSort("latest")}
+                    variant={trendSort === "latest" ? "contained" : "text"}
+                    sx={{ minWidth: 0, px: 1.2, borderRadius: 1.1 }}
+                  >
+                    Mới nhất
+                  </Button>
+                </Stack>
               </Stack>
               <Box
                 sx={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(auto-fit, minmax(270px, 1fr))",
-                  gap: 1,
+                  gridTemplateColumns: "repeat(auto-fit, minmax(290px, 1fr))",
+                  gap: 1.25,
+                  alignItems: "stretch",
                 }}
               >
-                {trendHighlights.map(([source, sourceRows]) => (
-                  <Box
-                    key={source}
-                    sx={{
-                      border: 1,
-                      borderColor: "divider",
-                      borderRadius: 1.5,
-                      p: 1.25,
-                      minWidth: 0,
-                    }}
-                  >
-                    <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.75 }}>
-                      <Chip size="small" color="primary" variant="outlined" label={sourceLabel(source)} />
-                      <Typography variant="caption" color="text.secondary">
-                        {sourceRows.length} nổi bật
-                      </Typography>
-                    </Stack>
-                    <Stack spacing={0.8}>
-                      {sourceRows.map((finding, index) => {
-                        const title = displayWireTitle(finding);
-                        const engagement = engagementLabel(finding);
-                        const content = (
-                          <Stack direction="row" spacing={0.75} alignItems="flex-start">
-                            <Typography variant="caption" color="text.secondary" sx={{ minWidth: 16 }}>
-                              {index + 1}.
-                            </Typography>
-                            <Box sx={{ minWidth: 0, flex: 1 }}>
-                              <Typography
-                                variant="body2"
+                {trendHighlights.map(([source, sourceRows]) => {
+                  const tone = sourceTone(source);
+                  return (
+                    <Box
+                      key={source}
+                      sx={{
+                        minWidth: 0,
+                        display: "flex",
+                        flexDirection: "column",
+                        border: `1px solid ${tone.border}`,
+                        borderRadius: 2,
+                        overflow: "hidden",
+                        background: "rgba(9,19,34,.88)",
+                      }}
+                    >
+                      <Stack
+                        direction="row"
+                        alignItems="center"
+                        justifyContent="space-between"
+                        sx={{ px: 1.35, py: 1, background: tone.surface }}
+                      >
+                        <Stack direction="row" spacing={0.9} alignItems="center" minWidth={0}>
+                          <Box
+                            sx={{
+                              width: 29,
+                              height: 29,
+                              display: "grid",
+                              placeItems: "center",
+                              borderRadius: 1,
+                              color: tone.accent,
+                              border: `1px solid ${tone.border}`,
+                              fontWeight: 800,
+                              fontSize: 12,
+                            }}
+                          >
+                            {sourceLabel(source).slice(0, 2).toUpperCase()}
+                          </Box>
+                          <Typography noWrap fontWeight={700} sx={{ color: tone.accent }}>
+                            {sourceLabel(source)}
+                          </Typography>
+                        </Stack>
+                        <Typography variant="caption" color="text.secondary">
+                          {sourceRows.length} mục
+                        </Typography>
+                      </Stack>
+                      <Stack spacing={0} sx={{ p: 0.8, flex: 1 }}>
+                        {sourceRows.map((finding, index) => {
+                          const title = displayWireTitle(finding);
+                          const engagement = engagementLabel(finding);
+                          const content = (
+                            <Stack
+                              direction="row"
+                              spacing={1}
+                              alignItems="flex-start"
+                              sx={{
+                                p: 0.75,
+                                borderRadius: 1.25,
+                                transition: "background .15s ease",
+                                "&:hover": { background: "rgba(255,255,255,.055)" },
+                              }}
+                            >
+                              <Box
                                 sx={{
-                                  fontWeight: 600,
-                                  display: "-webkit-box",
-                                  WebkitLineClamp: 2,
-                                  WebkitBoxOrient: "vertical",
-                                  overflow: "hidden",
+                                  flex: "0 0 25px",
+                                  width: 25,
+                                  height: 25,
+                                  display: "grid",
+                                  placeItems: "center",
+                                  borderRadius: 0.8,
+                                  color: index === 0 ? tone.accent : "text.secondary",
+                                  background: index === 0 ? tone.surface : "rgba(255,255,255,.06)",
+                                  fontSize: 12,
+                                  fontWeight: 700,
                                 }}
                               >
-                                {title}
-                              </Typography>
-                              <Typography variant="caption" color="text.secondary">
-                                Điểm {Number(finding.score || 0).toFixed(0)}
-                                {engagement ? ` · ${engagement}` : ""}
-                              </Typography>
-                            </Box>
-                          </Stack>
-                        );
-                        return finding.url ? (
-                          <Link key={finding.id} href={finding.url} target="_blank" rel="noreferrer" underline="hover">
-                            {content}
-                          </Link>
-                        ) : (
-                          <Box key={finding.id}>{content}</Box>
-                        );
-                      })}
-                    </Stack>
-                  </Box>
-                ))}
+                                {index + 1}
+                              </Box>
+                              <Box sx={{ minWidth: 0, flex: 1 }}>
+                                <Typography
+                                  variant="body2"
+                                  sx={{
+                                    fontWeight: 600,
+                                    lineHeight: 1.45,
+                                    display: "-webkit-box",
+                                    WebkitLineClamp: 3,
+                                    WebkitBoxOrient: "vertical",
+                                    overflow: "hidden",
+                                  }}
+                                >
+                                  {title}
+                                </Typography>
+                                <Typography variant="caption" color="text.secondary" noWrap>
+                                  Điểm {Number(finding.score || 0).toFixed(0)}
+                                  {engagement ? ` · ${engagement}` : ""}
+                                </Typography>
+                              </Box>
+                            </Stack>
+                          );
+                          return finding.url ? (
+                            <Link
+                              key={finding.id}
+                              href={finding.url}
+                              target="_blank"
+                              rel="noreferrer"
+                              underline="none"
+                              sx={{ color: "inherit" }}
+                            >
+                              {content}
+                            </Link>
+                          ) : (
+                            <Box key={finding.id}>{content}</Box>
+                          );
+                        })}
+                      </Stack>
+                    </Box>
+                  );
+                })}
               </Box>
             </Box>
           ) : null}
