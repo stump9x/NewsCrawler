@@ -46,7 +46,6 @@ export default function TrendPage() {
   const [catalogError, setCatalogError] = useState("");
   const [dictionary, setDictionary] = useState(() => readSaved("translations", {}));
   const dictionaryRef = useRef(dictionary);
-  const [translationStatus, setTranslationStatus] = useState({ active: 0, pending: 0, reason: "" });
   const translationQueue = useRef(null);
   const [revision, setRevision] = useState(0);
   const mounted = useRef(true);
@@ -114,12 +113,20 @@ export default function TrendPage() {
         setDictionary({ ...dictionaryRef.current });
         save("translations", Object.fromEntries(Object.entries(dictionaryRef.current).slice(-5000)));
       },
-      onStatus: setTranslationStatus,
     });
     translationQueue.current = queue;
     return () => { queue.stop(); translationQueue.current = null; };
   }, []);
   useEffect(() => { translationQueue.current?.update(texts); }, [textsKey]);
+  useEffect(() => {
+    const resume = () => { if (document.visibilityState === "visible") translationQueue.current?.resume(); };
+    window.addEventListener("online", resume);
+    document.addEventListener("visibilitychange", resume);
+    return () => {
+      window.removeEventListener("online", resume);
+      document.removeEventListener("visibilitychange", resume);
+    };
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => { if (document.visibilityState === "visible") setRevision((n) => n + 1); }, 180000);
@@ -134,9 +141,6 @@ export default function TrendPage() {
   }, [sourceKey, states]);
   const isLoading = boards.some((board) => board.state?.loading) || (!catalog && !catalogError);
   const refresh = () => { translationQueue.current?.retry(); setRevision((n) => n + 1); };
-  const totalItems = boards.reduce((n, board) => n + board.items.length, 0);
-  const translatedItems = boards.reduce((n, board) => n + board.items.filter((item) => translation(item.title, dictionary, item.title_vi)).length, 0);
-  const waitingReason = translationStatus.reason === "rate_limited" ? "Đang chờ giới hạn dịch vụ dịch · tự thử lại" : translationStatus.reason === "unavailable" ? "Dịch vụ dịch tạm chưa phản hồi · tự thử lại" : translationStatus.reason === "invalid_translation" ? "Đang dịch lại các mục chưa đạt yêu cầu" : "Đang chuẩn bị nhóm tiếp theo";
 
   return (
     <div className="trend-page trend-newsnow">
@@ -145,12 +149,7 @@ export default function TrendPage() {
         <button className="trend-refresh" onClick={refresh} aria-label="Làm mới bảng xu hướng">↻ <span>Làm mới</span></button>
       </div>
       <div className="trend-hero">
-        <div className="trend-brand"><b>News</b><b>Now<span> · Tiếng Việt</span></b></div>
         <p>Tin tức tổng hợp từ các nền tảng</p>
-      </div>
-      <div className="trend-status-line" role="status">
-        <span>{isLoading ? "Đang cập nhật các nguồn…" : `${totalItems} mục · Giữ thứ tự xếp hạng của nguồn`}</span>
-        <span>{`Đã dịch ${translatedItems}/${totalItems} mục`}{texts.length ? ` · ${translationStatus.active ? `${translationStatus.active} nhóm đang dịch` : waitingReason}` : " · Tiếng Việt"}</span>
       </div>
       {catalogError && <p className="trend-notice" role="alert">{catalogError}<button onClick={refresh}>Thử lại</button></p>}
       <div className="trend-grid">{boards.map((board) => <RankingCard key={board.id} board={board} state={board.state} dictionary={dictionary} refresh={() => loadSource(board.requestSource)} />)}</div>

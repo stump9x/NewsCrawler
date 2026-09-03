@@ -54,6 +54,47 @@ def cached_translation(text):
     return trend_cache().get(text_key(text))
 
 
+def _groq_drafts(content, originals):
+    """Keep complete, validated rows even if the response's tail was cut off."""
+    content = re.sub(r"^```(?:json)?\s*|\s*```$", "", content.strip())
+    try:
+        payload = json.loads(content)
+        rows = payload.get("items", []) if isinstance(payload, dict) else []
+    except json.JSONDecodeError:
+        rows = []
+        start = re.match(r'\s*\{\s*"items"\s*:\s*\[', content)
+        if start:
+            decoder = json.JSONDecoder()
+            offset = start.end()
+            while offset < len(content):
+                offset += len(content[offset:]) - len(content[offset:].lstrip())
+                try:
+                    row, offset = decoder.raw_decode(content, offset)
+                except json.JSONDecodeError:
+                    break  # Never accept an unfinished string or guess its tail.
+                rows.append(row)
+                offset += len(content[offset:]) - len(content[offset:].lstrip())
+                if content[offset:offset + 1] != ",":
+                    break
+                offset += 1
+    if not isinstance(rows, list):
+        return {}
+    drafts, seen, duplicate = {}, set(), set()
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        index = row.get("id")
+        if type(index) is not int or not 0 <= index < len(originals):
+            continue
+        if index in seen:
+            duplicate.add(index)
+        seen.add(index)
+        if valid_translation(originals[index], row.get("vi")):
+            drafts[index] = row["vi"].strip()
+    # Conflicting IDs must be retried, never attached to a guessed headline.
+    return {originals[index]: draft for index, draft in drafts.items() if index not in duplicate}
+
+
 def translate_batch(texts):
     """Reuse completed/in-flight work across tabs and web workers."""
     result = {text: cached_translation(text) for text in texts}
@@ -115,17 +156,18 @@ def _translate_missing(missing):
             )
             # groq_pool normalizes upstream responses to {"text": ...}.
             # Reading choices here silently discarded every successful batch.
-            content = payload["text"].strip()
-            content = re.sub(r"^```(?:json)?\s*|\s*```$", "", content)
-            for row in json.loads(content).get("items", []):
-                index = row.get("id")
-                if type(index) is int and 0 <= index < len(missing) and valid_translation(missing[index], row.get("vi")):
-                    drafts[missing[index]] = row["vi"].strip()
+            drafts.update(_groq_drafts(payload["text"], missing))
             reason = "invalid_translation"
         except Exception as exc:
             reason = "rate_limited" if any(word in str(exc).lower() for word in ("budget", "rate", "cooling", "429", "quota")) else "unavailable"
+            if "413" in str(exc) or "too large" in str(exc).lower():
+                reason = "payload_too_large"
             # Do not log exception payloads (which can contain account details).
             logger.info("Trend Groq batch deferred: %s (%s)", reason, type(exc).__name__)
+    if drafts:
+        # Publish and cache useful results immediately. Only unfinished entries
+        # return on the next smaller batch, with Google fallback still available.
+        return drafts, reason
     remaining = [text for text in missing if text not in drafts]
     if remaining and not is_google_circuit_open() and wait_for_google_budget(block=False):
         # A single translation request per batch; indexed markers prevent
@@ -145,13 +187,21 @@ def _translate_missing(missing):
                 response.raise_for_status()
                 body = response.json()
                 translated = "".join(str(part[0] or "") for part in body[0] if isinstance(part, list) and part)
-                matches = list(re.finditer(r"\[\s*NC\s*(\d{4})\s*\]", translated, re.I))
-                for i, match in enumerate(matches):
-                    index = int(match.group(1))
-                    end = matches[i + 1].start() if i + 1 < len(matches) else len(translated)
-                    draft = translated[match.end():end].strip()
-                    if index < len(selected) and valid_translation(selected[index], draft):
-                        drafts[selected[index]] = draft
+                if len(selected) == 1:
+                    # Single-item retries also work when Google drops a marker.
+                    draft = re.sub(r"\[\s*NC\s*0000\s*\]", "", translated, flags=re.I).strip()
+                    if valid_translation(selected[0], draft):
+                        drafts[selected[0]] = draft
+                else:
+                    matches = list(re.finditer(r"\[\s*NC\s*(\d{4})\s*\]", translated, re.I))
+                    # Missing/reordered markers can merge two titles. Split the
+                    # batch on retry instead of caching a wrongly paired result.
+                    if [int(match.group(1)) for match in matches] == list(range(len(selected))):
+                        for i, match in enumerate(matches):
+                            end = matches[i + 1].start() if i + 1 < len(matches) else len(translated)
+                            draft = translated[match.end():end].strip()
+                            if valid_translation(selected[i], draft):
+                                drafts[selected[i]] = draft
                 if len(drafts) < len(missing):
                     reason = "invalid_translation"
             except (httpx.HTTPError, ValueError, IndexError, TypeError) as exc:

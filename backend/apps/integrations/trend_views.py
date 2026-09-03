@@ -1,5 +1,6 @@
 """Authenticated feed reading and translation, independent of research/Celery."""
 import time
+from urllib.parse import urlsplit
 
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -54,7 +55,16 @@ class TrendBoardsView(APIView):
             board["name_vi"] = cached_translation(board["name"])
             board["subtitle_vi"] = cached_translation(board["subtitle"])
             for item in board["items"]:
-                item["title_vi"] = cached_translation(item["title"])
+                target = urlsplit(item.get("url", ""))
+                # Repository identifiers are names, not prose. Translating them
+                # corrupts names and repeatedly fails the unchanged-English check.
+                repository_name = (
+                    source == "github-trending-today"
+                    and target.hostname == "github.com"
+                    and item["title"].replace(" ", "") == target.path.strip("/")
+                    and target.path.strip("/").count("/") == 1
+                )
+                item["title_vi"] = item["title"] if repository_name else cached_translation(item["title"])
         return Response({**saved, "stale": stale, "error": error})
 
 
