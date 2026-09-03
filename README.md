@@ -6,8 +6,15 @@ Sau khi SSH vào VPS, chạy tại thư mục dự án:
 
 ```bash
 cd /root/NewsCrawler
-git pull --ff-only origin main && docker compose up -d --build
+git pull --ff-only origin main
+DOCKER_BUILDKIT=1 docker compose build --parallel backend frontend
+docker compose up -d
 ```
+
+Dockerfile dùng cache BuildKit cho pip, npm và Chromium Playwright. Các lần cập
+nhật chỉ mã nguồn sẽ bỏ qua phần tải phụ thuộc; build production cũng bỏ qua
+test frontend. Nếu cần chạy test frontend trong lúc build, đặt
+`RUN_FRONTEND_TESTS=1` trước lệnh `docker compose build`.
 
 Trạm tin tức tiếp tục ở **http://107.161.168.82:3000**. Dùng lại file `.env` hiện có.
 

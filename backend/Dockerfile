@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.7
+
 FROM python:3.12-slim AS builder
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -13,7 +15,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 COPY requirements.txt .
 RUN python -m venv /opt/venv \
-    && /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
+    && /opt/venv/bin/pip install --upgrade pip setuptools wheel
+
+# Keep downloaded Python wheels in the BuildKit cache.  Dependency installation
+# is then reused across source-only rebuilds and after a normal git pull.
+RUN --mount=type=cache,id=newscrawler-pip,target=/root/.cache/pip \
+    /opt/venv/bin/pip install -r requirements.txt
 
 FROM python:3.12-slim
 
@@ -48,7 +55,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /opt/venv /opt/venv
-RUN /opt/venv/bin/playwright install chromium
+
+# Playwright stores Chromium in a persistent BuildKit cache, then copies the
+# browser into the image.  The first build still downloads Chromium; later
+# builds only copy the cached files instead of downloading them again.
+RUN --mount=type=cache,id=newscrawler-playwright,target=/root/.cache/ms-playwright \
+    PLAYWRIGHT_BROWSERS_PATH=/root/.cache/ms-playwright \
+    /opt/venv/bin/playwright install chromium \
+    && mkdir -p /ms-playwright \
+    && cp -a /root/.cache/ms-playwright/. /ms-playwright/
 
 COPY . .
 
