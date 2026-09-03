@@ -1,5 +1,6 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
+from .trend_views import TrendBoardsView, TrendCatalogView, TrendTranslateView
 
 from .views import (
     AIBriefingViewSet,
@@ -39,6 +40,9 @@ router.register(
 )
 
 urlpatterns = [
+    path("trend/catalog/", TrendCatalogView.as_view(), name="trend-catalog"),
+    path("trend/boards/", TrendBoardsView.as_view(), name="trend-boards"),
+    path("trend/translate/", TrendTranslateView.as_view(), name="trend-translate"),
     path("integrations/health/", IntegrationsHealthView.as_view(), name="integrations-health"),
     path(
         "integrations/forum-claims/",

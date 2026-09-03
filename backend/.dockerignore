@@ -5,6 +5,7 @@ venv
 .env
 *.sqlite3
 staticfiles
+.trend-cache
 .pytest_cache
 .mypy_cache
 .wire-backups
