@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { PROVIDERS, CJK, count, dateLabel, pendingTexts, readSaved, request, save, translation } from "../features/trends/feed";
+import { createTranslationQueue } from "../features/trends/translationQueue";
 import "../features/trends/trend.css";
 
 function Vietnamese({ text, supplied, dictionary, name = false }) {
@@ -76,12 +77,11 @@ export default function TrendPage() {
   const [catalogError, setCatalogError] = useState("");
   const [dictionary, setDictionary] = useState(() => readSaved("translations", {}));
   const dictionaryRef = useRef(dictionary);
-  const [translationBusy, setTranslationBusy] = useState(false);
-  const [translationRetry, setTranslationRetry] = useState(0);
+  const [translationStatus, setTranslationStatus] = useState({ active: 0, pending: 0, reason: "" });
+  const translationQueue = useRef(null);
   const [revision, setRevision] = useState(0);
   const [limit, setLimit] = useState(9);
   const [stars, setStars] = useState(() => readSaved("stars", []));
-  const attempts = useRef(new Map());
   const mounted = useRef(true);
   const active = useRef(new Map());
 
@@ -134,44 +134,25 @@ export default function TrendPage() {
     const state = states[`${provider}:${source.id}`];
     if (state?.boards?.length) return state.boards.map((board) => ({ ...board, state, requestSource: source.id }));
     if (provider !== "newsnow") return [];
-    return [{ ...source, id: `newsnow:${source.id}`, provider, items: [], state: state || { loading: true }, requestSource: source.id }];
+    return [{ ...source, subtitle_vi: source.subtitle, id: `newsnow:${source.id}`, provider, items: [], state: state || { loading: true }, requestSource: source.id }];
   }), [provider, selectedSources, states]);
   const texts = useMemo(() => pendingTexts(boards, dictionary), [boards, dictionary]);
   const textsKey = texts.join("\u0000");
 
   useEffect(() => {
-    if (!texts.length) { setTranslationBusy(false); return; }
-    let cancelled = false;
-    const controller = new AbortController();
-    let timer;
-    async function translate() {
-      setTranslationBusy(true);
-      const queue = texts.filter((text) => !dictionaryRef.current[text] && (attempts.current.get(text)?.retryAt || 0) <= Date.now());
-      if (queue.length && !cancelled) {
-        const batch = [];
-        let size = 0;
-        while (queue.length && batch.length < 16 && size + queue[0].length <= 4000) { const text = queue.shift(); size += text.length; batch.push(text); }
-        if (!batch.length) return;
-        try {
-          const data = await request("translate/", { method: "post", body: { texts: batch }, signal: controller.signal });
-          if (cancelled) return;
-          for (const row of data.items || []) if (row.status === "ok" && row.vi && !CJK.test(row.vi)) dictionaryRef.current[row.text] = row.vi;
-        } catch { if (cancelled) return; }
-        for (const text of batch) if (!dictionaryRef.current[text]) {
-          const n = (attempts.current.get(text)?.count || 0) + 1;
-          attempts.current.set(text, { count: n, retryAt: Date.now() + Math.min(300000, 30000 * 2 ** (n - 1)) });
-        }
+    const queue = createTranslationQueue({
+      translate: (batch, signal) => request("translate/", { method: "post", body: { texts: batch }, signal }),
+      onResult: (rows) => {
+        Object.assign(dictionaryRef.current, rows);
         setDictionary({ ...dictionaryRef.current });
         save("translations", Object.fromEntries(Object.entries(dictionaryRef.current).slice(-5000)));
-      }
-      if (!cancelled) {
-        setTranslationBusy(false);
-        timer = setTimeout(() => setTranslationRetry((n) => n + 1), queue.length ? 100 : 30000);
-      }
-    }
-    translate();
-    return () => { cancelled = true; controller.abort(); clearTimeout(timer); };
-  }, [textsKey, translationRetry]);
+      },
+      onStatus: setTranslationStatus,
+    });
+    translationQueue.current = queue;
+    return () => { queue.stop(); translationQueue.current = null; };
+  }, []);
+  useEffect(() => { translationQueue.current?.update(texts); }, [textsKey]);
 
   useEffect(() => {
     const timer = setInterval(() => { if (document.visibilityState === "visible") setRevision((n) => n + 1); }, 180000);
@@ -188,7 +169,10 @@ export default function TrendPage() {
   const isLoading = boards.some((board) => board.state?.loading) || (provider !== "newsnow" && (!providerState || providerState.loading));
   const totalSources = (catalog?.newsnow || []).filter((source) => mode === "follow" ? stars.includes(`newsnow:${source.id}`) : source.mode === mode).length;
   const toggleStar = (id) => setStars((prev) => { const next = prev.includes(id) ? prev.filter((value) => value !== id) : [...prev, id]; save("stars", next); return next; });
-  const refresh = () => { attempts.current.clear(); setTranslationRetry((n) => n + 1); setRevision((n) => n + 1); };
+  const refresh = () => { translationQueue.current?.retry(); setRevision((n) => n + 1); };
+  const totalItems = boards.reduce((n, board) => n + board.items.length, 0);
+  const translatedItems = boards.reduce((n, board) => n + board.items.filter((item) => translation(item.title, dictionary, item.title_vi)).length, 0);
+  const waitingReason = translationStatus.reason === "rate_limited" ? "Đang chờ giới hạn dịch vụ dịch · tự thử lại" : translationStatus.reason === "unavailable" ? "Dịch vụ dịch tạm chưa phản hồi · tự thử lại" : translationStatus.reason === "invalid_translation" ? "Đang dịch lại các mục chưa đạt yêu cầu" : "Đang chuẩn bị nhóm tiếp theo";
 
   return (
     <div className={`trend-page trend-${provider}`}>
@@ -206,8 +190,8 @@ export default function TrendPage() {
         </div>
       </div>
       <div className="trend-status-line" role="status">
-        <span>{isLoading ? "Đang cập nhật các nguồn…" : `${boards.reduce((n, board) => n + board.items.length, 0)} mục · Giữ thứ tự xếp hạng của nguồn`}</span>
-        <span>{texts.length ? translationBusy ? "Đang dịch sang tiếng Việt…" : "Đang chờ dịch các mục còn lại · tự thử lại" : "Tiếng Việt"}</span>
+        <span>{isLoading ? "Đang cập nhật các nguồn…" : `${totalItems} mục · Giữ thứ tự xếp hạng của nguồn`}</span>
+        <span>{`Đã dịch ${translatedItems}/${totalItems} mục`}{texts.length ? ` · ${translationStatus.active ? `${translationStatus.active} nhóm đang dịch` : waitingReason}` : " · Tiếng Việt"}</span>
       </div>
       {catalogError && <p className="trend-notice" role="alert">{catalogError}<button onClick={refresh}>Thử lại</button></p>}
       {provider !== "newsnow" && providerState?.error && <p className="trend-notice" role="alert">{providerState.error}<button onClick={refresh}>Thử lại</button></p>}

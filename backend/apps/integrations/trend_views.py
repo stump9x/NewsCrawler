@@ -61,7 +61,7 @@ class TrendTranslateView(APIView):
 
     def post(self, request):
         texts = request.data.get("texts") if isinstance(request.data, dict) else None
-        if not isinstance(texts, list) or not 1 <= len(texts) <= 16 or any(not isinstance(text, str) or not text.strip() or len(text) > 4000 for text in texts) or sum(map(len, texts)) > 4200:
-            return Response({"detail": "Mỗi lượt dịch tối đa 16 đoạn, tổng 4.200 ký tự."}, status=400)
-        translated = translate_batch(texts)
-        return Response({"items": [{"text": text, "vi": translated.get(text), "status": "ok" if translated.get(text) else "pending"} for text in texts], "retry_after": 30})
+        if not isinstance(texts, list) or not 1 <= len(texts) <= 48 or any(not isinstance(text, str) or not text.strip() or len(text) > 4000 for text in texts) or sum(map(len, texts)) > 4200:
+            return Response({"detail": "Mỗi lượt dịch tối đa 48 đoạn, tổng 4.200 ký tự."}, status=400)
+        batch = translate_batch(texts)
+        return Response({"items": [{"text": text, "vi": batch.translations.get(text), "status": "ok" if batch.translations.get(text) else "pending"} for text in texts], "reason": batch.reason, "retry_after": batch.retry_after})
