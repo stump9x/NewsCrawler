@@ -1,5 +1,22 @@
 const HIDDEN_TAGS = new Set(["news", "rss", "alleged-claim", "china", "wire-topic-6", "wire-topic-7"]);
 
+// These classifier tags describe the same broad signal already represented by
+// a canonical wire-topic tag. Hide them even on older cards that have not yet
+// been reclassified, so a card does not become a wall of near-duplicate chips.
+const GENERIC_WIRE_TOPIC_TAGS = new Set([
+  "exercises",
+  "maritime",
+  "procurement",
+  "force-posture",
+  "combat-trends",
+  "national-strategy",
+  "security-cooperation",
+  "defense-policy",
+  "analysis",
+]);
+
+const MAX_CANONICAL_TOPIC_TAGS = 2;
+
 /** Region-level geo slugs — deprioritized vs country tags. */
 const REGION_GEO_SLUGS = new Set([
   "geo-southeast-asia",
@@ -229,12 +246,12 @@ export function orderedWireTags(row, maxTags = 8, maxGeography = 6) {
   }
   const website = uniqueTags.find((tag) => slugOf(tag).startsWith("site-"));
   const geography = wireCountryTags({ ...row, tags: uniqueTags }, maxGeography);
-  const hasCanonicalTopic = uniqueTags.some((tag) => slugOf(tag).startsWith("wire-topic-"));
   const topics = uniqueTags.filter((tag) => {
     const slug = slugOf(tag);
     // Canonical wire-topic tags supersede generic classifier labels such as
-    // exercises/maritime, which otherwise repeat the same subject.
-    if (hasCanonicalTopic && ["exercises", "maritime", "procurement", "force-posture", "combat-trends", "national-strategy", "security-cooperation", "defense-policy", "analysis"].includes(slug)) return false;
+    // exercises/maritime. Apply this to legacy cards too, since those labels
+    // are not useful as standalone hashtags and cause semantic repetition.
+    if (GENERIC_WIRE_TOPIC_TAGS.has(slug)) return false;
     return (
       !slug.startsWith("site-") &&
       !HIDDEN_TAGS.has(slug) &&
@@ -245,6 +262,17 @@ export function orderedWireTags(row, maxTags = 8, maxGeography = 6) {
   const geoSelected = geography;
   const headBudget = Math.max(0, maxTags - geoSelected.length);
 
+  // Keep the two most specific editorial topics. One article can match a
+  // South China Sea activity (1a) and a regional exercise (4a); showing a
+  // short pair is enough context while leaving room for geography/source.
+  const canonicalTopics = topics
+    .filter((tag) => slugOf(tag).startsWith("wire-topic-"))
+    .slice(0, MAX_CANONICAL_TOPIC_TAGS);
+  const remainingTopics = topics
+    .filter((tag) => !slugOf(tag).startsWith("wire-topic-"))
+    .slice(0, Math.max(0, 3 - canonicalTopics.length));
+  const compactTopics = [...canonicalTopics, ...remainingTopics];
+
   const ordered = [];
   if (website && ordered.length < headBudget) {
     ordered.push({ kind: "website", tag: website });
@@ -252,7 +280,7 @@ export function orderedWireTags(row, maxTags = 8, maxGeography = 6) {
   if (row?.is_kev && ordered.length < headBudget) {
     ordered.push({ kind: "kev", key: "kev" });
   }
-  for (const tag of topics) {
+  for (const tag of compactTopics) {
     if (ordered.length >= headBudget) break;
     ordered.push({ kind: "topic", tag });
   }

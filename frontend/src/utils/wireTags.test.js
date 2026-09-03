@@ -129,6 +129,26 @@ describe("Wire tag ordering", () => {
     ]);
   });
 
+  it("keeps only a compact set of canonical topics and hides legacy aliases", () => {
+    const result = orderedWireTags({
+      tags: [
+        { slug: "wire-topic-1a", name: "Biển Đông" },
+        { slug: "wire-topic-4a", name: "Diễn tập" },
+        { slug: "wire-topic-4c", name: "Công nghệ quân sự" },
+        { slug: "exercises", name: "Exercises" },
+        { slug: "maritime", name: "Maritime" },
+        { slug: "geo-philippines", name: "Philippines" },
+      ],
+      8,
+    });
+    expect(result.filter((item) => item.kind === "topic").map((item) => item.tag.slug)).toEqual([
+      "wire-topic-1a",
+      "wire-topic-4a",
+    ]);
+    expect(result.some((item) => item.tag?.slug === "exercises")).toBe(false);
+    expect(result.some((item) => item.tag?.slug === "maritime")).toBe(false);
+  });
+
   it("exposes ISO2 and flagcdn URL for official flag images", () => {
     expect(isGeographyTag({ slug: "vietnam" })).toBe(true);
     expect(geographyIso2({ slug: "geo-united-states" })).toBe("US");
