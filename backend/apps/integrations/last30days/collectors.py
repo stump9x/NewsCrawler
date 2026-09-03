@@ -373,7 +373,7 @@ def collect_web(
 
 def _newsnow_source_ids() -> list[str]:
     """Return the small, useful NewsNow source set (never the whole directory)."""
-    raw = getattr(settings, "TREND_NEWSNOW_SOURCE_IDS", "cls,weibo,zhihu,bilibili,hupu,v2ex")
+    raw = getattr(settings, "TREND_NEWSNOW_SOURCE_IDS", "cls-hot,weibo,zhihu,bilibili,hupu,v2ex")
     values = raw if isinstance(raw, (list, tuple)) else str(raw).split(",")
     out: list[str] = []
     for value in values:

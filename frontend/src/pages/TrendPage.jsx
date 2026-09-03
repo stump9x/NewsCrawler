@@ -47,6 +47,7 @@ function sourceLabel(source) {
     const newsnowId = key.slice("newsnow:".length);
     const labels = {
       cls: "NewsNow · Tài chính",
+      "cls-hot": "NewsNow · Tài chính",
       weibo: "NewsNow · Weibo",
       zhihu: "NewsNow · Zhihu",
       bilibili: "NewsNow · Bilibili",

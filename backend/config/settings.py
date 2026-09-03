@@ -784,7 +784,7 @@ TREND_NEWSNOW_BASE_URL = env(
     "TREND_NEWSNOW_BASE_URL", default="https://newsnow.busiyi.world"
 )
 TREND_NEWSNOW_SOURCE_IDS = env(
-    "TREND_NEWSNOW_SOURCE_IDS", default="cls,weibo,zhihu,bilibili,hupu,v2ex"
+    "TREND_NEWSNOW_SOURCE_IDS", default="cls-hot,weibo,zhihu,bilibili,hupu,v2ex"
 )
 TREND_NEWSNOW_TIMEOUT_SEC = env.float("TREND_NEWSNOW_TIMEOUT_SEC", default=8.0)
 
