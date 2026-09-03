@@ -10,6 +10,13 @@ Cân bằng độ sát chủ đề và khả năng tìm đủ diễn biến tron
 4. Phải có nguồn, đường dẫn, ngày xuất bản hợp lệ trong cửa sổ thời gian của hệ thống. Ví dụ chỉ minh họa phạm vi, KHÔNG chứng minh sự kiện đã xảy ra. Không gán ngày hiện tại cho bài không rõ ngày; không tự đổi năm để biến tin cũ thành tin mới.
 5. Giữ bài đánh giá khi gắn một sự kiện/quyết sách/năng lực xác định và có căn cứ trong nguồn; loại suy đoán thuần túy, hồi cố, quảng cáo, danh sách tổng hợp thiếu diễn biến.
 
+PHẠM VI QUỐC GIA
+Ưu tiên Trung Quốc, Mỹ, Đài Loan, Nhật Bản, Việt Nam, các nước Đông Nam Á,
+Úc, Triều Tiên và Hàn Quốc. Bài chỉ gồm các nước ngoài phạm vi (ví dụ Anh,
+Iraq) thì loại. Bài Mỹ kèm một nước ngoài phạm vi cũng loại nếu không có đối
+tác thuộc phạm vi hoặc nội dung tác chiến mạng/an ninh mạng nổi bật. Không
+loại tin tác chiến mạng nổi bật chỉ vì bài có thêm một nước ngoài phạm vi.
+
 NHÓM 1 — BIỂN ĐÔNG, KHU VỰC NHẠY CẢM/TRANH CHẤP
 Hiện diện, tuần tra, chấp pháp, huấn luyện, diễn tập, va chạm và tăng cường năng lực thực địa: Xca-bơ-rô/Scarborough/Huangyan/黄岩岛; Cỏ Mây/Second Thomas/Ayungin/仁爱礁; Hoa Lau/Swallow Reef/Layang Layang; Trường Sa/Spratly; Hoàng Sa/Paracel. Ví dụ: tuần tra Trung Quốc, động thái Trung Quốc–Philippines, Malaysia lắp radar ở Hoa Lau, phản ứng vụ va chạm Cỏ Mây.
 Biện pháp hành chính, pháp lý, kinh tế, tuyên truyền liên quan thực thi chủ quyền: quy chế khu bảo tồn Xca-bơ-rô, chính sách du lịch Hoàng Sa, đánh bắt chung, lệnh cấm đánh bắt và lập luận pháp lý về vùng tranh chấp. Loại cẩm nang du lịch, quảng bá tour và tin thủy sản thông thường.

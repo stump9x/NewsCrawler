@@ -249,9 +249,10 @@ WIRE_FEED_COUNTRY_CODES = frozenset(
     }
 )
 
-# Priority / monitored geography for Wire *inclusion* (matches search dropdown + Indo-Pacific).
-# UK/Canada/Pakistan/Estonia/etc. are tagged when present but do NOT alone keep a story.
-# Co-mention with a priority country keeps the item and retains all country flags/tags.
+# Priority / monitored geography for Wire *inclusion*.  Keep the editorial
+# area explicit: China, the US, Taiwan, Japan, ASEAN/SEA, Australia and both
+# Koreas (plus Vietnam). Other country tags may still be displayed when an
+# accepted story mentions them, but cannot make an otherwise unrelated story pass.
 WIRE_PRIORITY_GEO_SLUGS = frozenset(
     {
         "vietnam",
@@ -266,14 +267,10 @@ WIRE_PRIORITY_GEO_SLUGS = frozenset(
         "geo-cambodia",
         "geo-laos",
         "geo-australia",
-        "geo-russia",
-        "geo-ukraine",
         "geo-myanmar",
-        "geo-india",
         "geo-south-korea",
         "geo-north-korea",
         "geo-singapore",
-        "geo-new-zealand",
         "geo-southeast-asia",
         "geo-asia-pacific",
     }
@@ -290,6 +287,10 @@ _WIRE_REGION_GEO_SLUGS = frozenset(
         "geo-africa",
         "geo-emea",
     }
+)
+
+WIRE_MONITORED_COUNTRY_SLUGS = frozenset(
+    slug for slug in WIRE_PRIORITY_GEO_SLUGS if slug not in _WIRE_REGION_GEO_SLUGS
 )
 
 
@@ -388,6 +389,38 @@ def is_non_priority_country_only(item: dict[str, Any]) -> bool:
     if not country_slugs:
         return False
     return not any(slug in WIRE_PRIORITY_GEO_SLUGS for slug in slugs)
+
+
+def is_irrelevant_country_mix(item: dict[str, Any]) -> bool:
+    """Reject US-only stories polluted by unrelated country mentions.
+
+    A headline such as ``US–UK`` or ``US–Iraq`` should not enter the Wire just
+    because it came from an American source.  A US story with a monitored
+    Indo-Pacific counterpart (for example US–China) remains eligible.  Cyber
+    operations/security incidents are explicitly retained because they are a
+    requested exception even when the article names another country.
+    """
+    slugs = set(_wire_content_geography_slugs(item))
+    countries = {
+        slug
+        for slug in slugs
+        if slug == "vietnam"
+        or (slug.startswith("geo-") and slug not in _WIRE_REGION_GEO_SLUGS)
+    }
+    if "geo-united-states" not in countries:
+        return False
+    monitored = countries & WIRE_MONITORED_COUNTRY_SLUGS
+    if monitored != {"geo-united-states"}:
+        # A monitored Indo-Pacific counterpart (US–China, US–Japan, etc.)
+        # makes the wider story relevant even if another country is mentioned.
+        return False
+    if not countries - WIRE_MONITORED_COUNTRY_SLUGS:
+        return False
+    text = " ".join(
+        str(item.get(key) or "")
+        for key in ("title", "title_vi", "summary", "description", "content")
+    )
+    return not is_defense_security_signal(text)
 
 
 # Absolute soft veto — never overridden by hard-ops name-drops in PR copy
@@ -1109,6 +1142,8 @@ def is_wire_relevant(item: dict[str, Any], *, prompt: str | None = None) -> bool
     ).casefold()
     _, explicit_exclude = evaluate_wire_filter_prompt(content_text, prompt=prompt)
     if is_global_wire_noise(content_text):
+        return False
+    if is_non_priority_country_only(item) or is_irrelevant_country_mix(item):
         return False
     if explicit_exclude:
         return False

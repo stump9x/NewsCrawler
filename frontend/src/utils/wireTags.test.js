@@ -111,6 +111,24 @@ describe("Wire tag ordering", () => {
     ]);
   });
 
+  it("deduplicates hashtags and suppresses generic labels beside canonical topics", () => {
+    const result = orderedWireTags({
+      tags: [
+        { slug: "wire-topic-4a", name: "Diễn tập" },
+        { slug: "wire-topic-4a", name: "Diễn tập" },
+        { slug: "exercises", name: "Exercises" },
+        { slug: "geo-china", name: "China" },
+        { slug: "geo-china", name: "China" },
+      ],
+    });
+    expect(result.filter((item) => item.kind === "topic").map((item) => item.tag.slug)).toEqual([
+      "wire-topic-4a",
+    ]);
+    expect(result.filter((item) => item.kind === "geography").map((item) => item.tag.slug)).toEqual([
+      "geo-china",
+    ]);
+  });
+
   it("exposes ISO2 and flagcdn URL for official flag images", () => {
     expect(isGeographyTag({ slug: "vietnam" })).toBe(true);
     expect(geographyIso2({ slug: "geo-united-states" })).toBe("US");
@@ -136,18 +154,19 @@ describe("Wire tag ordering", () => {
     expect(WIRE_COUNTRY_FILTER_OPTIONS.map((o) => o.value)).toEqual([
       "geo-china",
       "geo-united-states",
-      "geo-philippines",
       "geo-taiwan",
+      "geo-japan",
+      "geo-australia",
+      "geo-north-korea",
+      "geo-south-korea",
+      "vietnam",
+      "geo-philippines",
       "geo-thailand",
       "geo-indonesia",
       "geo-malaysia",
-      "vietnam",
-      "geo-japan",
+      "geo-singapore",
       "geo-cambodia",
       "geo-laos",
-      "geo-australia",
-      "geo-russia",
-      "geo-ukraine",
       "geo-myanmar",
     ]);
     for (const opt of WIRE_COUNTRY_FILTER_OPTIONS) {

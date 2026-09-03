@@ -147,18 +147,19 @@ const GEO_LABEL_VI = {
 export const WIRE_COUNTRY_FILTER_OPTIONS = [
   { value: "geo-china", label: "Trung Quốc" },
   { value: "geo-united-states", label: "Mỹ" },
-  { value: "geo-philippines", label: "Philippines" },
   { value: "geo-taiwan", label: "Đài Loan" },
+  { value: "geo-japan", label: "Nhật Bản" },
+  { value: "geo-australia", label: "Úc" },
+  { value: "geo-north-korea", label: "Triều Tiên" },
+  { value: "geo-south-korea", label: "Hàn Quốc" },
+  { value: "vietnam", label: "Việt Nam" },
+  { value: "geo-philippines", label: "Philippines" },
   { value: "geo-thailand", label: "Thái Lan" },
   { value: "geo-indonesia", label: "Indonesia" },
   { value: "geo-malaysia", label: "Malaysia" },
-  { value: "vietnam", label: "Việt Nam" },
-  { value: "geo-japan", label: "Nhật Bản" },
+  { value: "geo-singapore", label: "Singapore" },
   { value: "geo-cambodia", label: "Campuchia" },
   { value: "geo-laos", label: "Lào" },
-  { value: "geo-australia", label: "Úc" },
-  { value: "geo-russia", label: "Nga" },
-  { value: "geo-ukraine", label: "Ukraina" },
   { value: "geo-myanmar", label: "Myanmar" },
 ];
 
@@ -195,8 +196,15 @@ export function preferCountryGeography(tags) {
  */
 export function wireCountryTags(row, maxCountries = 6) {
   const tags = Array.isArray(row?.tags) ? row.tags : [];
+  const seen = new Set();
+  const unique = tags.filter((tag) => {
+    const key = slugOf(tag);
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
   return preferCountryGeography(
-    tags.filter(isGeographyTag).filter((tag) => !isRegionGeographyTag(tag))
+    unique.filter(isGeographyTag).filter((tag) => !isRegionGeographyTag(tag))
   )
     .filter((tag) => geographyFlagUrl(tag, 20))
     .slice(0, Math.max(0, maxCountries));
@@ -209,10 +217,24 @@ export function wireCountryTags(row, maxCountries = 6) {
  */
 export function orderedWireTags(row, maxTags = 8, maxGeography = 6) {
   const tags = Array.isArray(row?.tags) ? row.tags : [];
-  const website = tags.find((tag) => slugOf(tag).startsWith("site-"));
-  const geography = wireCountryTags(row, maxGeography);
-  const topics = tags.filter((tag) => {
+  // API joins can repeat a tag. Keep the first occurrence so a card never
+  // renders duplicate hashtags or consumes the visible tag budget twice.
+  const uniqueTags = [];
+  const seen = new Set();
+  for (const tag of tags) {
+    const key = slugOf(tag);
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    uniqueTags.push(tag);
+  }
+  const website = uniqueTags.find((tag) => slugOf(tag).startsWith("site-"));
+  const geography = wireCountryTags({ ...row, tags: uniqueTags }, maxGeography);
+  const hasCanonicalTopic = uniqueTags.some((tag) => slugOf(tag).startsWith("wire-topic-"));
+  const topics = uniqueTags.filter((tag) => {
     const slug = slugOf(tag);
+    // Canonical wire-topic tags supersede generic classifier labels such as
+    // exercises/maritime, which otherwise repeat the same subject.
+    if (hasCanonicalTopic && ["exercises", "maritime", "procurement", "force-posture", "combat-trends", "national-strategy", "security-cooperation", "defense-policy", "analysis"].includes(slug)) return false;
     return (
       !slug.startsWith("site-") &&
       !HIDDEN_TAGS.has(slug) &&

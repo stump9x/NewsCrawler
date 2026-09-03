@@ -241,6 +241,9 @@ rules you would use for headings in a military, defence, or intelligence documen
    do NOT invent a destination country.
 5. Translate every meaningful word. Do not leave source-language content words
    untranslated (e.g. visit, revive, project, opportunity, strategic).
+   Translate the complete headline clause: retain auxiliaries and planning verbs
+   such as "plans to", "prepares to", "aims to" and their objects. Never return
+   a fragment such as "Cách Nhật Bản dự" or stop at a dangling preposition.
 6. Exceptions that MAY remain in the original form:
    - abbreviations, identifiers, code names, serial numbers, technical designators
    - Latin proper nouns when no confident official Vietnamese form exists
@@ -300,6 +303,8 @@ _SHORT_EN_FALLBACK_PROMPT = """\
 You translate military/defence news titles into formal Vietnamese.
 Rules:
 - Keep the exact meaning. Do not summarize or add facts.
+- Translate the whole headline, including verbs and objects; never output a
+  shortened fragment or end with an unfinished word such as "dự" or "của".
 - Do not invent countries, people, or places.
 - Keep proper nouns/acronyms as-is when unsure (NATO, PLA, F-35, Patriot, GAO…).
 - Output ONLY one Vietnamese title line. No quotes or notes.
@@ -624,6 +629,17 @@ def translation_length_implausible(original: str, translated: str) -> bool:
     if not src or not dst:
         return False
     ratio = len(dst) / max(1, len(src))
+    src_words = re.findall(r"[A-Za-zÀ-ỹĐđ]{2,}", src)
+    dst_words = re.findall(r"[A-Za-zÀ-ỹĐđ]{2,}", dst)
+    # A long source reduced to three or four words is usually a truncated
+    # machine draft, even when it contains Vietnamese diacritics.
+    if len(src_words) >= 6 and len(dst_words) < max(5, int(len(src_words) * 0.45)):
+        return True
+    if re.search(
+        r"\b(?:dự|của|về|với|cho|từ|tại|trong|để|nhằm|theo|đang|sẽ)$",
+        dst.casefold(),
+    ) and len(dst_words) < 7:
+        return True
     # CJK titles pack meaning into fewer glyphs; Vietnamese expansion of 2–5× is normal.
     if is_cjk_title(original):
         return ratio > 5.5 or ratio < 0.45
@@ -776,6 +792,8 @@ def is_mangled_title_vi(
         return True
     if original and translation_invents_places(original, text):
         return True
+    if original and translation_length_implausible(original, text):
+        return True
     # Stricter fidelity checks for local-model output (3B invents fluent nonsense).
     provider_l = str(provider or "").casefold()
     ollama_like = (
@@ -849,6 +867,8 @@ def accept_groq_translation(original: str, translated: str) -> bool:
         return False
     if translation_has_hallucinated_phrases(original, text):
         return False
+    if translation_length_implausible(original, text):
+        return False
     if has_obvious_garble(text):
         return False
     if has_untranslated_english_content(original, text):
@@ -864,6 +884,24 @@ def accept_groq_translation(original: str, translated: str) -> bool:
         }
         return bool(words & _VIETNAMESE_SIGNAL_WORDS)
     return False
+
+
+def accept_google_translation(original: str, translated: str) -> bool:
+    """Validate Google output before it becomes the title shown to users."""
+    text = (translated or "").strip()
+    if not text:
+        return False
+    if translation_still_cjk(original, text):
+        return False
+    if translation_invents_places(original, text):
+        return False
+    if translation_length_implausible(original, text):
+        return False
+    if has_obvious_garble(text) or has_untranslated_english_content(original, text):
+        return False
+    if _ENGLISH_HEADLINE_RE.search(text) and english_word_count(text) >= 4:
+        return False
+    return looks_vietnamese(text) or (is_cjk_title(original) and vietnamese_ratio(text) >= 0.08)
 
 
 def cjk_prefer_ollama() -> bool:
@@ -1714,6 +1752,8 @@ def apply_inline_rule_translation(
         ):
             try:
                 draft = google_translate_title(title, client=google_client)
+                if not accept_google_translation(title, draft):
+                    raise TitleTranslateError("Google returned an incomplete or mixed-language title")
                 clear_google_circuit()
                 if translation_still_cjk(title, draft) and _try_ollama_fallback(
                     threat, title

@@ -24,4 +24,11 @@ describe("displayWireTitle", () => {
   it("shows placeholder only when both titles are empty", () => {
     expect(displayWireTitle({ title: "", title_vi: "" })).toBe("Đang dịch…");
   });
+
+  it("falls back from a truncated Vietnamese draft", () => {
+    expect(displayWireTitle({
+      title: "How Japan plans to strengthen maritime security cooperation",
+      title_vi: "Cách Nhật Bản dự",
+    })).toBe("How Japan plans to strengthen maritime security cooperation");
+  });
 });

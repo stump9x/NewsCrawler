@@ -49,30 +49,30 @@ const POLL_MS = 10000;
 const WIRE_MAX_AGE_DAYS = 30;
 const PAGE_SIZE = 50;
 const SCOPE_TOPICS = {
-  "wire-topic-1a": "Biển Đông: hoạt động thực địa",
-  "wire-topic-1b": "Biển Đông: biện pháp chủ quyền",
-  "wire-topic-2a": "Trung Quốc: biên giới, cửa khẩu",
-  "wire-topic-2b": "Trung Quốc: quốc phòng, an ninh",
-  "wire-topic-2c": "Trung Quốc: công nghệ, hạ tầng chiến lược",
-  "wire-topic-3a": "Tổ chức và chiến lược quốc phòng",
-  "wire-topic-3b": "Hội nghị và quyết sách trọng điểm",
-  "wire-topic-3c": "Chính sách công nghệ, hiện đại hóa",
-  "wire-topic-4a": "Diễn tập và hoạt động quân sự",
-  "wire-topic-4b": "Hợp tác, chuyển giao quốc phòng",
-  "wire-topic-4c": "Học thuyết và năng lực mới",
-  "wire-topic-5": "Trừng phạt, kiểm soát xuất khẩu",
+  "wire-topic-1a": "Biển Đông: thực địa",
+  "wire-topic-1b": "Biển Đông: chủ quyền",
+  "wire-topic-2a": "TQ: biên giới, cửa khẩu",
+  "wire-topic-2b": "TQ: quốc phòng, an ninh",
+  "wire-topic-2c": "TQ: công nghệ, hạ tầng",
+  "wire-topic-3a": "Tổ chức, chiến lược QP",
+  "wire-topic-3b": "Hội nghị, quyết sách",
+  "wire-topic-3c": "Công nghệ, hiện đại hóa",
+  "wire-topic-4a": "Diễn tập, hoạt động QS",
+  "wire-topic-4b": "Hợp tác, chuyển giao QP",
+  "wire-topic-4c": "Học thuyết, năng lực mới",
+  "wire-topic-5": "Trừng phạt, kiểm soát XK",
 };
 const TOPIC_LABELS = {
   ...SCOPE_TOPICS,
   exercises: "Diễn tập",
   maritime: "Hàng hải",
-  procurement: "Mua sắm quốc phòng",
+  procurement: "Mua sắm QP",
   "force-posture": "Bố trí lực lượng",
-  "combat-trends": "Xu hướng tác chiến",
-  "national-strategy": "Chiến lược quân sự",
-  "cyber-operations": "Hoạt động mạng",
-  "security-cooperation": "Hợp tác an ninh",
-  "defense-policy": "Chính sách quốc phòng",
+  "combat-trends": "Xu hướng QS",
+  "national-strategy": "Chiến lược QS",
+  "cyber-operations": "Tác chiến mạng",
+  "security-cooperation": "Hợp tác AN",
+  "defense-policy": "Chính sách QP",
   analysis: "Phân tích",
 };
 const SOURCE_LABELS = {
@@ -282,12 +282,6 @@ function WireCard({ row, onFavoriteToggle, favoriteBusy }) {
           </Stack>
 
           <Box minWidth={0}>
-            {Number(row.personal_interest_score) >= 3 && !row.is_favorite ? (
-              <Chip size="small" color="success" variant="outlined"
-                label="Cùng chủ đề tin đang theo dõi"
-                title="Cùng phân nhóm và quốc gia với một tin bạn đang theo dõi"
-                sx={{ mb: 0.75 }} />
-            ) : null}
             <ExternalTitleLink
               title={displayWireTitle(row)}
               href={resolveThreatHref(row)}

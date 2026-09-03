@@ -12,7 +12,7 @@ import unicodedata
 from dataclasses import dataclass
 from functools import lru_cache
 
-POLICY_VERSION = "2026-09-topics-v2"
+POLICY_VERSION = "2026-09-topics-v3"
 TOPIC_TAG_PREFIX = "wire-topic-"
 
 
