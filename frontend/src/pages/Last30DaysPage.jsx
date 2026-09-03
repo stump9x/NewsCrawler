@@ -37,6 +37,28 @@ function sourceLabel(source) {
   return SOURCE_LABELS[key] || key;
 }
 
+function compactCount(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number) || number <= 0) return "";
+  if (number >= 1000000) return `${(number / 1000000).toFixed(1).replace(/\.0$/, "")}tr`;
+  if (number >= 1000) return `${(number / 1000).toFixed(1).replace(/\.0$/, "")}k`;
+  return String(Math.round(number));
+}
+
+function engagementLabel(finding) {
+  const engagement = finding?.engagement && typeof finding.engagement === "object"
+    ? finding.engagement
+    : {};
+  const parts = [];
+  const comments = compactCount(engagement.comments ?? engagement.num_comments);
+  const likes = compactCount(engagement.likes ?? engagement.favorites);
+  const points = compactCount(engagement.points ?? engagement.upvotes ?? engagement.score);
+  if (points) parts.push(`${points} điểm`);
+  if (likes) parts.push(`${likes} thích`);
+  if (comments) parts.push(`${comments} bình luận`);
+  return parts.join(" · ");
+}
+
 /** Drop findings whose published_at is older than lookback (FE safety net). */
 function filterFindingsByLookback(rows, lookbackDays = 30) {
   const days = Math.max(1, Math.min(Number(lookbackDays) || 30, 90));
@@ -538,6 +560,7 @@ export default function Last30DaysPage() {
                     <Stack spacing={0.8}>
                       {sourceRows.map((finding, index) => {
                         const title = displayWireTitle(finding);
+                        const engagement = engagementLabel(finding);
                         const content = (
                           <Stack direction="row" spacing={0.75} alignItems="flex-start">
                             <Typography variant="caption" color="text.secondary" sx={{ minWidth: 16 }}>
@@ -558,6 +581,7 @@ export default function Last30DaysPage() {
                               </Typography>
                               <Typography variant="caption" color="text.secondary">
                                 Điểm {Number(finding.score || 0).toFixed(0)}
+                                {engagement ? ` · ${engagement}` : ""}
                               </Typography>
                             </Box>
                           </Stack>
