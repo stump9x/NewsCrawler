@@ -14,6 +14,8 @@ from .auth_views import (
     WireFilterPromptView,
     MindmapPromptAdminReferenceView,
     MindmapPromptView,
+    CivilDefenseResearchPromptAdminReferenceView,
+    CivilDefenseResearchPromptView,
 )
 from .views import HealthView
 
@@ -42,6 +44,16 @@ urlpatterns = [
         "v1/auth/mindmap-prompt/admin-reference/",
         MindmapPromptAdminReferenceView.as_view(),
         name="mindmap-prompt-admin-reference",
+    ),
+    path(
+        "v1/auth/civil-defense-research-prompt/",
+        CivilDefenseResearchPromptView.as_view(),
+        name="civil-defense-research-prompt",
+    ),
+    path(
+        "v1/auth/civil-defense-research-prompt/admin-reference/",
+        CivilDefenseResearchPromptAdminReferenceView.as_view(),
+        name="civil-defense-research-prompt-admin-reference",
     ),
     path(
         "v1/auth/wire-filter-prompts/",

@@ -166,7 +166,8 @@ class ThreatViewSet(viewsets.ModelViewSet):
         filtered = ThreatFilter(
             params, queryset=Threat.objects.all(), request=request
         ).qs.order_by("-published_at", "-id")
-        return apply_user_wire_policy(filtered, request.user, prioritize=False)
+        filtered = apply_user_wire_policy(filtered, request.user, prioritize=False)
+        return filtered
 
     @staticmethod
     def _wire_rank_map(queryset):

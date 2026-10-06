@@ -17,6 +17,7 @@ __pycache__/
 *.sqlite3
 backend/celerybeat-schedule
 backend/.trend-cache/
+backend/.telegram/
 .wire-backups/
 backend/core.*
 data/

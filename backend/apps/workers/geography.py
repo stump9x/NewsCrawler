@@ -607,6 +607,9 @@ def infer_country_from_flag_html(html: str) -> tuple[str, str]:
 
 def _alias_pattern(alias: str) -> re.Pattern[str]:
     escaped = re.escape(alias).replace(r"\ ", r"[\s-]+")
+    # Lào Cai is a Vietnamese province, not the country Laos.
+    if alias.casefold() in {"lao", "lào"}:
+        return re.compile(rf"(?<!\w){escaped}(?!\s+cai\b)(?!\w)", re.IGNORECASE)
     # CJK scripts do not use spaces, so Python's \w boundaries would reject
     # country names embedded naturally in compounds such as 日本の自衛隊.
     if re.search(r"[\u3040-\u30ff\u3400-\u9fff]", alias):

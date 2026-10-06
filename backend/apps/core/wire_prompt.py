@@ -1,10 +1,10 @@
 """Human-readable editorial contract for the five operational news clusters."""
 
-DEFAULT_WIRE_FILTER_PROMPT = """NHIỆM VỤ: LỌC SÁT NĂM NHÓM CHỦ ĐỀ
-Cân bằng độ sát chủ đề và khả năng tìm đủ diễn biến trong ngày. Chỉ đưa vào Trạm tin tức tin có diễn biến, quyết sách, kế hoạch, năng lực hoặc phản ứng cụ thể thuộc một trong các nhóm dưới đây. Ví dụ minh họa phạm vi, không phải danh sách sự kiện hoặc cách diễn đạt duy nhất được phép giữ. Nhận cả từ đồng nghĩa, biến thể ngôn ngữ và diễn biến tương đương có bằng chứng.
+DEFAULT_WIRE_FILTER_PROMPT = """NHIỆM VỤ: PHỦ RỘNG CÓ KIỂM SOÁT NĂM NHÓM CHỦ ĐỀ
+Tìm đủ diễn biến liên quan nhưng vẫn chống nhiễu. Đưa vào Trạm tin tức mọi tin có diễn biến, quyết sách, kế hoạch, năng lực, chuẩn bị, triển khai hoặc phản ứng cụ thể thuộc một trong các nhóm dưới đây. Ví dụ chỉ minh họa phạm vi, không phải danh sách sự kiện hay cách diễn đạt bắt buộc. Nhận từ đồng nghĩa, tên viết tắt, biến thể đa ngôn ngữ và diễn biến tương đương có bằng chứng.
 
 ĐIỀU KIỆN BẮT BUỘC
-1. Đọc tiêu đề và phần đầu nội dung: phải xác định được chủ thể/địa bàn + vấn đề chuyên biệt + hành động/quyết định/phản ứng được nguồn nêu. Tiêu đề có thể nêu hệ thống, lực lượng hoặc sự kiện; phần dẫn bổ sung chủ thể và hành động. Không bắt buộc mọi từ khóa đều nằm trong tiêu đề. Các yếu tố phải cùng ngữ cảnh, không ghép từ nhiều bản tin hoặc liên kết gợi ý.
+1. Đọc tiêu đề và phần đầu nội dung: phải xác định được chủ thể/địa bàn + vấn đề chuyên biệt + hành động/quyết định/phản ứng được nguồn nêu. Tiêu đề có thể nêu hệ thống, lực lượng hoặc sự kiện; phần dẫn được phép bổ sung chủ thể, địa bàn và hành động. Không bắt buộc mọi từ khóa đều nằm trong tiêu đề. Các yếu tố phải cùng ngữ cảnh, không ghép từ nhiều bản tin hoặc liên kết gợi ý.
 2. Tên quốc gia, tên nguồn, tên quân đội, chữ “an ninh”, “AI”, “chiến lược” hay thẻ chủ đề đơn lẻ không đủ. Không suy ra tác động tới Việt Nam từ xuất xứ của nguồn báo.
 3. Giữ tin chính sách dân sự nếu đúng lĩnh vực chiến lược/địa bàn bên dưới; không bắt buộc mọi tin phải có từ khóa quân sự. Ngược lại, không giữ mọi tin quân sự thế giới.
 4. Phải có nguồn, đường dẫn, ngày xuất bản hợp lệ trong cửa sổ thời gian của hệ thống. Ví dụ chỉ minh họa phạm vi, KHÔNG chứng minh sự kiện đã xảy ra. Không gán ngày hiện tại cho bài không rõ ngày; không tự đổi năm để biến tin cũ thành tin mới.
@@ -32,7 +32,8 @@ Nghị quyết/dự thảo của Đảng NDCM Lào; đánh giá/kết quả Hộ
 Chính sách/phát biểu/đánh giá có căn cứ tại Hội nghị AI thế giới ở Trung Quốc; chương trình hiện đại hóa quốc phòng cụ thể như tàu Zumwalt của Mỹ. Loại giới thiệu lịch hội chợ hoặc sản phẩm AI đơn thuần.
 
 NHÓM 4 — QUÂN SỰ, HỢP TÁC VÀ NĂNG LỰC MỚI
-Diễn tập Hán Quang, SEACAT, phòng thủ đô thị Đài Loan; huấn luyện hải quân Campuchia với tàu tiếp nhận; hợp tác hàng hải Mỹ–Nhật–Philippines; hoạt động quân sự/diễn tập Indonesia và các nước tại khu vực. Cần lực lượng, địa bàn, hoạt động cụ thể; không giữ thể thao, cứu trợ thông thường hay sinh hoạt đơn vị chỉ vì có quân nhân.
+Diễn tập Hán Quang, SEACAT, phòng thủ đô thị Đài Loan; huấn luyện hải quân Campuchia với tàu tiếp nhận; hợp tác hàng hải Mỹ–Nhật–Philippines; hoạt động quân sự/diễn tập Indonesia và các nước tại khu vực. Bao gồm toàn bộ vòng đời một hoạt động xác định: đề xuất/kế hoạch, khảo sát, chuẩn bị hậu cần-kỹ thuật, kiểm tra, tập huấn, hiệp đồng, sơ duyệt, tổng duyệt, thực binh, kết quả và rút kinh nghiệm. Cần lực lượng, địa bàn hoặc tên hoạt động cụ thể; không giữ thể thao, cứu trợ thông thường hay sinh hoạt đơn vị chỉ vì có quân nhân.
+Ưu tiên đầy đủ diễn biến về diễn tập chung phòng thủ dân sự giữa Việt Nam–Lào–Campuchia năm 2026, kể cả bài chỉ dùng cách gọi “quân đội ba nước”. Nhận các nội dung tương đương: ứng phó thảm họa/thiên tai, HADR, hỗ trợ nhân đạo-cứu trợ thảm họa, phòng chống thiên tai, tìm kiếm cứu hộ-cứu nạn, quân y, cứu trợ khẩn cấp, civil defense/civil defence, civil protection, disaster response/relief, humanitarian assistance, search and rescue. Tin chuẩn bị, kiểm tra và bảo đảm hậu cần-kỹ thuật thuộc đúng sự kiện vẫn là diễn biến chính, không phải cứu trợ thông thường.
 Thỏa thuận/kết quả hội nghị quốc phòng Úc–Philippines; Thái Lan nhận Stryker; Ủy ban biên giới Lào–Campuchia; hỗ trợ an ninh Nhật–Campuchia; chuyển giao/mua sắm có quan hệ hợp tác hoặc tác động khu vực. Loại hợp đồng vũ khí nội địa thông thường ngoài trọng tâm.
 Học thuyết mới của Indonesia; hệ thống phòng thủ Guam; nâng cấp chỉ huy–điều khiển phòng không Đài Loan; tàu không người lái Trung Quốc; chương trình nghiên cứu 6G; dự án AI tiếng Lào có hợp tác Trung Quốc. Nhận các diễn biến tương đương về hệ thống phòng thủ tên lửa, tác chiến điện tử, vũ khí công nghệ mới và triển khai AI quân sự. Cần chương trình/học thuyết/năng lực xác định; loại suy đoán tính năng và bài công nghệ đại trà.
 
@@ -43,8 +44,8 @@ CHỐNG DƯƠNG TÍNH GIẢ
 Loại tin đời sống, thể thao, gia đình quân nhân, nghi lễ/kỷ niệm, lịch sử vũ khí, quảng cáo, tai nạn dân sự, tin tài chính thường nhật; bài chỉ kể tên nước/đơn vị/AI; nội dung ngoài năm nhóm; chứng cứ chỉ nằm trong URL, tên nguồn hoặc thẻ. Không dùng số tin cần đạt làm lý do hạ chuẩn.
 
 TÙY CHỈNH VÀ ĐỀ XUẤT
-Năm nhóm được thực thi bằng bộ quy tắc xác định trong hệ thống, không gọi AI. Văn xuôi ở đây mô tả tiêu chí; chỉ dòng GIỮ:/LOẠI: là tùy chỉnh từ khóa chạy trực tiếp. LOẠI ưu tiên hơn GIỮ; GIỮ chỉ ưu tiên tin đã vượt các điều kiện, không mở rộng phạm vi. Tin đề xuất theo dõi phải cùng phân nhóm cụ thể và quốc gia với một tin đã theo dõi; cùng nguồn hoặc hai thẻ chung không đủ.
-GIỮ: Xca-bơ-rô; Cỏ Mây; Hoa Lau; Scarborough; Second Thomas; Phòng Thành Cảng; Sách trắng Quốc phòng; Hán Quang; SEACAT; kiểm soát xuất khẩu
+Năm nhóm được thực thi bằng bộ quy tắc xác định trong hệ thống, không gọi AI. Văn xuôi ở đây mô tả tiêu chí; chỉ dòng GIỮ:/LOẠI: là tùy chỉnh từ khóa chạy trực tiếp. LOẠI ưu tiên hơn GIỮ; GIỮ chỉ ưu tiên tin đã vượt các điều kiện, không mở rộng phạm vi. Tin đề xuất theo dõi được ưu tiên khi cùng phân nhóm cụ thể; mức cao nhất khi còn trùng quốc gia với cùng một tin đã theo dõi. Cùng nguồn hoặc thẻ chung chung không đủ.
+GIỮ: Xca-bơ-rô; Cỏ Mây; Hoa Lau; Scarborough; Second Thomas; Phòng Thành Cảng; Sách trắng Quốc phòng; Hán Quang; SEACAT; kiểm soát xuất khẩu; diễn tập chung phòng thủ dân sự; Việt Nam Lào Campuchia; quân đội ba nước; ứng phó thảm họa; tìm kiếm cứu nạn; HADR
 LOẠI: cẩm nang du lịch; mẹo du lịch; đời sống quân nhân; thể thao quân đội; quảng cáo sản phẩm
 
 KẾT QUẢ

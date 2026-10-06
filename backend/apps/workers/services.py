@@ -20,7 +20,7 @@ from apps.core.wire_filter_policy import (
     GLOBAL_WIRE_NOISE_GROUPS,
     evaluate_wire_filter_prompt,
 )
-from apps.core.wire_topics import TOPIC_LABELS, TOPIC_TAG_PREFIX, classify_wire_topics
+from apps.core.wire_topics import CIVIL_DEFENSE_VLC_2026_TAG, TOPIC_LABELS, TOPIC_TAG_PREFIX, classify_wire_topics, is_civil_defense_vlc_2026
 from apps.intel.models import CompromisedCredential, DataLeak, Indicator, Tag, Threat
 from apps.intel.watching import (
     match_indicator_against_rules,
@@ -1182,11 +1182,15 @@ def _classify_rss_item(item: dict[str, Any]) -> tuple[str, str, list[str], Decim
     discovery = str(item.get("discovery") or "")
     is_x_wire = discovery == "x-wire" or str(item.get("engine") or "") == "x_twitter"
     text = f"{item.get('title') or ''} {item.get('summary') or ''} {item.get('description') or ''}".lower()
+    event_date = item.get("published_at") or item.get("published") or item.get("date")
+    civil_defense_event = is_civil_defense_vlc_2026(text, published_at=event_date)
     topic_match = classify_wire_topics(item)
     vietnam = is_vietnam_related(" ".join(topic_match.evidence))
 
     # Emit only source and substantive military topic tags.
     tags: list[str] = list(topic_match.tags)
+    if discovery == "telegram-group":
+        tags.append("telegram")
     if is_x_wire:
         tags.append("x")
         handle = str(item.get("x_handle") or "").lstrip("@").strip().lower()
@@ -1195,6 +1199,8 @@ def _classify_rss_item(item: dict[str, Any]) -> tuple[str, str, list[str], Decim
     website_tag = website_tag_slug(item)
     if website_tag:
         tags.append(website_tag)
+    if civil_defense_event and CIVIL_DEFENSE_VLC_2026_TAG not in tags:
+        tags.append(CIVIL_DEFENSE_VLC_2026_TAG)
 
     if is_x_wire:
         source = Threat.Source.X
@@ -1698,6 +1704,12 @@ def ingest_rss_items(items: list[dict[str, Any]], *, source_label: str = "rss") 
         title = str(item.get("title") or "").strip()
         if not title:
             continue
+        # User-confirmed false positive: a domestic fire drill in Lao Cai.
+        if title.casefold().startswith(
+            "lào cai: nhiều địa phương thực tập, diễn tập phương án chữa cháy, cứu nạn, cứu hộ"
+        ):
+            skipped_irrelevant += 1
+            continue
         from apps.workers.feeds.clients import absolutize_feed_link
 
         link = normalize_wire_url(
@@ -1809,7 +1821,20 @@ def ingest_rss_items(items: list[dict[str, Any]], *, source_label: str = "rss") 
         match_threat_against_rules(obj)
         from apps.integrations.ai.translate import apply_inline_rule_translation
 
-        if not apply_inline_rule_translation(obj):
+        telegram_title = str(item.get("title_vi") or "").strip()
+        if item.get("discovery") == "telegram-group" and telegram_title:
+            from apps.integrations.ai.translate import title_hash
+
+            obj.title = title[:512]
+            obj.title_vi = telegram_title[:512]
+            obj.title_vi_status = Threat.TitleViStatus.SKIPPED
+            obj.title_vi_provider = "telegram-caption"
+            obj.title_hash = title_hash(telegram_title)
+            obj.save(update_fields=[
+                "title", "title_vi", "title_vi_status", "title_vi_provider",
+                "title_hash", "updated_at",
+            ])
+        elif not apply_inline_rule_translation(obj):
             translate_ids.append(obj.id)
 
     if translate_ids:

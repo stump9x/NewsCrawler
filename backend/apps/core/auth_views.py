@@ -34,6 +34,14 @@ from .mindmap_policy import (
     get_mindmap_prompt_record,
     get_user_mindmap_prompt_record,
 )
+from .civil_defense_policy import (
+    DEFAULT_CIVIL_DEFENSE_RESEARCH_PROMPT,
+    MAX_CIVIL_DEFENSE_PROMPT_CHARS,
+    clear_civil_defense_prompt_cache,
+    get_civil_defense_prompt,
+    get_civil_defense_prompt_record,
+    get_user_civil_defense_prompt_record,
+)
 
 
 class LoginSerializer(serializers.Serializer):
@@ -155,6 +163,20 @@ class MindmapPromptSerializer(serializers.Serializer):
         value = value.strip()
         if not value:
             raise serializers.ValidationError("Prompt Mindmap không được để trống.")
+        return value
+
+
+class CivilDefenseResearchPromptSerializer(serializers.Serializer):
+    prompt = serializers.CharField(
+        max_length=MAX_CIVIL_DEFENSE_PROMPT_CHARS,
+        trim_whitespace=True,
+        min_length=100,
+    )
+
+    def validate_prompt(self, value):
+        value = value.strip()
+        if not value:
+            raise serializers.ValidationError("Chính sách chuyên đề không được để trống.")
         return value
 
 
@@ -435,6 +457,34 @@ def _mindmap_prompt_payload(record, *, owner=None, fallback_prompt: str = "", in
     }
 
 
+def _civil_defense_prompt_payload(record, *, owner=None, fallback_prompt: str = "", inherited: bool = False) -> dict:
+    prompt = ((record.civil_defense_research_prompt if record is not None else "") or fallback_prompt).strip()
+    inherited = inherited or (
+        owner is not None
+        and not (record and (record.civil_defense_research_prompt or "").strip())
+    )
+    return {
+        "prompt": prompt,
+        "default_prompt": DEFAULT_CIVIL_DEFENSE_RESEARCH_PROMPT,
+        "is_default": prompt == DEFAULT_CIVIL_DEFENSE_RESEARCH_PROMPT.strip(),
+        "updated_at": (
+            record.civil_defense_updated_at
+            if record is not None and record.civil_defense_updated_at
+            else None
+        ),
+        "updated_by": (
+            record.civil_defense_updated_by.username
+            if record is not None and record.civil_defense_updated_by
+            else ""
+        ),
+        "owner_id": owner.pk if owner is not None else None,
+        "owner_username": owner.username if owner is not None else "Quản trị viên",
+        "inherited_from_admin": inherited,
+        "scope": "user" if owner is not None else "system",
+        "policy_type": WireFilterPromptRevision.PolicyType.CIVIL_DEFENSE.value,
+    }
+
+
 def _record_policy_revision(record, actor, action: str, *, policy_type=WireFilterPromptRevision.PolicyType.WIRE_FILTER, prompt: str | None = None) -> None:
     owner = record.owner or actor
     WireFilterPromptRevision.objects.create(
@@ -536,6 +586,96 @@ class MindmapPromptView(APIView):
             clear_mindmap_prompt_cache()
         owner = None if request.user.is_superuser else request.user
         return Response(_mindmap_prompt_payload(record, owner=owner))
+
+
+class CivilDefenseResearchPromptView(APIView):
+    permission_classes = [IsAuthenticated]
+    throttle_scope = "auth"
+
+    def get(self, request):
+        record = get_user_civil_defense_prompt_record(request.user)
+        owner = None if request.user.is_superuser else request.user
+        fallback = get_civil_defense_prompt()
+        inherited = owner is not None and not (
+            record and (record.civil_defense_research_prompt or "").strip()
+        )
+        return Response(
+            _civil_defense_prompt_payload(
+                record, owner=owner, fallback_prompt=fallback, inherited=inherited
+            )
+        )
+
+    def patch(self, request):
+        serializer = CivilDefenseResearchPromptSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        with transaction.atomic():
+            record = get_user_civil_defense_prompt_record(request.user)
+            record.civil_defense_research_prompt = serializer.validated_data["prompt"]
+            record.civil_defense_updated_by = request.user
+            record.civil_defense_updated_at = timezone.now()
+            record.save(
+                update_fields=[
+                    "civil_defense_research_prompt",
+                    "civil_defense_updated_by",
+                    "civil_defense_updated_at",
+                ]
+            )
+            _record_policy_revision(
+                record,
+                request.user,
+                WireFilterPromptRevision.Action.UPDATE,
+                policy_type=WireFilterPromptRevision.PolicyType.CIVIL_DEFENSE,
+                prompt=record.civil_defense_research_prompt,
+            )
+        if request.user.is_superuser:
+            clear_civil_defense_prompt_cache()
+        owner = None if request.user.is_superuser else request.user
+        return Response(_civil_defense_prompt_payload(record, owner=owner))
+
+    def post(self, request):
+        with transaction.atomic():
+            record = get_user_civil_defense_prompt_record(request.user)
+            admin_record = get_civil_defense_prompt_record()
+            if request.user.is_superuser:
+                prompt = DEFAULT_CIVIL_DEFENSE_RESEARCH_PROMPT
+            else:
+                prompt = (
+                    admin_record.civil_defense_research_prompt
+                    or DEFAULT_CIVIL_DEFENSE_RESEARCH_PROMPT
+                )
+            record.civil_defense_research_prompt = prompt
+            record.civil_defense_updated_by = request.user
+            record.civil_defense_updated_at = timezone.now()
+            record.save(
+                update_fields=[
+                    "civil_defense_research_prompt",
+                    "civil_defense_updated_by",
+                    "civil_defense_updated_at",
+                ]
+            )
+            _record_policy_revision(
+                record,
+                request.user,
+                WireFilterPromptRevision.Action.RESET,
+                policy_type=WireFilterPromptRevision.PolicyType.CIVIL_DEFENSE,
+                prompt=record.civil_defense_research_prompt,
+            )
+        if request.user.is_superuser:
+            clear_civil_defense_prompt_cache()
+        owner = None if request.user.is_superuser else request.user
+        return Response(_civil_defense_prompt_payload(record, owner=owner))
+
+
+class CivilDefenseResearchPromptAdminReferenceView(APIView):
+    permission_classes = [IsAuthenticated]
+    throttle_scope = "auth"
+
+    def get(self, request):
+        payload = _civil_defense_prompt_payload(
+            get_civil_defense_prompt_record(), fallback_prompt=get_civil_defense_prompt()
+        )
+        payload["read_only"] = True
+        return Response(payload)
 
 
 class MindmapPromptAdminReferenceView(APIView):

@@ -12,7 +12,7 @@ import unicodedata
 from dataclasses import dataclass
 from functools import lru_cache
 
-POLICY_VERSION = "2026-09-topics-v3"
+POLICY_VERSION = "2026-10-topics-v4"
 TOPIC_TAG_PREFIX = "wire-topic-"
 
 
@@ -30,8 +30,12 @@ def _pattern(terms: str) -> re.Pattern:
         if not term:
             continue
         escaped = re.escape(term)
-        # Chinese phrases are normally adjacent to other Han characters.
-        parts.append(escaped if re.search(r"[\u3400-\u9fff]", term) else rf"(?<!\w){escaped}(?!\w)")
+        # CJK, Khmer, Lao and Thai phrases are commonly written without spaces.
+        parts.append(
+            escaped
+            if re.search(r"[\u0e00-\u0eff\u1780-\u17ff\u3400-\u9fff]", term)
+            else rf"(?<!\w){escaped}(?!\w)"
+        )
     return re.compile("|".join(parts))
 
 
@@ -39,9 +43,54 @@ def has(text: str, terms: str) -> bool:
     return bool(_pattern(terms).search(text))
 
 
+CIVIL_DEFENSE_VLC_2026_TAG = "civil-defense-vlc-2026"
+_VLC_COUNTRY_GROUPS = (
+    "Việt Nam|Vietnam|Viet Nam|越南|វៀតណាម|ຫວຽດນາມ",
+    "Lào|Laos|Lao PDR|老挝|ឡាវ|ລາວ",
+    "Campuchia|Cambodia|Cambodian|Cambodge|柬埔寨|កម្ពុជា|កម្ពុជ|ກຳປູເຈຍ",
+)
+_VLC_EVENT_TERMS = (
+    "phòng thủ dân sự|civil defense|civil defence|civilian protection|civil protection|"
+    "disaster response|disaster relief|humanitarian assistance|search and rescue|HADR|"
+    "cứu hộ|cứu nạn|tìm kiếm cứu nạn|ứng phó thảm họa|phòng chống thiên tai|"
+    "diễn tập|huấn luyện|rescue exercise|rescue drill|joint exercise|exercise|drill|"
+    "民防|民事防护|联合演习|联合训练|演习|救灾|救援|搜救|"
+    "ការពារជនស៊ីវិល|សមយុទ្ធ|លំហាត់|ហ្វឹកហ្វឺន|ការសង្គ្រោះ|"
+    "ປ້ອງກັນພົນລະເຮືອນ|ເຝິກຊ້ອມ|ຝຶກຊ້ອມ|ກູ້ໄພ|"
+    "การฝึกร่วม|ป้องกันพลเรือน|กู้ภัย|exercice conjoint|protection civile|secours"
+)
+_VLC_EVENT_IDENTIFIERS = (
+    "Lữ đoàn 249|Lu Brigade 249|Brigade 249|Engineering Brigade 249|第249工程旅|"
+    "Nguyễn Trường Thắng|Nguyen Truong Thang|Sao Sokha|Tea Seiha|"
+    "Chansamone Chanyalath|Khamliang Outhakaysone|Khamphay Ounvilay|"
+    "Phạm Văn Tí|Pham Van Ti|Long Kimlien|Lê Quang Đạo|Le Quang Dao|"
+    "Huỳnh Tấn Hùng|Huynh Tan Hung"
+)
+
+
+def is_civil_defense_vlc_2026(text: str, *, published_at=None) -> bool:
+    """Precisely identify the 2026 Vietnam-Laos-Cambodia civil-defense exercise."""
+    normalized = normalize(text)
+    year = getattr(published_at, "year", None)
+    if "2026" not in normalized and str(year or str(published_at or "")[:4]) != "2026":
+        return False
+    if not has(normalized, _VLC_EVENT_TERMS):
+        return False
+    # Lao Cai is a Vietnamese province; do not count its name as Laos.
+    laos_evidence = re.sub(r"(?<!\w)(?:lào|lao)\s+cai(?!\w)", " ", normalized)
+    country_count = (
+        int(has(normalized, _VLC_COUNTRY_GROUPS[0]))
+        + int(has(laos_evidence, _VLC_COUNTRY_GROUPS[1]))
+        + int(has(normalized, _VLC_COUNTRY_GROUPS[2]))
+    )
+    return country_count >= 2 or (
+        country_count >= 1 and has(normalized, _VLC_EVENT_IDENTIFIERS)
+    )
+
+
 CHINA = "Trung Quốc|China|Chinese|Beijing|Bắc Kinh|中国|中國|中方|国务院|Quốc vụ viện|Quảng Tây|Guangxi|广西|Vân Nam|Yunnan|云南|Hải Nam|Hainan|海南|Quảng Châu|Guangzhou|广州|Phòng Thành Cảng|Fangchenggang|防城港|Long Châu|Longzhou|龙州"
 VIETNAM = "Việt Nam|Vietnam|Viet Nam|Vietnamese|越南|Hà Nội|Hanoi"
-REGION = CHINA + "|" + VIETNAM + "|Nhật Bản|Japan|Japanese|日本|Đài Loan|Taiwan|Taiwanese|台湾|台灣|臺灣|Philippines|Philippine|菲律宾|Malaysia|马来西亚|Indonesia|Indonesian|IND|印尼|Singapore|Xin-ga-po|新加坡|Campuchia|Cambodia|Cambodian|柬埔寨|Lào|Laos|Lao|老挝|Thái Lan|Thailand|Thai|泰国|Myanmar|缅甸|Úc|Australia|Australian|澳大利亚|Mỹ|Hoa Kỳ|United States|U.S.|US|U.S. Navy|American|US Navy|US military|美国|Nga|Russia|Russian|俄罗斯|Ấn Độ|India|Indian|印度"
+REGION = CHINA + "|" + VIETNAM + "|Nhật Bản|Japan|Japanese|日本|Đài Loan|Taiwan|Taiwanese|台湾|台灣|臺灣|Philippines|Philippine|菲律宾|Malaysia|马来西亚|Indonesia|Indonesian|IND|印尼|Singapore|Xin-ga-po|新加坡|Campuchia|Cambodia|Cambodian|Kingdom of Cambodia|Cambodge|Khmer|柬埔寨|越老柬|កម្ពុជា|កម្ពុជ|ກຳປູເຈຍ|กัมพูชา|Lào|Laos|Lao|Lao PDR|Lao People's Democratic Republic|老挝|ឡាវ|ລາວ|ลาว|Việt Nam|Vietnam|Viet Nam|វៀតណាម|ຫວຽດນາມ|เวียดนาม|Thái Lan|Thailand|Thai|泰国|ประเทศไทย|Myanmar|缅甸|Úc|Australia|Australian|澳大利亚|Mỹ|Hoa Kỳ|United States|U.S.|US|U.S. Navy|American|US Navy|US military|美国|Nga|Russia|Russian|俄罗斯|Ấn Độ|India|Indian|印度"
 SEA = "Biển Đông|South China Sea|West Philippine Sea|南海|Xca-bơ-rô|Scarborough|Huangyan|黄岩岛|Cỏ Mây|Second Thomas|Ayungin|仁爱礁|Hoa Lau|Swallow Reef|Layang Layang|弹丸礁|Trường Sa|Spratly|南沙|Hoàng Sa|Paracel|Paracels|西沙"
 DEVELOPMENT = "ban hành|công bố|phê duyệt|thông qua|sửa đổi|triển khai|thành lập|kiện toàn|kế hoạch|KH|quy hoạch|chính sách|quy định|chủ trương|đề xuất|chuẩn bị|tổ chức|kết quả|động thái|hoạt động|phản ứng|dư luận|đánh giá|phát biểu|thỏa thuận|ký kết|tiếp nhận|bàn giao|hỗ trợ|tăng cường|đẩy mạnh|hoàn thành|nâng cấp|phát triển|diễn tập|huấn luyện|tuần tra|va chạm|họp báo|approve|approves|approved|announce|announces|announced|adopt|adopts|adopted|issue|issues|issued|launch|launches|launched|plan|plans|planning|policy|regulation|regulations|propose|proposes|proposed|establish|establishes|established|deploy|deploys|deployed|deployment|exercise|exercises|drill|drills|patrol|patrols|collision|clash|reaction|reactions|response|review|assessment|analysis|sign|signs|signed|agreement|receive|receives|received|deliver|delivers|delivered|upgrade|upgrades|modernization|develop|develops|development|press conference|briefing|decision|decisions|results|speech|发布|公布|批准|通过|修订|实施|部署|成立|举行|开展|计划|规划|政策|条例|办法|演习|训练|巡航|碰撞|回应|反应|合作|援助|研发|建设|升级|会议|记者会"
 
@@ -49,7 +98,9 @@ DEVELOPMENT = "ban hành|công bố|phê duyệt|thông qua|sửa đổi|triển
 # Alternate surface forms of the same editorial actions (not additional topics).
 DEVELOPMENT += "|thông báo|bổ sung|xây dựng|hiện đại hóa|sửa chữa|đóng mới|publish|publishes|published|modernisation|build|builds|building|construction|announcement|ramps up|ramp up|steps up|participating|took part|rolls out|roll out|introducing|expanding|unveiling|launching|推出|推动|加速|推进|批量生产|量产|發表|發布|計畫"
 DEVELOPMENT += "|unveil|unveils|unveiled|introduce|introduces|introduced|install|installs|installed|installation|retrofit|retrofits|retrofitting|modernizing|modernising|commission|commissions|commissioned|transfer|transfers|transferred|take delivery|takes delivery|taking delivery|participate|participates|participated|held|conduct|conducts|conducted|train|trains|trained|training|refuel|refuels|refueling|refuelling|escort|escorts|escorted|arrive|arrives|arrived|test|tests|tested|test-fired|test-fires|prepare|prepares|preparing|strengthen|strengthens|strengthening|launching|developing|developed|deploying|expand|expands|expansion|tập trận|thử nghiệm|thử tên lửa|lắp đặt|đưa vào biên chế|hạ thủy|ra mắt|ra khơi|điều động|bắn thử|tăng tốc|试验|试射|下水|入列|服役|改装|测试|演练|启用"
-MILITARY_SUBJECT = "warship|warships|frigate|frigates|destroyer|destroyers|fighter|fighters|naval|navy|military|army|missile|missiles|defense system|defence system|radar|air force|aircraft carrier|readiness|USAF|USMC|JMSDF|JASDF|USS|electronic warfare|hải quân|quân đội|quân sự|tàu chiến|tên lửa|phòng thủ|tàu khu trục|chiến đấu cơ|quốc phòng|军舰|护卫舰|驱逐舰|战机|导弹|海军|军事|国防"
+DEVELOPMENT += "|kiểm tra|khảo sát|tập huấn|sơ duyệt|tổng duyệt|thực binh|hiệp đồng|phối hợp|diễn tập chung|inspect|inspects|inspected|inspection|survey|surveys|rehearsal|rehearsals|rehearse|rehearses|rehearsed|coordinate|coordinates|coordinated|coordination|preparedness|tabletop exercise|field exercise|command-post exercise|command post exercise|联合演习|联合训练|协同|检查|准备"
+DEVELOPMENT += "|exercice conjoint|entraînement conjoint|联合演习|联演|救援演习|សមយុទ្ធ|ហ្វឹកហ្វឺន|លំហាត់|ເຝິກຊ້ອມ|ຝຶກຊ້ອມ|การฝึกร่วม|การฝึก"
+MILITARY_SUBJECT = "warship|warships|frigate|frigates|destroyer|destroyers|fighter|fighters|naval|navy|military|army|missile|missiles|defense system|defence system|radar|air force|aircraft carrier|readiness|civil defense|civil defence|civil protection|HADR|disaster response|disaster relief|emergency response|humanitarian assistance|search and rescue|USAF|USMC|JMSDF|JASDF|USS|electronic warfare|hải quân|quân đội|quân sự|tàu chiến|tên lửa|phòng thủ|phòng thủ dân sự|ứng phó thảm họa|cứu hộ|cứu nạn|tìm kiếm cứu nạn|phòng chống thiên tai|tàu khu trục|chiến đấu cơ|quốc phòng|军舰|护卫舰|驱逐舰|战机|导弹|海军|军事|国防|民防|灾害应对|搜救"
 REGION += "|美军|美國|美方|美战争部|美國防部|俄军|俄羅斯"
 VIETNAM += "|VN"
 RETIRED_TOPIC_TAGS = ("wire-topic-6", "wire-topic-7")
@@ -91,8 +142,8 @@ TOPICS = (
           "Hội nghị Trí tuệ nhân tạo|Hội nghị AI|World Artificial Intelligence Conference|WAIC|chính sách công nghệ chiến lược|hiện đại hóa quốc phòng|công nghệ quốc phòng|năng lực tác chiến mới|World Artificial Intelligence Conference|WAIC|世界人工智能大会|Zumwalt|strategic technology policy|defense modernization|defence modernization|military technology|weapons modernization|Zumwalt",
           "chính sách|phát biểu|đánh giá|hội nghị|nâng cấp|hiện đại hóa|speech|assessment|policy|conference|upgrade|modernization|modernisation|installation|retrofit|radar|hypersonic|讲话|评估|政策|大会|升级|现代化"),
     Topic("4a", "Diễn tập, huấn luyện và hoạt động quân sự", REGION + "|SEACAT|Hán Quang|Han Kuang|汉光|Guam|关岛",
-          "diễn tập|huấn luyện|hoạt động quân sự|hợp tác hàng hải|phòng thủ đô thị|SEACAT|Hán Quang|Han Kuang|exercise|exercises|drill|drills|military training|naval training|military operation|military operations|maritime cooperative activity|military deployment|carrier deployment|carrier strike group|joint training|combat training|live-fire|air strikes|airstrikes|naval patrol|coastguard patrols|coast guard patrols|演习|军演|军事训练|海军训练|军事行动|汉光",
-          "quân sự|quân đội|QĐ|hải quân|tàu chiến|phòng thủ|hàng hải đa phương|Hán Quang|Han Kuang|SEACAT|military|naval|navy|army|marines|air force|fighter|fighters|combat|troops|forces|USAF|USMC|JMSDF|JASDF|coastguard|coast guard|defense|defence|maritime cooperative|军演|军事|军队|海军|空军|汉光"),
+          "diễn tập|diễn tập chung|huấn luyện|tập huấn|sơ duyệt|tổng duyệt|thực binh|hiệp đồng|hoạt động quân sự|hợp tác hàng hải|phòng thủ đô thị|phòng thủ dân sự|ứng phó thảm họa|ứng phó thiên tai|phòng chống thiên tai|tìm kiếm cứu nạn|tìm kiếm cứu hộ|cứu hộ|cứu nạn|quân y|hậu cần kỹ thuật|Lữ đoàn 249|SEACAT|Hán Quang|Han Kuang|exercise|exercises|joint exercise|joint exercises|drill|drills|rehearsal|rehearsals|field exercise|command-post exercise|tabletop exercise|military training|naval training|military operation|military operations|maritime cooperative activity|military deployment|carrier deployment|carrier strike group|joint training|combat training|live-fire|civil defense|civil defence|civil protection|civilian protection|disaster response|disaster relief|emergency response|humanitarian assistance|HADR|search and rescue|SAR|medical response|Brigade 249|Engineering Brigade 249|exercice conjoint|protection civile|secours|air strikes|airstrikes|naval patrol|coastguard patrols|coast guard patrols|演习|军演|联合演习|联演|救援演习|军事训练|海军训练|军事行动|民防|保护平民|灾害应对|搜救|第249工程旅|249工程旅|ការពារជនស៊ីវិល|សមយុទ្ធ|ហ្វឹកហ្វឺន|លំហាត់|វិស្វកម្ម|ເຝິກຊ້ອມ|ກອບກູ້|ໄພພິບັດ|ກອງພົນນ້ອຍ|การฝึกร่วม|กู้ภัย|ภัยพิบัติ|ป้องกันพลเรือน|汉光",
+          "quân sự|quân đội|quân đội ba nước|QĐ|hải quân|tàu chiến|phòng thủ|phòng thủ dân sự|ứng phó thảm họa|thiên tai|cứu hộ|cứu nạn|tìm kiếm cứu nạn|quân y|hậu cần kỹ thuật|Lữ đoàn 249|hàng hải đa phương|Hán Quang|Han Kuang|SEACAT|military|naval|navy|army|armed forces|marines|air force|fighter|fighters|combat|troops|forces|civil defense|civil defence|civil protection|civilian protection|disaster response|disaster relief|emergency response|humanitarian assistance|HADR|search and rescue|Brigade 249|Engineering Brigade 249|protection civile|USAF|USMC|JMSDF|JASDF|coastguard|coast guard|defense|defence|maritime cooperative|军演|军事|军队|海军|空军|民防|救灾|搜救|保护平民|第249工程旅|249工程旅|ការពារជនស៊ីវិល|សមយុទ្ធ|ហ្វឹកហ្វឺន|វិស្វកម្ម|ເຝິກຊ້ອມ|ກອບກູ້|ໄພພິບັດ|ກອງພົນນ້ອຍ|การฝึกร่วม|กู้ภัย|ภัยพิบัติ|ป้องกันพลเรือน|汉光"),
     Topic("4b", "Hợp tác quốc phòng, biên giới và chuyển giao trang bị", REGION,
           "hợp tác quốc phòng|hỗ trợ an ninh|Bộ trưởng Quốc phòng|Ủy ban biên giới chung|Stryker|mua sắm quốc phòng|chuyển giao vũ khí|tiếp nhận tàu|defense cooperation|defence cooperation|security assistance|defense ministers|defence ministers|joint border committee|arms transfer|military aid|air-defense missile agreement|military sale|military sales|arms deal|arms sale|arms sales|defense export|defence export|military helicopter sale|export customer|defense partnership|defence partnership|security cooperation|missile sale|helicopter sale|fighter sale|equipment transfer|weapons transfer|warship transfer|防务合作|安全援助|国防部长|联合边界|武器转让|军事援助",
           "hội nghị|kết quả|thỏa thuận|ký|tiếp nhận|bàn giao|chuyển giao|hỗ trợ|hợp tác|chuẩn bị|mua sắm|agreement|sign|signs|signed|receive|receives|received|deliver|delivers|delivered|transfer|conference|meeting|assistance|aid|cooperation|procurement|sale|sales|export|exports|buy|purchase|transfer|transfers|receive|receives|received|deliver|delivers|delivered|会议|协议|接收|交付|援助|合作"),
@@ -210,6 +261,8 @@ WIRE_DISCOVERY_QUERIES = (
     'Asia political party central committee plenum summit cabinet foreign policy diplomatic briefing resolution strategy decisions',
     'strategic technology policy military technology defense modernization artificial intelligence conference speech weapons modernization Zumwalt',
     'Indo-Pacific military exercise drill training operation maritime cooperation Taiwan Cambodia Indonesia Philippines Singapore naval forces',
+    'Vietnam Laos Cambodia 2026 joint civil defense civil defence disaster response exercise search and rescue HADR',
+    'Việt Nam Lào Campuchia diễn tập chung phòng thủ dân sự 2026 ứng phó thảm họa thiên tai tìm kiếm cứu hộ cứu nạn',
     'regional defense cooperation security assistance defense ministers arms transfer military sale equipment delivery border committee',
     'military doctrine missile defense air defense command and control electronic warfare unmanned vessel 6G military AI capability',
     'China United States European Union sanctions countermeasures export controls entity list dual use UAV forced labor investigation',

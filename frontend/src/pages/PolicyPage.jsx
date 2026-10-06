@@ -58,6 +58,10 @@ export default function PolicyPage() {
   const [savedMindmapPrompt, setSavedMindmapPrompt] = useState("");
   const [mindmapMeta, setMindmapMeta] = useState(null);
   const [mindmapLoading, setMindmapLoading] = useState(true);
+  const [civilDefensePrompt, setCivilDefensePrompt] = useState("");
+  const [savedCivilDefensePrompt, setSavedCivilDefensePrompt] = useState("");
+  const [civilDefenseMeta, setCivilDefenseMeta] = useState(null);
+  const [civilDefenseLoading, setCivilDefenseLoading] = useState(true);
   const [meta, setMeta] = useState(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -70,6 +74,9 @@ export default function PolicyPage() {
   const [mindmapReferenceOpen, setMindmapReferenceOpen] = useState(false);
   const [mindmapReferenceLoading, setMindmapReferenceLoading] = useState(false);
   const [mindmapReference, setMindmapReference] = useState(null);
+  const [civilDefenseReferenceOpen, setCivilDefenseReferenceOpen] = useState(false);
+  const [civilDefenseReferenceLoading, setCivilDefenseReferenceLoading] = useState(false);
+  const [civilDefenseReference, setCivilDefenseReference] = useState(null);
 
   const [adminRows, setAdminRows] = useState([]);
   const [adminLoading, setAdminLoading] = useState(false);
@@ -149,11 +156,26 @@ export default function PolicyPage() {
     }
   }, []);
 
+  const loadCivilDefense = useCallback(async () => {
+    setCivilDefenseLoading(true);
+    try {
+      const data = await api.get("/api/v1/auth/civil-defense-research-prompt/", { retries: 1 });
+      setCivilDefensePrompt(data?.prompt || "");
+      setSavedCivilDefensePrompt(data?.prompt || "");
+      setCivilDefenseMeta(data || null);
+    } catch (err) {
+      setError(err.message || "Không thể tải chính sách chuyên đề phòng thủ dân sự.");
+    } finally {
+      setCivilDefenseLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     load();
     loadMindmap();
+    loadCivilDefense();
     loadAdminPolicies();
-  }, [load, loadMindmap, loadAdminPolicies]);
+  }, [load, loadMindmap, loadCivilDefense, loadAdminPolicies]);
 
   useEffect(() => {
     loadAudit(auditUserId, loginPage, policyPage);
@@ -247,6 +269,68 @@ export default function PolicyPage() {
       setMindmapReferenceLoading(false);
     }
   }
+
+  async function saveCivilDefense() {
+    setBusy(true);
+    setError("");
+    setMessage("");
+    try {
+      const data = await api.patch("/api/v1/auth/civil-defense-research-prompt/", { prompt: civilDefensePrompt });
+      setCivilDefensePrompt(data.prompt);
+      setSavedCivilDefensePrompt(data.prompt);
+      setCivilDefenseMeta(data);
+      setMessage(isSuperuser ? "Đã lưu chính sách chuyên đề quản trị." : "Đã lưu chính sách chuyên đề riêng cho tài khoản này.");
+      if (isSuperuser) {
+        await loadAdminPolicies();
+        await loadAudit(auditUserId, loginPage, policyPage);
+      }
+    } catch (err) {
+      setError(err.message || "Không thể lưu chính sách chuyên đề.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function restoreCivilDefense() {
+    const question = isSuperuser
+      ? "Khôi phục chính sách chuyên đề về bản mặc định?"
+      : "Đặt lại chính sách chuyên đề theo bản quản trị hiện tại?";
+    if (!window.confirm(question)) return;
+    setBusy(true);
+    setError("");
+    setMessage("");
+    try {
+      const data = await api.post("/api/v1/auth/civil-defense-research-prompt/", {});
+      setCivilDefensePrompt(data.prompt);
+      setSavedCivilDefensePrompt(data.prompt);
+      setCivilDefenseMeta(data);
+      setMessage(isSuperuser ? "Đã khôi phục chính sách chuyên đề mặc định." : "Đã đặt lại chính sách chuyên đề theo Quản trị viên.");
+      if (isSuperuser) {
+        await loadAdminPolicies();
+        await loadAudit(auditUserId, loginPage, policyPage);
+      }
+    } catch (err) {
+      setError(err.message || "Không thể đặt lại chính sách chuyên đề.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function openCivilDefenseReference() {
+    setCivilDefenseReferenceOpen(true);
+    setCivilDefenseReferenceLoading(true);
+    setCivilDefenseReference(null);
+    try {
+      const data = await api.get("/api/v1/auth/civil-defense-research-prompt/admin-reference/", { retries: 1 });
+      setCivilDefenseReference(data);
+    } catch (err) {
+      setCivilDefenseReferenceOpen(false);
+      setError(err.message || "Không thể tải chính sách chuyên đề quản trị.");
+    } finally {
+      setCivilDefenseReferenceLoading(false);
+    }
+  }
+
   async function restorePolicy() {
     const question = isSuperuser
       ? "Khôi phục chính sách quản trị về bản mặc định đã kiểm duyệt?"
@@ -368,7 +452,7 @@ export default function PolicyPage() {
                 label="Tự động nhận dạng tin và chủ đề yêu thích để tăng đề xuất tương tự"
               />
               <Typography variant="caption" color="text.secondary" sx={{ display: "block", ml: 6 }}>
-                Đề xuất tin cùng phân nhóm cụ thể và quốc gia với một tin bạn đang theo dõi. Cùng nguồn hoặc thẻ chung chưa đủ. Chỉ áp dụng cho tài khoản này; giữ thứ tự theo thời gian xuất bản.
+                Đề xuất tin cùng phân nhóm cụ thể với tin bạn đang theo dõi; ưu tiên cao nhất khi còn trùng quốc gia. Cùng nguồn hoặc thẻ chung chưa đủ. Chỉ áp dụng cho tài khoản này; giữ thứ tự theo thời gian xuất bản.
               </Typography>
             </Box>
           ) : null}
@@ -429,6 +513,73 @@ export default function PolicyPage() {
                       meta.updated_by ? ` bởi ${meta.updated_by}` : ""
                     }.`
                   : "Chưa có lịch sử cập nhật."}
+              </Typography>
+            </>
+          )}
+        </AccordionDetails>
+      </Accordion>
+
+      <Accordion defaultExpanded disableGutters sx={{ bgcolor: "background.paper", border: 1, borderColor: "divider", borderRadius: 1 }}>
+        <AccordionSummary
+          expandIcon={<Typography component="span" sx={{ fontSize: "1.35rem", fontWeight: 700, lineHeight: 1 }}>⌄</Typography>}
+          sx={{ px: 2, minHeight: 58, "&:hover": { bgcolor: "action.hover" }, "& .MuiAccordionSummary-content": { my: 1.25 } }}
+        >
+          <Typography variant="h6">Chuyên đề: Diễn tập phòng thủ dân sự Việt Nam - Lào - Campuchia 2026</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Stack direction={{ xs: "column", md: "row" }} spacing={1.5} justifyContent="space-between" alignItems={{ xs: "stretch", md: "flex-start" }}>
+            <Box>
+              <Typography color="text.secondary" sx={{ mt: 0.5, mb: 2 }}>
+                Cấu hình nghiên cứu riêng cho tin, ảnh, video và bài đăng công khai về toàn bộ vòng đời diễn tập: chuẩn bị, kiểm tra, luyện tập, hiệp đồng, thực binh và tổng kết.
+              </Typography>
+            </Box>
+            {!isSuperuser ? (
+              <Button variant="outlined" onClick={openCivilDefenseReference}>
+                Tham khảo từ Quản trị viên
+              </Button>
+            ) : null}
+          </Stack>
+          {!civilDefenseLoading ? (
+            <Alert severity="info" sx={{ mb: 1.5 }}>
+              Chính sách này độc lập với bộ lọc năm nhóm. Bản mặc định đã gồm neo sự kiện, người/đơn vị, mốc thời gian, truy vấn 7 ngôn ngữ, nguồn bắt buộc, mạng xã hội, quy tắc loại nhiễu và định dạng đầu ra hai câu.
+            </Alert>
+          ) : null}
+          {civilDefenseLoading ? (
+            <Stack direction="row" spacing={1.5} alignItems="center" sx={{ py: 3 }}>
+              <CircularProgress size={22} />
+              <Typography color="text.secondary">Đang tải chính sách chuyên đề…</Typography>
+            </Stack>
+          ) : (
+            <>
+              <TextField
+                fullWidth
+                multiline
+                minRows={20}
+                maxRows={42}
+                label="Nội dung chính sách nghiên cứu chuyên đề"
+                value={civilDefensePrompt}
+                onChange={(event) => setCivilDefensePrompt(event.target.value)}
+                disabled={busy}
+                inputProps={{ maxLength: 30000, spellCheck: false }}
+                InputProps={{ sx: { alignItems: "flex-start", fontFamily: "ui-monospace, SFMono-Regular, Consolas, monospace", fontSize: "0.9rem", lineHeight: 1.55 } }}
+              />
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={1} alignItems={{ xs: "stretch", sm: "center" }} sx={{ mt: 1.5 }}>
+                <Button variant="contained" onClick={saveCivilDefense} disabled={busy || civilDefensePrompt.trim() === savedCivilDefensePrompt.trim()}>
+                  {busy ? "Đang lưu…" : "Lưu chính sách chuyên đề"}
+                </Button>
+                <Button variant="outlined" color="secondary" onClick={restoreCivilDefense} disabled={busy || (isSuperuser && Boolean(civilDefenseMeta?.is_default))}>
+                  {isSuperuser ? "Khôi phục mặc định" : "Đặt lại theo Quản trị viên"}
+                </Button>
+                <Box sx={{ flex: 1 }} />
+                <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+                  <Chip size="small" label={`Ký tự: ${civilDefensePrompt.length}`} />
+                  {civilDefenseMeta?.inherited_from_admin ? <Chip size="small" color="info" label="Đang kế thừa bản quản trị" /> : null}
+                </Stack>
+              </Stack>
+              <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 1 }}>
+                {civilDefenseMeta?.updated_at
+                  ? `Cập nhật gần nhất: ${formatDate(civilDefenseMeta.updated_at)}${civilDefenseMeta.updated_by ? ` bởi ${civilDefenseMeta.updated_by}` : ""}.`
+                  : "Đang dùng bản chính sách chuyên đề mặc định."}
               </Typography>
             </>
           )}
@@ -768,6 +919,40 @@ export default function PolicyPage() {
         <DialogActions>
           <Button onClick={() => setReferenceOpen(false)}>Đóng</Button>
         </DialogActions>
+      </Dialog>
+
+      <Dialog
+        open={civilDefenseReferenceOpen}
+        onClose={() => setCivilDefenseReferenceOpen(false)}
+        fullWidth
+        maxWidth="md"
+      >
+        <DialogTitle>Tham khảo chính sách chuyên đề từ Quản trị viên</DialogTitle>
+        <DialogContent dividers>
+          {civilDefenseReferenceLoading ? (
+            <Stack direction="row" spacing={1.5} alignItems="center" sx={{ py: 3 }}>
+              <CircularProgress size={22} />
+              <Typography color="text.secondary">Đang tải chính sách chuyên đề quản trị…</Typography>
+            </Stack>
+          ) : civilDefenseReference ? (
+            <Stack spacing={1.5}>
+              <Alert severity="info">Bản này chỉ để tham khảo và không thay đổi chính sách riêng của bạn.</Alert>
+              <TextField
+                fullWidth
+                multiline
+                minRows={20}
+                maxRows={36}
+                label="Chính sách chuyên đề quản trị hiện tại"
+                value={civilDefenseReference.prompt || ""}
+                InputProps={{ readOnly: true, sx: { alignItems: "flex-start", fontFamily: "ui-monospace, SFMono-Regular, Consolas, monospace", fontSize: "0.9rem", lineHeight: 1.55 } }}
+              />
+              <Typography variant="caption" color="text.secondary">
+                {civilDefenseReference.updated_at ? `Cập nhật gần nhất: ${formatDate(civilDefenseReference.updated_at)}${civilDefenseReference.updated_by ? ` bởi ${civilDefenseReference.updated_by}` : ""}.` : "Chính sách quản trị hiện hành."}
+              </Typography>
+            </Stack>
+          ) : null}
+        </DialogContent>
+        <DialogActions><Button onClick={() => setCivilDefenseReferenceOpen(false)}>Đóng</Button></DialogActions>
       </Dialog>
 
       <Dialog

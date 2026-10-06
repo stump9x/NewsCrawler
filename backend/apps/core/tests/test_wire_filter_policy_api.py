@@ -14,6 +14,8 @@ class WireFilterPromptApiTests(APITestCase):
     own_url = "/api/v1/auth/wire-filter-prompt/"
     reference_url = "/api/v1/auth/wire-filter-prompt/admin-reference/"
     admin_list_url = "/api/v1/auth/wire-filter-prompts/"
+    civil_defense_url = "/api/v1/auth/civil-defense-research-prompt/"
+    civil_defense_reference_url = "/api/v1/auth/civil-defense-research-prompt/admin-reference/"
 
     def setUp(self):
         User = get_user_model()
@@ -111,6 +113,50 @@ class WireFilterPromptApiTests(APITestCase):
         self.client.force_authenticate(self.user_a)
         self.client.get(self.own_url)
         reset = self.client.post(self.own_url, {}, format="json")
+        self.assertEqual(reset.status_code, status.HTTP_200_OK)
+        self.assertEqual(reset.data["prompt"], admin_prompt)
+
+    def test_civil_defense_policy_is_separate_editable_and_inherited(self):
+        self.client.force_authenticate(self.admin)
+        initial = self.client.get(self.civil_defense_url)
+        self.assertEqual(initial.status_code, status.HTTP_200_OK)
+        self.assertIn("Lữ đoàn Công binh 249", initial.data["prompt"])
+        self.assertIn("YouTube", initial.data["prompt"])
+
+        admin_prompt = (
+            "VAI TRÒ\nNghiên cứu diễn tập phòng thủ dân sự Việt Nam Lào Campuchia năm 2026.\n"
+            "NGUỒN\nMở nguồn gốc, đối chiếu ngày và giữ URL.\n"
+            "LỌC\nGiữ Lữ đoàn 249, cứu hộ cứu nạn và ứng phó thảm họa; loại Peace Train."
+        )
+        updated = self.client.patch(
+            self.civil_defense_url, {"prompt": admin_prompt}, format="json"
+        )
+        self.assertEqual(updated.status_code, status.HTTP_200_OK)
+        self.assertEqual(updated.data["prompt"], admin_prompt)
+        self.assertTrue(
+            WireFilterPromptRevision.objects.filter(
+                policy_type=WireFilterPromptRevision.PolicyType.CIVIL_DEFENSE
+            ).exists()
+        )
+
+        self.client.force_authenticate(self.user_a)
+        inherited = self.client.get(self.civil_defense_url)
+        self.assertEqual(inherited.status_code, status.HTTP_200_OK)
+        self.assertTrue(inherited.data["inherited_from_admin"])
+        self.assertEqual(inherited.data["prompt"], admin_prompt)
+        reference = self.client.get(self.civil_defense_reference_url)
+        self.assertTrue(reference.data["read_only"])
+        self.assertEqual(reference.data["prompt"], admin_prompt)
+
+        personal_prompt = admin_prompt + "\nĐẦU RA\nMỗi tin đúng hai câu tiếng Việt."
+        personal = self.client.patch(
+            self.civil_defense_url, {"prompt": personal_prompt}, format="json"
+        )
+        self.assertEqual(personal.status_code, status.HTTP_200_OK)
+        self.assertFalse(personal.data["inherited_from_admin"])
+        self.assertEqual(personal.data["prompt"], personal_prompt)
+
+        reset = self.client.post(self.civil_defense_url, {}, format="json")
         self.assertEqual(reset.status_code, status.HTTP_200_OK)
         self.assertEqual(reset.data["prompt"], admin_prompt)
 

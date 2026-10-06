@@ -211,6 +211,16 @@ CELERY_BEAT_SCHEDULE = {
         "schedule": 600.0,
         "kwargs": {"limit_per_feed": 25},
     },
+    "ingest-vlc-rss-daily-review": {
+        "task": "workers.ingest_vlc_rss",
+        "schedule": 86400.0,
+        "kwargs": {"limit_per_feed": 25},
+    },
+    "ingest-telegram-vlc-every-2m": {
+        "task": "workers.ingest_telegram_group",
+        "schedule": 120.0,
+        "kwargs": {"limit_messages": 50, "limit_links": 5},
+    },
     "translate-wire-titles-every-60s": {
         "task": "integrations.translate_threat_titles",
         # Pace for free-tier Groq but clear Dòng tin backlog (priority-ordered).

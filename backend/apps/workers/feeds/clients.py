@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 DEFAULT_TIMEOUT = 30.0
 # v14: visible leads before truncation; re-evaluate cached feeds with five topics.
-RSS_PROCESSING_VERSION = 14
+RSS_PROCESSING_VERSION = 15
 
 RSS_HEADERS = {
     "User-Agent": (

@@ -21,6 +21,7 @@ class WireFilterPrompt(models.Model):
     )
     prompt = models.TextField()
     mindmap_prompt = models.TextField(blank=True, default="")
+    civil_defense_research_prompt = models.TextField(blank=True, default="")
     favorite_recommendations_enabled = models.BooleanField(default=True)
     owner = models.OneToOneField(
         settings.AUTH_USER_MODEL,
@@ -41,6 +42,11 @@ class WireFilterPrompt(models.Model):
     mindmap_updated_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL,
         related_name="mindmap_prompt_updates",
+    )
+    civil_defense_updated_at = models.DateTimeField(null=True, blank=True)
+    civil_defense_updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL,
+        related_name="civil_defense_prompt_updates",
     )
 
     class Meta:
@@ -85,6 +91,7 @@ class WireFilterPromptRevision(models.Model):
     class PolicyType(models.TextChoices):
         WIRE_FILTER = "wire_filter", "Trạm tin tức"
         MINDMAP = "mindmap", "Mindmap"
+        CIVIL_DEFENSE = "civil_defense", "Phòng thủ dân sự 2026"
 
     policy = models.ForeignKey(
         WireFilterPrompt,

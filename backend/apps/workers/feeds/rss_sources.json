@@ -1370,167 +1370,953 @@
     "requires_tor": false
   },
   {
-    "name": "china-mod-curated", "url": "https://www.mod.gov.cn/", "country": "China", "country_code": "CN", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | Ministry of National Defense of China | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "china-mod-curated",
+    "url": "https://www.mod.gov.cn/",
+    "country": "China",
+    "country_code": "CN",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | Ministry of National Defense of China | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "xinhua-english-china", "url": "https://www.xinhuanet.com/english/rss/chinarss.xml", "country": "China", "country_code": "CN", "confidence": 1, "category": "news",
-    "notes": "transport=official-rss | Xinhua English China desk | homepage=https://english.news.cn/ | wire-topic-v2", "requires_tor": false
+    "name": "xinhua-english-china",
+    "url": "https://www.xinhuanet.com/english/rss/chinarss.xml",
+    "country": "China",
+    "country_code": "CN",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | Xinhua English China desk | homepage=https://english.news.cn/ | wire-topic-v2",
+    "requires_tor": false
   },
   {
-    "name": "xinhua-english-world", "url": "https://www.xinhuanet.com/english/rss/worldrss.xml", "country": "China", "country_code": "CN", "confidence": 1, "category": "news",
-    "notes": "transport=official-rss | Xinhua English World desk | homepage=https://english.news.cn/ | wire-topic-v2", "requires_tor": false
+    "name": "xinhua-english-world",
+    "url": "https://www.xinhuanet.com/english/rss/worldrss.xml",
+    "country": "China",
+    "country_code": "CN",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-rss | Xinhua English World desk | homepage=https://english.news.cn/ | wire-topic-v2",
+    "requires_tor": false
   },
   {
-    "name": "people-cn-curated", "url": "https://www.people.com.cn/", "country": "China", "country_code": "CN", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | People's Daily People.cn | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "people-cn-curated",
+    "url": "https://www.people.com.cn/",
+    "country": "China",
+    "country_code": "CN",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | People's Daily People.cn | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "global-times-curated", "url": "https://www.globaltimes.cn/", "country": "China", "country_code": "CN", "confidence": 2, "category": "news",
-    "notes": "transport=official-html-curated | Global Times China international desk | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "global-times-curated",
+    "url": "https://www.globaltimes.cn/",
+    "country": "China",
+    "country_code": "CN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-html-curated | Global Times China international desk | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "china-gov-curated", "url": "https://www.gov.cn/", "country": "China", "country_code": "CN", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | China Government policy and State Council | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "china-gov-curated",
+    "url": "https://www.gov.cn/",
+    "country": "China",
+    "country_code": "CN",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | China Government policy and State Council | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "miit-curated", "url": "https://www.miit.gov.cn/", "country": "China", "country_code": "CN", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | MIIT China technology and industry policy | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "miit-curated",
+    "url": "https://www.miit.gov.cn/",
+    "country": "China",
+    "country_code": "CN",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | MIIT China technology and industry policy | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "mofcom-curated", "url": "https://www.mofcom.gov.cn/", "country": "China", "country_code": "CN", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | MOFCOM China trade measures | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "mofcom-curated",
+    "url": "https://www.mofcom.gov.cn/",
+    "country": "China",
+    "country_code": "CN",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | MOFCOM China trade measures | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "china-export-control", "url": "https://exportcontrol.mofcom.gov.cn/", "country": "China", "country_code": "CN", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | China Export Control Information | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "china-export-control",
+    "url": "https://exportcontrol.mofcom.gov.cn/",
+    "country": "China",
+    "country_code": "CN",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | China Export Control Information | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "guangxi-gov-curated", "url": "https://www.gxzf.gov.cn/", "country": "China", "country_code": "CN", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | Guangxi Government border/coastal policy | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "guangxi-gov-curated",
+    "url": "https://www.gxzf.gov.cn/",
+    "country": "China",
+    "country_code": "CN",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | Guangxi Government border/coastal policy | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "yunnan-gov-curated", "url": "https://www.yn.gov.cn/", "country": "China", "country_code": "CN", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | Yunnan Government border/opening policy | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "yunnan-gov-curated",
+    "url": "https://www.yn.gov.cn/",
+    "country": "China",
+    "country_code": "CN",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | Yunnan Government border/opening policy | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "hainan-ocean-curated", "url": "https://oc.hainan.gov.cn/", "country": "China", "country_code": "CN", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | Hainan Ocean Department marine policy | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "hainan-ocean-curated",
+    "url": "https://oc.hainan.gov.cn/",
+    "country": "China",
+    "country_code": "CN",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | Hainan Ocean Department marine policy | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "fangchenggang-gov-curated", "url": "https://www.fcgs.gov.cn/", "country": "China", "country_code": "CN", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | Fangchenggang Government port/border policy | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "fangchenggang-gov-curated",
+    "url": "https://www.fcgs.gov.cn/",
+    "country": "China",
+    "country_code": "CN",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | Fangchenggang Government port/border policy | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "pna-curated", "url": "https://www.pna.gov.ph/", "country": "Philippines", "country_code": "PH", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | Philippine News Agency | West Philippine Sea/defense filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "pna-curated",
+    "url": "https://www.pna.gov.ph/",
+    "country": "Philippines",
+    "country_code": "PH",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | Philippine News Agency | West Philippine Sea/defense filter | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "gma-news-curated", "url": "https://www.gmanetwork.com/news/", "country": "Philippines", "country_code": "PH", "confidence": 2, "category": "news",
-    "notes": "transport=official-html-curated | GMA News Philippines | security/foreign affairs filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "gma-news-curated",
+    "url": "https://www.gmanetwork.com/news/",
+    "country": "Philippines",
+    "country_code": "PH",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-html-curated | GMA News Philippines | security/foreign affairs filter | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "dfa-ph-curated", "url": "https://dfa.gov.ph/", "country": "Philippines", "country_code": "PH", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | Philippine Department of Foreign Affairs | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "dfa-ph-curated",
+    "url": "https://dfa.gov.ph/",
+    "country": "Philippines",
+    "country_code": "PH",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | Philippine Department of Foreign Affairs | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "dnd-ph-curated", "url": "https://www.dnd.gov.ph/", "country": "Philippines", "country_code": "PH", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | Philippine Department of National Defense | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "dnd-ph-curated",
+    "url": "https://www.dnd.gov.ph/",
+    "country": "Philippines",
+    "country_code": "PH",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | Philippine Department of National Defense | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "malaysia-mod-curated", "url": "https://www.mod.gov.my/", "country": "Malaysia", "country_code": "MY", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | Malaysia Ministry of Defence | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "malaysia-mod-curated",
+    "url": "https://www.mod.gov.my/",
+    "country": "Malaysia",
+    "country_code": "MY",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | Malaysia Ministry of Defence | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "midas-malaysia-curated", "url": "https://midas.mod.gov.my/", "country": "Malaysia", "country_code": "MY", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | Malaysia Institute of Defence and Security | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "midas-malaysia-curated",
+    "url": "https://midas.mod.gov.my/",
+    "country": "Malaysia",
+    "country_code": "MY",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | Malaysia Institute of Defence and Security | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "bernama-curated", "url": "https://www.bernama.com/", "country": "Malaysia", "country_code": "MY", "confidence": 2, "category": "news",
-    "notes": "transport=official-html-curated | BERNAMA Malaysia | defense/foreign affairs filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "bernama-curated",
+    "url": "https://www.bernama.com/",
+    "country": "Malaysia",
+    "country_code": "MY",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-html-curated | BERNAMA Malaysia | defense/foreign affairs filter | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "taiwan-mnd-curated", "url": "https://www.mnd.gov.tw/en/", "country": "Taiwan", "country_code": "TW", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | Taiwan Ministry of National Defense | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "taiwan-mnd-curated",
+    "url": "https://www.mnd.gov.tw/en/",
+    "country": "Taiwan",
+    "country_code": "TW",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | Taiwan Ministry of National Defense | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "taiwan-mna-curated", "url": "https://mna.mnd.gov.tw/en/", "country": "Taiwan", "country_code": "TW", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | Taiwan Military News Agency | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "taiwan-mna-curated",
+    "url": "https://mna.mnd.gov.tw/en/",
+    "country": "Taiwan",
+    "country_code": "TW",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | Taiwan Military News Agency | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "singapore-mindef-curated", "url": "https://www.mindef.gov.sg/", "country": "Singapore", "country_code": "SG", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | Singapore MINDEF | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "singapore-mindef-curated",
+    "url": "https://www.mindef.gov.sg/",
+    "country": "Singapore",
+    "country_code": "SG",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | Singapore MINDEF | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "indonesia-kemhan-curated", "url": "https://www.kemhan.go.id/", "country": "Indonesia", "country_code": "ID", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | Indonesia Ministry of Defence Kemhan | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "indonesia-kemhan-curated",
+    "url": "https://www.kemhan.go.id/",
+    "country": "Indonesia",
+    "country_code": "ID",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | Indonesia Ministry of Defence Kemhan | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "tni-ppid-curated", "url": "https://ppid.tni.mil.id/", "country": "Indonesia", "country_code": "ID", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | TNI PPID Indonesia military releases | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "tni-ppid-curated",
+    "url": "https://ppid.tni.mil.id/",
+    "country": "Indonesia",
+    "country_code": "ID",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | TNI PPID Indonesia military releases | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "japan-mofa-curated", "url": "https://www.mofa.go.jp/", "country": "Japan", "country_code": "JP", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | Japan Ministry of Foreign Affairs | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "japan-mofa-curated",
+    "url": "https://www.mofa.go.jp/",
+    "country": "Japan",
+    "country_code": "JP",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | Japan Ministry of Foreign Affairs | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "ustr-curated", "url": "https://ustr.gov/", "country": "United States", "country_code": "US", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | USTR trade enforcement and labor measures | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "ustr-curated",
+    "url": "https://ustr.gov/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | USTR trade enforcement and labor measures | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "cbp-curated", "url": "https://www.cbp.gov/", "country": "United States", "country_code": "US", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | US Customs and Border Protection | sanctions/export and border measures filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "cbp-curated",
+    "url": "https://www.cbp.gov/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | US Customs and Border Protection | sanctions/export and border measures filter | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "dhs-curated", "url": "https://www.dhs.gov/", "country": "United States", "country_code": "US", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | US Department of Homeland Security | strategic security policy filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "dhs-curated",
+    "url": "https://www.dhs.gov/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | US Department of Homeland Security | strategic security policy filter | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "bis-curated", "url": "https://www.bis.gov/", "country": "United States", "country_code": "US", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | US Bureau of Industry and Security | export controls/enforcement filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "bis-curated",
+    "url": "https://www.bis.gov/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | US Bureau of Industry and Security | export controls/enforcement filter | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "federal-register-curated", "url": "https://www.federalregister.gov/", "country": "United States", "country_code": "US", "confidence": 1, "category": "news",
-    "notes": "transport=official-html-curated | US Federal Register rules and notices | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "federal-register-curated",
+    "url": "https://www.federalregister.gov/",
+    "country": "United States",
+    "country_code": "US",
+    "confidence": 1,
+    "category": "news",
+    "notes": "transport=official-html-curated | US Federal Register rules and notices | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "reuters-asia-curated", "url": "https://www.reuters.com/world/asia-pacific/", "country": "International", "country_code": "INT", "confidence": 2, "category": "news",
-    "notes": "transport=official-html-curated | Reuters Asia-Pacific | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "reuters-asia-curated",
+    "url": "https://www.reuters.com/world/asia-pacific/",
+    "country": "International",
+    "country_code": "INT",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-html-curated | Reuters Asia-Pacific | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "ap-asia-curated", "url": "https://apnews.com/hub/asia-pacific", "country": "International", "country_code": "INT", "confidence": 2, "category": "news",
-    "notes": "transport=official-html-curated | Associated Press Asia-Pacific | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "ap-asia-curated",
+    "url": "https://apnews.com/hub/asia-pacific",
+    "country": "International",
+    "country_code": "INT",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-html-curated | Associated Press Asia-Pacific | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "jakarta-post-curated", "url": "https://www.thejakartapost.com/", "country": "Indonesia", "country_code": "ID", "confidence": 2, "category": "news",
-    "notes": "transport=official-html-curated | The Jakarta Post | defense/foreign affairs filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "jakarta-post-curated",
+    "url": "https://www.thejakartapost.com/",
+    "country": "Indonesia",
+    "country_code": "ID",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-html-curated | The Jakarta Post | defense/foreign affairs filter | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "star-malaysia-curated", "url": "https://www.thestar.com.my/", "country": "Malaysia", "country_code": "MY", "confidence": 2, "category": "news",
-    "notes": "transport=official-html-curated | The Star Malaysia | security/foreign affairs filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "star-malaysia-curated",
+    "url": "https://www.thestar.com.my/",
+    "country": "Malaysia",
+    "country_code": "MY",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-html-curated | The Star Malaysia | security/foreign affairs filter | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "cna-curated", "url": "https://www.channelnewsasia.com/", "country": "Singapore", "country_code": "SG", "confidence": 2, "category": "news",
-    "notes": "transport=official-html-curated | Channel NewsAsia | regional security filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "cna-curated",
+    "url": "https://www.channelnewsasia.com/",
+    "country": "Singapore",
+    "country_code": "SG",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-html-curated | Channel NewsAsia | regional security filter | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "straits-times-curated", "url": "https://www.straitstimes.com/", "country": "Singapore", "country_code": "SG", "confidence": 2, "category": "news",
-    "notes": "transport=official-html-curated | The Straits Times | regional security filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "straits-times-curated",
+    "url": "https://www.straitstimes.com/",
+    "country": "Singapore",
+    "country_code": "SG",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-html-curated | The Straits Times | regional security filter | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "japan-times-curated", "url": "https://www.japantimes.co.jp/", "country": "Japan", "country_code": "JP", "confidence": 2, "category": "news",
-    "notes": "transport=official-html-curated | The Japan Times | defense/foreign affairs filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "japan-times-curated",
+    "url": "https://www.japantimes.co.jp/",
+    "country": "Japan",
+    "country_code": "JP",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-html-curated | The Japan Times | defense/foreign affairs filter | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "nikkei-asia-curated", "url": "https://asia.nikkei.com/", "country": "Japan", "country_code": "JP", "confidence": 2, "category": "news",
-    "notes": "transport=official-html-curated | Nikkei Asia | strategic economy/security filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "nikkei-asia-curated",
+    "url": "https://asia.nikkei.com/",
+    "country": "Japan",
+    "country_code": "JP",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-html-curated | Nikkei Asia | strategic economy/security filter | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "kyodo-english-curated", "url": "https://english.kyodonews.net/", "country": "Japan", "country_code": "JP", "confidence": 2, "category": "news",
-    "notes": "transport=official-html-curated | Kyodo News English | regional security filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "kyodo-english-curated",
+    "url": "https://english.kyodonews.net/",
+    "country": "Japan",
+    "country_code": "JP",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-html-curated | Kyodo News English | regional security filter | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
   },
   {
-    "name": "focus-taiwan-curated", "url": "https://focustaiwan.tw/", "country": "Taiwan", "country_code": "TW", "confidence": 2, "category": "news",
-    "notes": "transport=official-html-curated | Focus Taiwan | defense/foreign affairs filter | wire-topic-v2 | homepage filtered by title/lead", "requires_tor": false
+    "name": "focus-taiwan-curated",
+    "url": "https://focustaiwan.tw/",
+    "country": "Taiwan",
+    "country_code": "TW",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-html-curated | Focus Taiwan | defense/foreign affairs filter | wire-topic-v2 | homepage filtered by title/lead",
+    "requires_tor": false
+  },
+  {
+    "name": "google-news-vlc-civil-defense-vi",
+    "url": "https://news.google.com/rss/search?q=di%E1%BB%85n+t%E1%BA%ADp+chung+ph%C3%B2ng+th%E1%BB%A7+d%C3%A2n+s%E1%BB%B1+Vi%E1%BB%87t+Nam+L%C3%A0o+Campuchia+2026+when%3A90d&hl=vi&gl=VN&ceid=VN:vi",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | targeted=Vietnam-Laos-Cambodia civil defense exercise | language=vi | validated=2026-10-05",
+    "requires_tor": false
+  },
+  {
+    "name": "google-news-vlc-rescue-vi",
+    "url": "https://news.google.com/rss/search?q=qu%C3%A2n+%C4%91%E1%BB%99i+ba+n%C6%B0%E1%BB%9Bc+Vi%E1%BB%87t+Nam+L%C3%A0o+Campuchia+c%E1%BB%A9u+h%E1%BB%99+c%E1%BB%A9u+n%E1%BA%A1n+%E1%BB%A9ng+ph%C3%B3+th%E1%BA%A3m+h%E1%BB%8Da+when%3A90d&hl=vi&gl=VN&ceid=VN:vi",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | targeted=tri-country disaster response and rescue | language=vi | validated=2026-10-05",
+    "requires_tor": false
+  },
+  {
+    "name": "google-news-vlc-civil-defense-en",
+    "url": "https://news.google.com/rss/search?q=Vietnam+Laos+Cambodia+2026+joint+civil+defense+exercise+when:90d&hl=en&gl=US&ceid=US:en",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | targeted=Vietnam-Laos-Cambodia civil defense exercise | language=en | validated=2026-10-05",
+    "requires_tor": false
+  },
+  {
+    "name": "google-news-vlc-hadr-en",
+    "url": "https://news.google.com/rss/search?q=Vietnam+Laos+Cambodia+disaster+response+HADR+search+rescue+military+exercise+2026+when:90d&hl=en&gl=US&ceid=US:en",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | targeted=tri-country HADR and search-rescue exercise | language=en | validated=2026-10-05",
+    "requires_tor": false
+  },
+  {
+    "name": "google-news-vlc-nguyen-truong-thang-vi",
+    "url": "https://news.google.com/rss/search?q=Nguy%E1%BB%85n+Tr%C6%B0%E1%BB%9Dng+Th%E1%BA%AFng+ph%C3%B2ng+th%E1%BB%A7+d%C3%A2n+s%E1%BB%B1+L%C3%A0o+Campuchia+2026+when%3A365d&hl=vi&gl=VN&ceid=VN:vi",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | targeted=Nguyen Truong Thang civil defense | language=vi | validated=2026-10-05",
+    "requires_tor": false
+  },
+  {
+    "name": "google-news-vlc-brigade-249-vi",
+    "url": "https://news.google.com/rss/search?q=L%E1%BB%AF+%C4%91o%C3%A0n+249+L%C3%A0o+Campuchia+di%E1%BB%85n+t%E1%BA%ADp+c%E1%BB%A9u+h%E1%BB%99+2026+when%3A365d&hl=vi&gl=VN&ceid=VN:vi",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | targeted=Brigade 249 exercise | language=vi | validated=2026-10-05",
+    "requires_tor": false
+  },
+  {
+    "name": "google-news-vlc-nguyen-truong-thang-en",
+    "url": "https://news.google.com/rss/search?q=Nguyen+Truong+Thang+exercise+Laos+Cambodia+2026+when%3A365d&hl=en&gl=US&ceid=US:en",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | targeted=Nguyen Truong Thang exercise | language=en | validated=2026-10-05",
+    "requires_tor": false
+  },
+  {
+    "name": "google-news-vlc-brigade-249-en",
+    "url": "https://news.google.com/rss/search?q=Engineering+Brigade+249+Laos+Cambodia+2026+when%3A365d&hl=en&gl=US&ceid=US:en",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | targeted=Engineering Brigade 249 | language=en | validated=2026-10-05",
+    "requires_tor": false
+  },
+  {
+    "name": "google-news-vlc-exercise-zh",
+    "url": "https://news.google.com/rss/search?q=%E8%B6%8A%E8%80%81%E6%9F%AC+%E8%81%94%E5%90%88%E6%BC%94%E4%B9%A0+%E6%95%91%E6%8F%B4%E6%BC%94%E4%B9%A0+2026+when%3A365d&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | targeted=trilateral joint rescue exercise | language=zh | validated=2026-10-05",
+    "requires_tor": false
+  },
+  {
+    "name": "google-news-vlc-exercise-km",
+    "url": "https://news.google.com/rss/search?q=%E1%9E%9F%E1%9F%85+%E1%9E%9F%E1%9E%BB%E1%9E%81%E1%9E%B6+%E1%9E%9F%E1%9E%98%E1%9E%99%E1%9E%BB%E1%9E%91%E1%9F%92%E1%9E%92+%E1%9E%9C%E1%9F%80%E1%9E%8F%E1%9E%8E%E1%9E%B6%E1%9E%98+2026+when%3A365d&hl=km&gl=KH&ceid=KH:km",
+    "country": "Cambodia",
+    "country_code": "KH",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | targeted=Sao Sokha exercise | language=km | validated=2026-10-05",
+    "requires_tor": false
+  },
+  {
+    "name": "google-news-vlc-exercise-lo",
+    "url": "https://news.google.com/rss/search?q=%E0%BB%80%E0%BA%9D%E0%BA%B4%E0%BA%81%E0%BA%8A%E0%BB%89%E0%BA%AD%E0%BA%A1+%E0%BA%AB%E0%BA%A7%E0%BA%BD%E0%BA%94%E0%BA%99%E0%BA%B2%E0%BA%A1+%E0%BA%81%E0%BA%B3%E0%BA%9B%E0%BA%B9%E0%BB%80%E0%BA%88%E0%BA%8D+2026+when%3A365d&hl=lo&gl=LA&ceid=LA:lo",
+    "country": "Laos",
+    "country_code": "LA",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | targeted=trilateral rescue exercise | language=lo | validated=2026-10-05",
+    "requires_tor": false
+  },
+  {
+    "name": "google-news-vlc-exercise-fr",
+    "url": "https://news.google.com/rss/search?q=exercice+conjoint+protection+civile+Vietnam+Laos+Cambodge+2026+when%3A365d&hl=fr&gl=FR&ceid=FR:fr",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | targeted=trilateral civil protection exercise | language=fr | validated=2026-10-05",
+    "requires_tor": false
+  },
+  {
+    "name": "google-news-vlc-exercise-th",
+    "url": "https://news.google.com/rss/search?q=%E0%B8%81%E0%B8%B2%E0%B8%A3%E0%B8%9D%E0%B8%B6%E0%B8%81%E0%B8%A3%E0%B9%88%E0%B8%A7%E0%B8%A1+%E0%B8%9B%E0%B9%89%E0%B8%AD%E0%B8%87%E0%B8%81%E0%B8%B1%E0%B8%99%E0%B8%9E%E0%B8%A5%E0%B9%80%E0%B8%A3%E0%B8%B7%E0%B8%AD%E0%B8%99+%E0%B9%80%E0%B8%A7%E0%B8%B5%E0%B8%A2%E0%B8%94%E0%B8%99%E0%B8%B2%E0%B8%A1+%E0%B8%A5%E0%B8%B2%E0%B8%A7+%E0%B8%81%E0%B8%B1%E0%B8%A1%E0%B8%9E%E0%B8%B9%E0%B8%8A%E0%B8%B2+2026+when%3A365d&hl=th&gl=TH&ceid=TH:th",
+    "country": "Thailand",
+    "country_code": "TH",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | targeted=trilateral civil defense exercise | language=th | validated=2026-10-05",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-qdnd-vi",
+    "url": "https://news.google.com/rss/search?q=site%3Aqdnd.vn%202026%20%28%22Vi%E1%BB%87t%20Nam%22%20OR%20Vietnam%29%20%28L%C3%A0o%20OR%20Laos%29%20%28Campuchia%20OR%20Cambodia%29%20%28di%E1%BB%85n%20t%E1%BA%ADp%20OR%20exercise%20OR%20c%E1%BB%A9u%20h%E1%BB%99%20OR%20rescue%20OR%20%22civil%20defense%22%20OR%20%22ph%C3%B2ng%20th%E1%BB%A7%20d%C3%A2n%20s%E1%BB%B1%22%20OR%20HADR%29&hl=vi&gl=VN&ceid=VN:vi",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=qdnd.vn | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-qdnd-en",
+    "url": "https://news.google.com/rss/search?q=site%3Aen.qdnd.vn%202026%20%28%22Vi%E1%BB%87t%20Nam%22%20OR%20Vietnam%29%20%28L%C3%A0o%20OR%20Laos%29%20%28Campuchia%20OR%20Cambodia%29%20%28di%E1%BB%85n%20t%E1%BA%ADp%20OR%20exercise%20OR%20c%E1%BB%A9u%20h%E1%BB%99%20OR%20rescue%20OR%20%22civil%20defense%22%20OR%20%22ph%C3%B2ng%20th%E1%BB%A7%20d%C3%A2n%20s%E1%BB%B1%22%20OR%20HADR%29&hl=vi&gl=VN&ceid=VN:vi",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=en.qdnd.vn | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-mod-vn",
+    "url": "https://news.google.com/rss/search?q=site%3Amod.gov.vn%202026%20%28%22Vi%E1%BB%87t%20Nam%22%20OR%20Vietnam%29%20%28L%C3%A0o%20OR%20Laos%29%20%28Campuchia%20OR%20Cambodia%29%20%28di%E1%BB%85n%20t%E1%BA%ADp%20OR%20exercise%20OR%20c%E1%BB%A9u%20h%E1%BB%99%20OR%20rescue%20OR%20%22civil%20defense%22%20OR%20%22ph%C3%B2ng%20th%E1%BB%A7%20d%C3%A2n%20s%E1%BB%B1%22%20OR%20HADR%29&hl=vi&gl=VN&ceid=VN:vi",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=mod.gov.vn | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-tapchiqptd",
+    "url": "https://news.google.com/rss/search?q=site%3Atapchiqptd.vn%202026%20%28%22Vi%E1%BB%87t%20Nam%22%20OR%20Vietnam%29%20%28L%C3%A0o%20OR%20Laos%29%20%28Campuchia%20OR%20Cambodia%29%20%28di%E1%BB%85n%20t%E1%BA%ADp%20OR%20exercise%20OR%20c%E1%BB%A9u%20h%E1%BB%99%20OR%20rescue%20OR%20%22civil%20defense%22%20OR%20%22ph%C3%B2ng%20th%E1%BB%A7%20d%C3%A2n%20s%E1%BB%B1%22%20OR%20HADR%29&hl=vi&gl=VN&ceid=VN:vi",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=tapchiqptd.vn | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-baomoi",
+    "url": "https://news.google.com/rss/search?q=site%3Abaomoi.com%202026%20%28%22Vi%E1%BB%87t%20Nam%22%20OR%20Vietnam%29%20%28L%C3%A0o%20OR%20Laos%29%20%28Campuchia%20OR%20Cambodia%29%20%28di%E1%BB%85n%20t%E1%BA%ADp%20OR%20exercise%20OR%20c%E1%BB%A9u%20h%E1%BB%99%20OR%20rescue%20OR%20%22civil%20defense%22%20OR%20%22ph%C3%B2ng%20th%E1%BB%A7%20d%C3%A2n%20s%E1%BB%B1%22%20OR%20HADR%29&hl=vi&gl=VN&ceid=VN:vi",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=baomoi.com | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-bodu365",
+    "url": "https://news.google.com/rss/search?q=site%3Abodu365.co%202026%20Vietnam%20Laos%20Cambodia%20%28exercise%20OR%20rescue%20OR%20%22disaster%20response%22%20OR%20HADR%29&hl=en&gl=KH&ceid=KH:en",
+    "country": "Cambodia",
+    "country_code": "KH",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=bodu365.co | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-pasaxon",
+    "url": "https://news.google.com/rss/search?q=site%3Apasaxon.org.la%202026%20Vietnam%20Laos%20Cambodia%20%28exercise%20OR%20rescue%20OR%20%22disaster%20response%22%20OR%20HADR%29&hl=en&gl=LA&ceid=LA:en",
+    "country": "Laos",
+    "country_code": "LA",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=pasaxon.org.la | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-vnanet",
+    "url": "https://news.google.com/rss/search?q=site%3Avnanet.vn%202026%20%28%22Vi%E1%BB%87t%20Nam%22%20OR%20Vietnam%29%20%28L%C3%A0o%20OR%20Laos%29%20%28Campuchia%20OR%20Cambodia%29%20%28di%E1%BB%85n%20t%E1%BA%ADp%20OR%20exercise%20OR%20c%E1%BB%A9u%20h%E1%BB%99%20OR%20rescue%20OR%20%22civil%20defense%22%20OR%20%22ph%C3%B2ng%20th%E1%BB%A7%20d%C3%A2n%20s%E1%BB%B1%22%20OR%20HADR%29&hl=vi&gl=VN&ceid=VN:vi",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=vnanet.vn | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-vov",
+    "url": "https://news.google.com/rss/search?q=site%3Avov.vn%202026%20%28%22Vi%E1%BB%87t%20Nam%22%20OR%20Vietnam%29%20%28L%C3%A0o%20OR%20Laos%29%20%28Campuchia%20OR%20Cambodia%29%20%28di%E1%BB%85n%20t%E1%BA%ADp%20OR%20exercise%20OR%20c%E1%BB%A9u%20h%E1%BB%99%20OR%20rescue%20OR%20%22civil%20defense%22%20OR%20%22ph%C3%B2ng%20th%E1%BB%A7%20d%C3%A2n%20s%E1%BB%B1%22%20OR%20HADR%29&hl=vi&gl=VN&ceid=VN:vi",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=vov.vn | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-vietnamnet",
+    "url": "https://news.google.com/rss/search?q=site%3Avietnamnet.vn%202026%20%28%22Vi%E1%BB%87t%20Nam%22%20OR%20Vietnam%29%20%28L%C3%A0o%20OR%20Laos%29%20%28Campuchia%20OR%20Cambodia%29%20%28di%E1%BB%85n%20t%E1%BA%ADp%20OR%20exercise%20OR%20c%E1%BB%A9u%20h%E1%BB%99%20OR%20rescue%20OR%20%22civil%20defense%22%20OR%20%22ph%C3%B2ng%20th%E1%BB%A7%20d%C3%A2n%20s%E1%BB%B1%22%20OR%20HADR%29&hl=vi&gl=VN&ceid=VN:vi",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=vietnamnet.vn | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-bao-hai-quan",
+    "url": "https://news.google.com/rss/search?q=site%3Abaohaiquanvietnam.vn%202026%20%28%22Vi%E1%BB%87t%20Nam%22%20OR%20Vietnam%29%20%28L%C3%A0o%20OR%20Laos%29%20%28Campuchia%20OR%20Cambodia%29%20%28di%E1%BB%85n%20t%E1%BA%ADp%20OR%20exercise%20OR%20c%E1%BB%A9u%20h%E1%BB%99%20OR%20rescue%20OR%20%22civil%20defense%22%20OR%20%22ph%C3%B2ng%20th%E1%BB%A7%20d%C3%A2n%20s%E1%BB%B1%22%20OR%20HADR%29&hl=vi&gl=VN&ceid=VN:vi",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=baohaiquanvietnam.vn | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-bien-phong",
+    "url": "https://news.google.com/rss/search?q=site%3Abienphong.com.vn%202026%20%28%22Vi%E1%BB%87t%20Nam%22%20OR%20Vietnam%29%20%28L%C3%A0o%20OR%20Laos%29%20%28Campuchia%20OR%20Cambodia%29%20%28di%E1%BB%85n%20t%E1%BA%ADp%20OR%20exercise%20OR%20c%E1%BB%A9u%20h%E1%BB%99%20OR%20rescue%20OR%20%22civil%20defense%22%20OR%20%22ph%C3%B2ng%20th%E1%BB%A7%20d%C3%A2n%20s%E1%BB%B1%22%20OR%20HADR%29&hl=vi&gl=VN&ceid=VN:vi",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=bienphong.com.vn | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-qpvn",
+    "url": "https://news.google.com/rss/search?q=site%3Aqpvn.vn%202026%20%28%22Vi%E1%BB%87t%20Nam%22%20OR%20Vietnam%29%20%28L%C3%A0o%20OR%20Laos%29%20%28Campuchia%20OR%20Cambodia%29%20%28di%E1%BB%85n%20t%E1%BA%ADp%20OR%20exercise%20OR%20c%E1%BB%A9u%20h%E1%BB%99%20OR%20rescue%20OR%20%22civil%20defense%22%20OR%20%22ph%C3%B2ng%20th%E1%BB%A7%20d%C3%A2n%20s%E1%BB%B1%22%20OR%20HADR%29&hl=vi&gl=VN&ceid=VN:vi",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=qpvn.vn | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-kpl",
+    "url": "https://news.google.com/rss/search?q=site%3Akpl.gov.la%202026%20Vietnam%20Laos%20Cambodia%20%28exercise%20OR%20rescue%20OR%20%22disaster%20response%22%20OR%20HADR%29&hl=en&gl=LA&ceid=LA:en",
+    "country": "Laos",
+    "country_code": "LA",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=kpl.gov.la | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-lao-gov",
+    "url": "https://news.google.com/rss/search?q=site%3Alao.gov.la%202026%20Vietnam%20Laos%20Cambodia%20%28exercise%20OR%20rescue%20OR%20%22disaster%20response%22%20OR%20HADR%29&hl=en&gl=LA&ceid=LA:en",
+    "country": "Laos",
+    "country_code": "LA",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=lao.gov.la | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-vientiane-times",
+    "url": "https://news.google.com/rss/search?q=site%3Avientianetimes.org.la%202026%20Vietnam%20Laos%20Cambodia%20%28exercise%20OR%20rescue%20OR%20%22disaster%20response%22%20OR%20HADR%29&hl=en&gl=LA&ceid=LA:en",
+    "country": "Laos",
+    "country_code": "LA",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=vientianetimes.org.la | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-akp",
+    "url": "https://news.google.com/rss/search?q=site%3Aakp.gov.kh%202026%20Vietnam%20Laos%20Cambodia%20%28exercise%20OR%20rescue%20OR%20%22disaster%20response%22%20OR%20HADR%29&hl=en&gl=KH&ceid=KH:en",
+    "country": "Cambodia",
+    "country_code": "KH",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=akp.gov.kh | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-kampuchea-thmey",
+    "url": "https://news.google.com/rss/search?q=site%3Akampucheathmey.com%202026%20Vietnam%20Laos%20Cambodia%20%28exercise%20OR%20rescue%20OR%20%22disaster%20response%22%20OR%20HADR%29&hl=en&gl=KH&ceid=KH:en",
+    "country": "Cambodia",
+    "country_code": "KH",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=kampucheathmey.com | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-rasmei",
+    "url": "https://news.google.com/rss/search?q=site%3Arasmeinews.com%202026%20Vietnam%20Laos%20Cambodia%20%28exercise%20OR%20rescue%20OR%20%22disaster%20response%22%20OR%20HADR%29&hl=en&gl=KH&ceid=KH:en",
+    "country": "Cambodia",
+    "country_code": "KH",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=rasmeinews.com | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-phnompenhpost",
+    "url": "https://news.google.com/rss/search?q=site%3Aphnompenhpost.com%202026%20Vietnam%20Laos%20Cambodia%20%28exercise%20OR%20rescue%20OR%20%22disaster%20response%22%20OR%20HADR%29&hl=en&gl=KH&ceid=KH:en",
+    "country": "Cambodia",
+    "country_code": "KH",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=phnompenhpost.com | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-nhandan-zh",
+    "url": "https://news.google.com/rss/search?q=site%3Acn.nhandan.vn%202026%20%E8%B6%8A%E5%8D%97%20%E8%80%81%E6%8C%9D%20%E6%9F%AC%E5%9F%94%E5%AF%A8%20%28%E6%BC%94%E4%B9%A0%20OR%20%E6%95%91%E6%8F%B4%20OR%20%E6%B0%91%E9%98%B2%29&hl=zh-CN&gl=CN&ceid=CN:zh-Hans",
+    "country": "China",
+    "country_code": "CN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=cn.nhandan.vn | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-afp",
+    "url": "https://news.google.com/rss/search?q=site%3Aafp.com%202026%20%28%22Vi%E1%BB%87t%20Nam%22%20OR%20Vietnam%29%20%28L%C3%A0o%20OR%20Laos%29%20%28Campuchia%20OR%20Cambodia%29%20%28di%E1%BB%85n%20t%E1%BA%ADp%20OR%20exercise%20OR%20c%E1%BB%A9u%20h%E1%BB%99%20OR%20rescue%20OR%20%22civil%20defense%22%20OR%20%22ph%C3%B2ng%20th%E1%BB%A7%20d%C3%A2n%20s%E1%BB%B1%22%20OR%20HADR%29&hl=en&gl=FR&ceid=FR:en",
+    "country": "France",
+    "country_code": "FR",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=afp.com | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-nation-th",
+    "url": "https://news.google.com/rss/search?q=site%3Anationthailand.com%202026%20%28%22Vi%E1%BB%87t%20Nam%22%20OR%20Vietnam%29%20%28L%C3%A0o%20OR%20Laos%29%20%28Campuchia%20OR%20Cambodia%29%20%28di%E1%BB%85n%20t%E1%BA%ADp%20OR%20exercise%20OR%20c%E1%BB%A9u%20h%E1%BB%99%20OR%20rescue%20OR%20%22civil%20defense%22%20OR%20%22ph%C3%B2ng%20th%E1%BB%A7%20d%C3%A2n%20s%E1%BB%B1%22%20OR%20HADR%29&hl=en&gl=TH&ceid=TH:en",
+    "country": "Thailand",
+    "country_code": "TH",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=nationthailand.com | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-youtube",
+    "url": "https://news.google.com/rss/search?q=site%3Ayoutube.com%202026%20%28%22Vi%E1%BB%87t%20Nam%22%20OR%20Vietnam%29%20%28L%C3%A0o%20OR%20Laos%29%20%28Campuchia%20OR%20Cambodia%29%20%28di%E1%BB%85n%20t%E1%BA%ADp%20OR%20exercise%20OR%20c%E1%BB%A9u%20h%E1%BB%99%20OR%20rescue%20OR%20%22civil%20defense%22%20OR%20%22ph%C3%B2ng%20th%E1%BB%A7%20d%C3%A2n%20s%E1%BB%B1%22%20OR%20HADR%29&hl=vi&gl=VN&ceid=VN:vi",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=youtube.com | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-facebook",
+    "url": "https://news.google.com/rss/search?q=site%3Afacebook.com%202026%20%28%22Vi%E1%BB%87t%20Nam%22%20OR%20Vietnam%29%20%28L%C3%A0o%20OR%20Laos%29%20%28Campuchia%20OR%20Cambodia%29%20%28di%E1%BB%85n%20t%E1%BA%ADp%20OR%20exercise%20OR%20c%E1%BB%A9u%20h%E1%BB%99%20OR%20rescue%20OR%20%22civil%20defense%22%20OR%20%22ph%C3%B2ng%20th%E1%BB%A7%20d%C3%A2n%20s%E1%BB%B1%22%20OR%20HADR%29&hl=vi&gl=VN&ceid=VN:vi",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=facebook.com | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-tiktok",
+    "url": "https://news.google.com/rss/search?q=site%3Atiktok.com%202026%20%28%22Vi%E1%BB%87t%20Nam%22%20OR%20Vietnam%29%20%28L%C3%A0o%20OR%20Laos%29%20%28Campuchia%20OR%20Cambodia%29%20%28di%E1%BB%85n%20t%E1%BA%ADp%20OR%20exercise%20OR%20c%E1%BB%A9u%20h%E1%BB%99%20OR%20rescue%20OR%20%22civil%20defense%22%20OR%20%22ph%C3%B2ng%20th%E1%BB%A7%20d%C3%A2n%20s%E1%BB%B1%22%20OR%20HADR%29&hl=vi&gl=VN&ceid=VN:vi",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=tiktok.com | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "nhandan-vi",
+    "url": "https://nhandan.vn/rss/home.rss",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | topic=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "nhandan-en",
+    "url": "https://en.nhandan.vn/rss/home.rss",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | topic=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "vietnamplus-vi",
+    "url": "https://vietnamplus.vn/rss/home.rss",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | topic=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "vietnamplus-en",
+    "url": "https://en.vietnamplus.vn/rss/home.rss",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | topic=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "vietnamplus-zh",
+    "url": "https://zh.vietnamplus.vn/rss/home.rss",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | topic=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "vtv-vi",
+    "url": "https://vtv.vn/rss/home.rss",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | topic=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "thanhnien-defense",
+    "url": "https://thanhnien.vn/rss/thoi-su/quoc-phong.rss",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | topic=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "vnexpress-vi",
+    "url": "https://vnexpress.net/rss/tin-moi-nhat.rss",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | topic=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "tuoitre-vi",
+    "url": "https://tuoitre.vn/rss/tin-moi-nhat.rss",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | topic=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "dantri-vi",
+    "url": "https://dantri.com.vn/rss/home.rss",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | topic=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "tienphong-vi",
+    "url": "https://tienphong.vn/rss/home.rss",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | topic=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "laopost-lo",
+    "url": "https://laopost.com/feed/",
+    "country": "Laos",
+    "country_code": "LA",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=official-rss | topic=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-freshnews",
+    "url": "https://news.google.com/rss/search?q=site%3Afreshnews.com.kh%202026%20Vietnam%20Laos%20Cambodia%20%28exercise%20OR%20rescue%20OR%20%22disaster%20response%22%20OR%20HADR%29&hl=en&gl=KH&ceid=KH:en",
+    "country": "Cambodia",
+    "country_code": "KH",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=freshnews.com.kh | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-laodong",
+    "url": "https://news.google.com/rss/search?q=site%3Alaodong.vn%202026%20%28%22Vi%E1%BB%87t%20Nam%22%20OR%20Vietnam%29%20%28L%C3%A0o%20OR%20Laos%29%20%28Campuchia%20OR%20Cambodia%29%20%28di%E1%BB%85n%20t%E1%BA%ADp%20OR%20exercise%20OR%20c%E1%BB%A9u%20h%E1%BB%99%20OR%20rescue%20OR%20%22civil%20defense%22%20OR%20%22ph%C3%B2ng%20th%E1%BB%A7%20d%C3%A2n%20s%E1%BB%B1%22%20OR%20HADR%29&hl=vi&gl=VN&ceid=VN:vi",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=laodong.vn | targeted=VLC-2026",
+    "requires_tor": false
+  },
+  {
+    "name": "google-vlc-vietnamnews",
+    "url": "https://news.google.com/rss/search?q=site%3Avietnamnews.vn%202026%20%28%22Vi%E1%BB%87t%20Nam%22%20OR%20Vietnam%29%20%28L%C3%A0o%20OR%20Laos%29%20%28Campuchia%20OR%20Cambodia%29%20%28di%E1%BB%85n%20t%E1%BA%ADp%20OR%20exercise%20OR%20c%E1%BB%A9u%20h%E1%BB%99%20OR%20rescue%20OR%20%22civil%20defense%22%20OR%20%22ph%C3%B2ng%20th%E1%BB%A7%20d%C3%A2n%20s%E1%BB%B1%22%20OR%20HADR%29&hl=vi&gl=VN&ceid=VN:vi",
+    "country": "Vietnam",
+    "country_code": "VN",
+    "confidence": 2,
+    "category": "news",
+    "notes": "transport=google-news-search-rss | site=vietnamnews.vn | targeted=VLC-2026",
+    "requires_tor": false
   }
 ]

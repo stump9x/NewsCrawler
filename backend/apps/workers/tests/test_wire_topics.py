@@ -67,6 +67,7 @@ EXAMPLES = {
     "4a": (
         "Cuộc diễn tập Hán Quang lần thứ 42 của Đài Loan",
         "Cuộc diễn tập SEACAT 2026 tại Xin-ga-po",
+        "Việt Nam, Lào và Campuchia chuẩn bị tổ chức diễn tập chung về phòng thủ dân sự năm 2026",
         "Hải quân Campuchia tổ chức huấn luyện đối với tàu chiến tiếp nhận từ Trung Quốc",
         "KH sơ bộ tổ chức Diễn tập phòng thủ đô thị của Đài Loan năm 2026",
         "Hoạt động hợp tác hàng hải đa phương giữa Mỹ, Nhật Bản và Philippines ở Biển Đông",
@@ -124,6 +125,7 @@ class WireTopicTests(unittest.TestCase):
             ("国务院批准新核电项目", "", "2c"),
             ("Japan publishes defense white paper", "The government announced its new defense policy.", "3a"),
             ("US and Japan sign regional air-defense missile agreement", "", "4b"),
+            ("Vietnam, Lao PDR and Cambodia conduct joint civil defence disaster response exercise in 2026", "", "4a"),
             ("USTR publishes forced labor investigation findings", "", "5"),
         )
         for title, summary, code in cases:
@@ -158,6 +160,45 @@ class WireTopicTests(unittest.TestCase):
         for title in titles:
             with self.subTest(title=title):
                 self.assertFalse(classify_wire_topics({"title": title}).relevant)
+
+    def test_civil_defense_exercise_lifecycle_is_kept(self):
+        cases = (
+            (
+                "Tổng cục Hậu cần-Kỹ thuật kiểm tra công tác chuẩn bị diễn tập chung phòng thủ dân sự",
+                "Quân đội Việt Nam, Lào và Campuchia hiệp đồng bảo đảm quân y, tìm kiếm cứu hộ cứu nạn cho diễn tập năm 2026.",
+            ),
+            (
+                "Quân đội ba nước sơ duyệt thực binh ứng phó thảm họa thiên tai",
+                "Lực lượng Việt Nam, Lào và Campuchia tổ chức tìm kiếm cứu nạn trong diễn tập phòng thủ dân sự năm 2026.",
+            ),
+            (
+                "Vietnam, Laos and Cambodia inspect preparations for joint HADR exercise",
+                "The armed forces coordinated search and rescue, emergency response and medical support for the 2026 field exercise.",
+            ),
+            (
+                "越老柬2026年举行联合演习与救援演习",
+                "三国军队在第249工程旅开展民防和搜救训练。",
+            ),
+            (
+                "កម្ពុជា ឡាវ និង វៀតណាម រៀបចំសមយុទ្ធការពារជនស៊ីវិល ឆ្នាំ 2026",
+                "កងទ័ពបីប្រទេសហ្វឹកហ្វឺនសង្គ្រោះនៅហាណូយ។",
+            ),
+            (
+                "ຫວຽດນາມ ລາວ ກຳປູເຈຍ ເຝິກຊ້ອມກອບກູ້ໄພພິບັດ 2026",
+                "ກອງທັບສາມປະເທດຝຶກຊ້ອມຢູ່ກອງພົນນ້ອຍ 249.",
+            ),
+            (
+                "การฝึกร่วมป้องกันพลเรือน เวียดนาม ลาว กัมพูชา ปี 2026",
+                "กองทัพสามประเทศฝึกกู้ภัยและรับมือภัยพิบัติร่วมกัน",
+            ),
+            (
+                "Exercice conjoint de protection civile Vietnam-Laos-Cambodge 2026",
+                "Les forces armées préparent les secours et la réponse aux catastrophes à la Brigade 249.",
+            ),
+        )
+        for title, summary in cases:
+            with self.subTest(title=title):
+                self.assertIn("4a", classify_wire_topics({"title": title, "summary": summary}).codes)
 
     def test_metadata_and_related_articles_are_not_evidence(self):
         self.assertFalse(classify_wire_topics({

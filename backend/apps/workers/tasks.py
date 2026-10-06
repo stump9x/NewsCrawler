@@ -60,6 +60,43 @@ def ingest_cert_rss(self, limit_per_feed: int = 15) -> dict:
 
 
 
+@shared_task(bind=True, name="workers.ingest_vlc_rss", max_retries=5)
+def ingest_vlc_rss(self, limit_per_feed: int = 25) -> dict:
+    """Force-refresh only the VLC 2026 research feeds and ingest their latest items."""
+    from apps.core.task_lock import single_flight
+    from apps.intel.models import FeedSource
+    from apps.workers.feeds.clients import load_active_rss_feeds
+
+    with single_flight("workers.ingest_cert_rss", ttl_sec=1800) as acquired:
+        if not acquired:
+            raise self.retry(countdown=120)
+        targeted = FeedSource.objects.filter(is_active=True, name__icontains="vlc")
+        feed_ids = set(targeted.values_list("id", flat=True))
+        if not feed_ids:
+            return {"fetched": 0, "feeds_configured": 0, "reason": "no_active_vlc_feeds"}
+
+        # Bypass validators/body-hash short-circuit once so expanded policy can
+        # reconsider the current entries; the standard 10-minute sweep remains intact.
+        targeted.update(
+            processing_version=0,
+            http_etag="",
+            http_last_modified="",
+            last_body_sha256="",
+        )
+        feeds = [
+            feed for feed in load_active_rss_feeds()
+            if feed.get("id") in feed_ids
+        ]
+        rss_items = fetch_cert_rss_feeds(
+            feeds=feeds, limit_per_feed=limit_per_feed
+        )
+        stats = ingest_rss_items(rss_items, source_label="rss-vlc-2026")
+        stats["fetched"] = len(rss_items)
+        stats["feeds_configured"] = len(feeds)
+        stats["rss_fetched"] = len(rss_items)
+        return stats
+
+
 @shared_task(bind=True, name="workers.ingest_forum_claims", max_retries=2)
 def ingest_forum_claims(self, limit_per_feed: int = 25) -> dict:
     """Disabled: claim/dark-web news is not part of NewsCrawler."""
@@ -107,6 +144,31 @@ def backfill_wire_images_task(self, limit: int = 80, retry_errors: bool = False)
         except Exception as exc:  # noqa: BLE001
             logger.exception("backfill_wire_images failed")
             raise self.retry(exc=exc, countdown=300) from exc
+
+
+@shared_task(
+    bind=True, name="workers.ingest_telegram_group", max_retries=3,
+    soft_time_limit=240, time_limit=300,
+)
+def ingest_telegram_group(self, limit_messages: int = 50, limit_links: int = 5) -> dict:
+    """Read linked news from the explicitly connected Telegram group only."""
+    from apps.core.task_lock import single_flight
+    from apps.workers.telegram_account import account_directory, collect_group_links
+    from telethon.errors import FloodWaitError
+
+    if not (account_directory() / "config.json").exists():
+        return {"skipped": True, "reason": "telegram_account_not_connected"}
+    with single_flight("workers.ingest_telegram_group", ttl_sec=360) as acquired:
+        if not acquired:
+            return {"skipped": True, "reason": "already_running"}
+        try:
+            return collect_group_links(limit_messages=limit_messages, limit_links=limit_links)
+        except FloodWaitError as error:
+            raise self.retry(countdown=max(120, int(error.seconds) + 1)) from None
+        except Exception as error:
+            # Exception types only: never write credentials or account data to logs.
+            logger.warning("Telegram group collection failed: %s", type(error).__name__)
+            raise self.retry(countdown=120) from None
 
 
 @shared_task(name="workers.ingest_all_feeds")

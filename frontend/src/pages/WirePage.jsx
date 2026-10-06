@@ -63,6 +63,7 @@ const SCOPE_TOPICS = {
   "wire-topic-5": "Trừng phạt, kiểm soát XK",
 };
 const TOPIC_FILTER_OPTIONS = [
+  ["civil-defense-vlc-2026", "Diễn tập VLC 2026"],
   ["wire-topic-south-china-sea", "Biển Đông"],
   ["wire-topic-2a", "TQ: biên giới, cửa khẩu"],
   ["wire-topic-2b", "TQ: quốc phòng, an ninh"],
@@ -80,6 +81,7 @@ const TOPIC_LABELS = {
   ...SCOPE_TOPICS,
   "wire-topic-1a": "Biển Đông",
   "wire-topic-1b": "Biển Đông",
+  "civil-defense-vlc-2026": "Diễn tập VLC 2026",
   "cyber-operations": "Tác chiến mạng",
 };
 const SOURCE_LABELS = {

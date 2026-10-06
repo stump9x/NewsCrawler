@@ -35,7 +35,7 @@ class TopicRecommendationTests(TestCase):
     def scores(self):
         return dict(annotate_favorite_recommendations(Threat.objects.all(), self.user).values_list("id", "personal_interest_score"))
 
-    def test_same_favorite_must_share_specific_topic_and_country(self):
+    def test_same_topic_recommends_across_countries_and_country_strengthens(self):
         favorite = self.story("favorite", "wire-topic-1a", "geo-china", "maritime", "site-example-com")
         ThreatFavorite.objects.create(user=self.user, threat=favorite)
         correct = self.story("new patrol", "wire-topic-1a", "geo-china")
@@ -45,14 +45,15 @@ class TopicRecommendationTests(TestCase):
         hidden = self.story("hidden", "wire-topic-1a", "geo-china", relevant=False)
         scores = self.scores()
         self.assertEqual(scores[correct.id], 3)
-        for obj in (favorite, same_source_geo, different_topic, different_country, hidden):
+        self.assertEqual(scores[different_country.id], 2)
+        for obj in (favorite, same_source_geo, different_topic, hidden):
             self.assertEqual(scores[obj.id], 0)
 
-    def test_cannot_combine_country_and_topic_from_different_favorites(self):
+    def test_cannot_combine_country_and_topic_from_different_favorites_for_strong_score(self):
         for obj in (self.story("A", "wire-topic-1a", "geo-china"), self.story("B", "wire-topic-2c", "geo-japan")):
             ThreatFavorite.objects.create(user=self.user, threat=obj)
         candidate = self.story("C", "wire-topic-1a", "geo-japan")
-        self.assertEqual(self.scores()[candidate.id], 0)
+        self.assertEqual(self.scores()[candidate.id], 2)
 
     def test_retired_topic_does_not_recommend_even_before_reclassification(self):
         favorite = self.story("old visit", "wire-topic-6", "vietnam")

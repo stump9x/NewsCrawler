@@ -279,10 +279,12 @@ def get_user_wire_recommendations_enabled(user) -> bool:
 
 
 def annotate_favorite_recommendations(queryset, user):
-    """Require a specific subtopic AND country shared with the same favorite.
+    """Score same-subtopic candidates, strengthening matches by country.
 
     Generic topic/source tags never count. Favorites rejected by the current
-    scope do not train recommendations. Keep the publication timeline intact.
+    scope do not train recommendations. A candidate in the same specific
+    subtopic can cross country boundaries; sharing a country with that same
+    favorite earns the strongest score. Keep the publication timeline intact.
     """
     if not get_user_wire_recommendations_enabled(user):
         return queryset.annotate(
@@ -305,15 +307,19 @@ def annotate_favorite_recommendations(queryset, user):
         threat_id=OuterRef(OuterRef("pk")),
         tag__slug__in=WIRE_COUNTRY_FILTER_SLUGS,
     ).values("tag_id")
-    matches = (
+    topic_matches = (
         ThreatFavorite.objects.filter(user=user, threat__wire_relevant=True)
         .exclude(threat_id=OuterRef("pk"))
         .filter(threat__tags__in=Subquery(candidate_topics))
+    )
+    strong_matches = (
+        topic_matches
         .filter(threat__tags__in=Subquery(candidate_countries))
     )
     return queryset.annotate(
         personal_interest_score=Case(
-            When(Q(wire_relevant=True) & Exists(matches), then=Value(3)),
+            When(Q(wire_relevant=True) & Exists(strong_matches), then=Value(3)),
+            When(Q(wire_relevant=True) & Exists(topic_matches), then=Value(2)),
             default=Value(0),
             output_field=IntegerField(),
         )

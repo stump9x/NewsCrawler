@@ -12,3 +12,4 @@ staticfiles
 **/tests/
 **/test_*.py
 config/test_settings.py
+.telegram
